@@ -2,7 +2,7 @@ Veil is a tool designed to generate metasploit payloads that bypass common anti-
 
 Veil was developed and is actively supported by @ChrisTruncer
 
-Greetz & Thanks to @TheMightyShiv for your help and friendship and all others who have helped bear with my questions, gave advice and more, you all know what and how you've helped and how appreciative I am.
+Greetz & Thanks to @TheMightyShiv for your help and friendship and all others who have helped bear with my questions, gave advice, and more.  You all know what and how you've helped and how appreciative I am.
 
 
 Software Requirements:
