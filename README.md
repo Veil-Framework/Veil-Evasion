@@ -31,7 +31,7 @@ Run setup script on Kali x86 (for Pyinstaller).
 Install Python 2.7, Py2Exe, and PyCrypto on a Windows computer (for Py2Exe).  
 
 ##Description
-Veil was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil from the command line, and follow the menu to generate a payload.  Upon creating the payload, veil willask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
+Veil was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil from the command line, and follow the menu to generate a payload.  Upon creating the payload, veil will ask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
 
 If using Pyinstaller, Veil will convert your payload into an executable within Kali.
 
