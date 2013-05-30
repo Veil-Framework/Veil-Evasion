@@ -12,7 +12,7 @@ Greetz:
 ##Software Requirements:
 
 ###Linux
-1.  Use Kali(x86) and all dependencies are pre-installed
+1.  Use Kali (x86) and all dependencies are pre-installed
 
 - or - 
 
