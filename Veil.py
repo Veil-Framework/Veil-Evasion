@@ -503,7 +503,7 @@ def main():
 
     # Clear the terminal and print out welcome message
     title()
-    print " [By]: Chris Tuncer | [Twitter]: @ChrisTruncer"
+    print " [By]: Chris Truncer | [Twitter]: @ChrisTruncer"
     print "========================================================================="
     print
     print "[?] What payload type would you like to use?"
