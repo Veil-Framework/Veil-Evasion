@@ -2,7 +2,7 @@
 
 Veil is a tool designed to generate metasploit payloads that bypass common anti-virus solutions.
 
-Veil was originally developed by @ChrisTruncer.  Veil is currently under active support by @ChrisTruncer and @TheMightyShiv.
+Veil was originally developed by @ChrisTruncer.  Veil is currently under active support by @ChrisTruncer and @TheMightyShiv. 
 
 Greetz: 
 @jasonjfrank
@@ -12,7 +12,7 @@ Greetz:
 ##Software Requirements:
 
 ###Linux
-1.  Use Kali and all dependencies are pre-installed
+1.  Use Kali(x86) and all dependencies are pre-installed
 
 - or - 
 
@@ -27,8 +27,8 @@ Greetz:
 
 ##Setup (tldr;)
 
-Run setup script on Kali. Upon completion, delete the setup folder.
-Install Python 2.7, Py2Exe, and PyCrypto on a Windows computer (for Py2Exe functionality).  
+Run setup script on Kali x86 (for Pyinstaller).
+Install Python 2.7, Py2Exe, and PyCrypto on a Windows computer (for Py2Exe).  
 
 ##Description
 Veil was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil from the command line, and follow the menu to generate a payload.  Upon creating the payload, veil willask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
