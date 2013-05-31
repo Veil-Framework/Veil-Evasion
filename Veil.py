@@ -184,16 +184,21 @@ def supportingFiles():
 
      # Else, used pyinstaller (used by default)
     else:
-        print
-        os.system('wine /root/.wine/drive_c/Python27/python.exe /root/pyinstaller-2.0/pyinstaller.py --noconsole --onefile payload.py')
-        os.system('mv dist/payload.exe .')
-        os.system('rm -rf dist')
-        os.system('rm -rf build')
-        os.system('rm payload.spec')
-        os.system('rm logdict*.*')
-        os.system('rm payload.py')
-        title()
-        print helpfulinfo
+        if(os.path.isfile('/root/.wine/drive_c/Python27/python.exe')):
+            print
+            os.system('wine /root/.wine/drive_c/Python27/python.exe /root/pyinstaller-2.0/pyinstaller.py --noconsole --onefile payload.py')
+            os.system('mv dist/payload.exe .')
+            os.system('rm -rf dist')
+            os.system('rm -rf build')
+            os.system('rm payload.spec')
+            os.system('rm logdict*.*')
+            os.system('rm payload.py')
+            title()
+            print helpfulinfo
+        else:
+            print "Cannot find python.exe file at /root/.wine/drive_c/Python27/. Make sure the python.exe file exist before using PyInstaller."
+            exit(1)
+
 
 # Function to randomly create variable names
 def randomString():
