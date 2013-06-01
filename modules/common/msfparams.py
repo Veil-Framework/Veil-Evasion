@@ -59,10 +59,6 @@ def SetHandler():
     # Retrieve Handler User Input
     Handler = raw_input("[>] Please enter the number of your choice: ")
 
-    # Return to Main Menu option.
-    if Handler == '0':
-        SetPayloadType()
-
     # Check if Handler is numeric.
     try:
         float(Handler)
@@ -72,7 +68,7 @@ def SetHandler():
 
     # Check if Handler is a valid option.
     if Handler == "0":
-        exit()
+        SetPayloadType()
     elif 0 <= int(Handler) <= 3:
         SetLocalHost()
     # Payload type validation check.
