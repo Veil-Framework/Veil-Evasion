@@ -54,10 +54,14 @@ def SetHandler():
     print ' 1 - Reverse TCP'
     print ' 2 - Reverse HTTP'
     print ' 3 - Reverse HTTPS'
-    print ' 0 - Exit Veil\n'
+    print ' 0 - Main Menu\n'
 
     # Retrieve Handler User Input
     Handler = raw_input("[>] Please enter the number of your choice: ")
+
+    # Return to Main Menu option.
+    if Handler == '0':
+        SetPayloadType()
 
     # Check if Handler is numeric.
     try:
