@@ -2,6 +2,9 @@
 
 # Setup Script for Kali to use PyInstaller
 
+# Install MinGW for C payloads
+apt-get install mingw-w64
+
 # Unzip Setup Files
 unzip requiredfiles.zip
 
