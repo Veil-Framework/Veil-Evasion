@@ -11,7 +11,7 @@ from modules.auxiliary import shellcode
 from modules.common import randomizer
 from modules.common import messages
 
-def voidpointer():
+def pyvoidpointer():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
 
@@ -34,7 +34,7 @@ def voidpointer():
     supportingFiles()
     messages.endmsg()
 
-def VirtualAlloc():
+def pyVirtualAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
     
@@ -60,7 +60,7 @@ def VirtualAlloc():
     supportingFiles()
     messages.endmsg()
 
-def b64VAlloc():
+def pyb64VAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()    
 
@@ -92,7 +92,7 @@ def b64VAlloc():
     supportingFiles()
     messages.endmsg()
 
-def LetterSubVAlloc():
+def pyLetterSubVAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
 
@@ -138,7 +138,7 @@ def LetterSubVAlloc():
     supportingFiles()
     messages.endmsg()
 
-def ARCVAlloc():
+def pyARCVAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
 
@@ -181,7 +181,7 @@ def ARCVAlloc():
     supportingFiles()
     messages.endmsg()
 
-def DESVAlloc():
+def pyDESVAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
 
@@ -224,7 +224,7 @@ def DESVAlloc():
     supportingFiles()
     messages.endmsg()
 
-def AESVAlloc():
+def pyAESVAlloc():
     # Generate Shellcode Using msfvenom
     Shellcode = shellcode.genShellcode()
 

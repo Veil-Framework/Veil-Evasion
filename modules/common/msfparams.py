@@ -4,13 +4,13 @@ from modules.common import messages
 from modules.payloads import python
 
 # PayloadChoice Options
-PayloadChoice = {1 : python.voidpointer,
-2 : python.VirtualAlloc,
-3 : python.b64VAlloc,
-4 : python.LetterSubVAlloc,
-5 : python.ARCVAlloc,
-6 : python.DESVAlloc,
-7 : python.AESVAlloc
+PayloadChoice = {1 : python.pyvoidpointer,
+2 : python.pyVirtualAlloc,
+3 : python.pyb64VAlloc,
+4 : python.pyLetterSubVAlloc,
+5 : python.pyARCVAlloc,
+6 : python.pyDESVAlloc,
+7 : python.pyAESVAlloc
 }
 
 # Set/Verify PayloadType Variable
