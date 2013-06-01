@@ -1,3 +1,11 @@
+[06.01.2013]
+     Released.: Version 1.2
+     Added....: C-based payloads (many more coming)
+     Added....: Ability to use custom shellcode.
+     Modified.: Organized payloads by language.
+     Modified.: Split all payloads into single files.
+     Modified.: Costmetics
+
 [05.31.2013]
      Released.: Version 1.1.0
      Modified.: Major revamp of codebase. Began framework-based structure.

@@ -5,7 +5,7 @@ import os
 def title():
     os.system('clear')
     print "========================================================================="
-    print " Veil | [Version]: 1.1.0 | [Updated]: 05.31.2013"
+    print " Veil | [Version]: 1.1.0 | [Updated]: 06.01.2013"
     print "========================================================================="
 
 # Script Completion Message Function
