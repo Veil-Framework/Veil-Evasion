@@ -1,3 +1,4 @@
+# Pyinstaller method is also used in SET by Dave Kennedy when working with python payloads
 # Import Modules
 import os
 import sys

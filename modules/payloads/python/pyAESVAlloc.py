@@ -1,3 +1,7 @@
+# Based off of research done by Dave Kennedy, which has similar functionality within SET and CodeKoala which can be seen here:
+# http://www.codekoala.com/blog/2009/aes-encryption-python-using-pycrypto/
+# https://github.com/trustedsec/social-engineer-toolkit/blob/master/src/core/setcore.py
+
 # Import Modules
 import base64
 import random
