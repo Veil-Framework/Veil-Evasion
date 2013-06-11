@@ -1,3 +1,6 @@
+# Code was referenced from:
+# https://github.com/rapid7/metasploit-framework/blob/master/data/templates/src/pe/exe/template.c
+
 # Import modules
 import os
 import string
