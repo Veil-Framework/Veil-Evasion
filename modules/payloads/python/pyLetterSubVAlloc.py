@@ -1,3 +1,6 @@
+# Letter substitution code was adapted from:
+# http://www.tutorialspoint.com/python/string_maketrans.htm
+
 # Import Modules
 import string
 from modules.auxiliary import shellcode
