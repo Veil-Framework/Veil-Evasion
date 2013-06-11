@@ -1,3 +1,6 @@
+# Code adapted from:
+# http://www.debasish.in/2012/04/execute-shellcode-using-python.html
+
 # Import Modules
 from modules.auxiliary import shellcode
 from modules.common import messages
