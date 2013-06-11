@@ -1,3 +1,6 @@
+# Discovered code and adapted from:
+# http://www.debasish.in/2012/08/experiment-with-run-time.html
+
 # Import modules
 import os
 import string
