@@ -1,3 +1,6 @@
+# Great examples and code adapted from 
+# http://www.laurentluce.com/posts/python-and-cryptography-with-pycrypto/
+
 # Import Modules
 import random
 import string
