@@ -12,6 +12,7 @@ apt-get install mono-mcs
 
 if [ -f /root/.wine/drive_c/Python27/python.exe ]
 then
+	rm -rf ../setup
 	echo "Python already installed.. skipping install"
 else
 
