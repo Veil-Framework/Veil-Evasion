@@ -1,0 +1,263 @@
+# depslib dependency file v1.0
+1307313232 source:e:\projects\hyperion\main.cpp
+	<iostream>
+	<string.h>
+	"pe.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"patchcontainer.h"
+
+1304981796 e:\projects\hyperion\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1304981762 source:e:\projects\hyperion\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1304031132 e:\projects\hyperion\fileaccess.h
+	"stdint.h"
+
+1304031532 source:e:\projects\hyperion\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1305067543 source:e:\projects\hyperion\encryptdata.cpp
+	<iostream>
+	<string.h>
+	"encryptdata.h"
+	"fileaccess.h"
+
+1307307991 e:\projects\hyperion\encryptdata.h
+	"pe.h"
+	<vector>
+
+1307311722 source:e:\projects\hyperion\peanalysis.cpp
+	<iostream>
+	<string.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1307311805 e:\projects\hyperion\peanalysis.h
+	"pe.h"
+	<vector>
+
+1307313263 e:\projects\hyperion\patchcontainer.h
+	"peanalysis.h"
+
+1307313258 source:e:\projects\hyperion\patchcontainer.cpp
+	"patchcontainer.h"
+	"peanalysis.h"
+
+1307313232 source:f:\projects\hyperion\main.cpp
+	<iostream>
+	<string.h>
+	"pe.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"patchcontainer.h"
+
+1304981796 f:\projects\hyperion\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1304031132 f:\projects\hyperion\fileaccess.h
+	"stdint.h"
+
+1307311805 f:\projects\hyperion\peanalysis.h
+	"pe.h"
+	<vector>
+
+1307313263 f:\projects\hyperion\patchcontainer.h
+	"peanalysis.h"
+
+1307313258 source:f:\projects\hyperion\patchcontainer.cpp
+	"patchcontainer.h"
+	"peanalysis.h"
+
+1304981762 source:f:\projects\hyperion\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1307311722 source:f:\projects\hyperion\peanalysis.cpp
+	<iostream>
+	<string.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1304031532 source:f:\projects\hyperion\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1304978162 source:f:\projects\hyperion\crypter\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1315062595 f:\projects\hyperion\crypter\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1311888507 f:\projects\hyperion\crypter\fileaccess.h
+	"stdint.h"
+
+1315062622 source:f:\projects\hyperion\crypter\peanalysis.cpp
+	<iostream>
+	<string.h>
+	<windows.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1311624287 f:\projects\hyperion\crypter\peanalysis.h
+	"pe.h"
+	<vector>
+
+1311888499 source:f:\projects\hyperion\crypter\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1315743893 source:f:\projects\hyperion\crypter\main.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"pe.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1307884947 f:\projects\hyperion\crypter\patchcontainer.h
+	"peanalysis.h"
+	"createoutput.h"
+
+1307880669 source:f:\projects\hyperion\crypter\patchcontainer.cpp
+	<iostream>
+	<string.h>
+	"patchcontainer.h"
+	"peanalysis.h"
+
+1315746584 source:f:\projects\hyperion\crypter\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	<string.h>
+	"createoutput.h"
+
+1315762470 f:\projects\hyperion\crypter\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1311892099 source:f:\projects\hyperion\crypter2\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1311892107 f:\projects\hyperion\crypter2\fileaccess.h
+	"stdint.h"
+
+1304981762 source:f:\projects\hyperion\crypter2\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1307873664 f:\projects\hyperion\crypter2\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1311628075 source:f:\projects\hyperion\crypter2\peanalysis.cpp
+	<iostream>
+	<string.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1311627887 f:\projects\hyperion\crypter2\peanalysis.h
+	"pe.h"
+	<vector>
+
+1312233679 source:f:\projects\hyperion\crypter2\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	"createoutput.h"
+
+1312233317 f:\projects\hyperion\crypter2\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1312234002 source:f:\projects\hyperion\crypter2\main.cpp
+	<iostream>
+	<string.h>
+	"pe.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1307884947 f:\projects\hyperion\crypter2\patchcontainer.h
+	"peanalysis.h"
+	"createoutput.h"
+
+1311511420 source:f:\projects\hyperion\crypter2\patchcontainer.cpp
+	<iostream>
+	<string.h>
+	"patchcontainer.h"
+	"peanalysis.h"
+
+1311892099 source:f:\projects\hyperion\src\crypter\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1311892107 f:\projects\hyperion\src\crypter\fileaccess.h
+	"stdint.h"
+
+1331056347 source:f:\projects\hyperion\src\crypter\main.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"pe.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1331055330 f:\projects\hyperion\src\crypter\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1331055401 f:\projects\hyperion\src\crypter\peanalysis.h
+	"pe.h"
+	<vector>
+
+1333110943 f:\projects\hyperion\src\crypter\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1304981762 source:f:\projects\hyperion\src\crypter\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1331055659 source:f:\projects\hyperion\src\crypter\peanalysis.cpp
+	<iostream>
+	<string.h>
+	<windows.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1333102984 source:f:\projects\hyperion\src\crypter\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	<string.h>
+	<windows.h>
+	<time.h>
+	"createoutput.h"
+

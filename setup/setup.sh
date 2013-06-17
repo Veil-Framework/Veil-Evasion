@@ -5,6 +5,11 @@
 # Install MinGW for C payloads
 apt-get install mingw-w64
 
+# install mono for C# payloads
+apt-get install monodoc-browser
+apt-get install monodevelop
+apt-get install mono-mcs
+
 # Unzip Setup Files
 unzip requiredfiles.zip
 
@@ -33,3 +38,7 @@ rm -rf distutils
 rm -rf tcl
 rm -rf Tools
 rm -rf ../setup
+
+# run ./config/update.py
+cd ../config
+python update.py

