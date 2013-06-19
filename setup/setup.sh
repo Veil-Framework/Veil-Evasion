@@ -16,6 +16,12 @@ then
 	echo "Python already installed.. skipping install"
 else
 
+	# Download required files, doing no check cert because wget is having an issue with our wildcard cert
+	# if you're reading this, and actually concerned you might be mitm, use a browser and just download these
+	# files and then just comment these next two lines out :)
+	wget https://www.veil-evasion.com/InstallMe/requiredfiles.zip --no-check-certificate
+	wget https://www.veil-evasion.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate
+
 	# Unzip Setup Files
 	unzip requiredfiles.zip
 
