@@ -26,7 +26,7 @@ class Stager:
 	def __init__(self):
 		# required options
 		self.shortname = "ARCVirtualAlloc"
-		self.description = "..."
+		self.description = "ARC4 Encrypted shellcode is decrypted at runtime with key in file, injected into memory, and executed"
 		self.language = "python"
 		self.rating = "Excellent"
 		self.extension = "py"
