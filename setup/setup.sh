@@ -6,9 +6,7 @@
 apt-get install mingw-w64
 
 # install mono for C# payloads
-apt-get install monodoc-browser
-apt-get install monodevelop
-apt-get install mono-mcs
+apt-get install monodoc-browser monodevelop mono-mcs wine
 
 if [ -f /root/.wine/drive_c/Python27/python.exe ]
 then
