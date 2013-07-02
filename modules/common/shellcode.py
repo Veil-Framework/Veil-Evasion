@@ -47,6 +47,8 @@ class Shellcode:
 
 		"""
 
+		# Variable changed for compatibility with  non-root and non-Kali users
+		# Thanks to Tim Medin for the patch 
 		msfFolder = veil.METASPLOIT_PATH
 
 		# I can haz multiple platforms?
@@ -367,6 +369,7 @@ class Shellcode:
 				return None
 			else:
 				# Stript out extra characters, new lines, etc., just leave the shellcode.
+				# Tim Medin's patch for non-root non-kali users
 				FuncShellcode = commands.getoutput(veil.METASPLOIT_PATH + self.msfvenomCommand)
 				FuncShellcode = FuncShellcode[82:-1]
 				FuncShellcode = FuncShellcode.strip()

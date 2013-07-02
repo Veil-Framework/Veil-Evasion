@@ -73,6 +73,7 @@ def supportingFiles(language, payloadFile, options):
 		# Else, Use Pyinstaller (used by default)
 		else:
 			# Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
+			# Thanks to Tim Medin for patching for non-root non-kali users
 			if(os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
 
 				# extract the payload base name and turn it into an .exe
@@ -91,6 +92,7 @@ def supportingFiles(language, payloadFile, options):
 				print "\n [*] Executable written to: " +  helpers.color(veil.PAYLOAD_COMPILED_PATH + exeName)
 
 			else:
+				# Tim Medin's Patch for non-root non-kali users
 				messages.title()
 				print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine/drive_c/Python27/'), warning=True)
 				print helpers.color(" [!] ERROR: Make sure the python.exe binary exists before using PyInstaller.", warning=True)
