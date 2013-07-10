@@ -1,3 +1,9 @@
+[06.28.2013]
+     Released.: Version 2.0.1
+     Modified.: file name overwrite bug fix, main menu exit bugfix
+     Modified.: local file path completer added to ./modules/common/completers.py
+     Modified.: controller.py can be called from external code, returns path of .exe
+
 [06.16.2013]
      Released.: Version 2.0
      Added....: payloads: powershell, c#, native (hyperion/pecrypter)

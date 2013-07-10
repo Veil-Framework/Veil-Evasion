@@ -3,7 +3,7 @@ Contains any miscellaneous helper methods useful across multiple modules.
 
 """
 
-import random,string,base64,zlib, re
+import random, string, base64, zlib, re, textwrap
 
 def obfuscateNum(N, mod):
 	"""
@@ -54,3 +54,26 @@ def isValidHostname(hostname):
 	if hostname[-1:] == ".": hostname = hostname[:-1]
 	allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
 	return all(allowed.match(x) for x in hostname.split("."))
+
+def formatLong(title,message, frontTab=True, spacing=16):
+    """
+    Print a long title:message with our standardized formatting.
+    Wraps multiple lines into a nice paragraph format
+    """
+
+    lines = textwrap.wrap(textwrap.dedent(message).strip(), width=50)
+    returnString = ""
+
+    i = 1
+    if len(lines) > 0:
+        if frontTab:
+            returnString += "\t%s%s" % (('{0: <%s}'%spacing).format(title), lines[0])
+        else:
+            returnString += " %s%s" % (('{0: <%s}'%(spacing-1)).format(title), lines[0])
+    while i < len(lines):
+        if frontTab:
+            returnString += "\n\t"+' '*spacing+lines[i]
+        else:
+            returnString += "\n"+' '*spacing+lines[i]
+        i += 1
+    return returnString
