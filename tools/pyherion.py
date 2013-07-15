@@ -2,7 +2,7 @@
 
 """
 PyHerion 1.0
-By: @TheGrayhound
+By: @the_grayhound
 
 
 Python 'crypter' that builds an dynamic AES/base64 encoded launcher

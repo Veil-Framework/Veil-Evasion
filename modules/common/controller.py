@@ -17,7 +17,7 @@ import time
 try:
 	from config import veil
 except ImportError:
-	os.system(veil.TERMINAL_CLEAR)
+	os.system('clear')
 	print '========================================================================='
 	print ' Veil First Run Detected... Initializing Script Setup...'
 	print '========================================================================='
@@ -56,7 +56,8 @@ class Controller:
 		self.payload = None
 		# restrict loaded modules to specific languages
 		self.langs = langs
-		self.firstRun = True
+
+		self.outputFileName = ""
 		
 		# "help":"print help screen",
 		self.commands = { "use":"use a specific payload",
@@ -66,9 +67,10 @@ class Controller:
 		
 		self.payloadCommands = {"set":"set a specific option value",
 				"info":"show information about the payload",
-				"help":"show help menu for payload",
+				"help [crypters]":"show help menu for payload or crypters",
+				"generate":"generate payload",
 				"back":"go to the main menu",
-				"generate":"generate payload"}
+				"exit":"exit Veil"}
 		
 		self.LoadPayloads()
 
@@ -158,7 +160,8 @@ class Controller:
 				if self.payload.shellcode.customshellcode:
 					print "\tShellcode:\t\tused"
 
-			print "\tDescription:\t" + payload.description
+			# format this all nice-like
+			print helpers.formatLong("Description:", payload.description)
 		
 		# if required options were specified, output them
 		if hasattr(self.payload, 'required_options'):
@@ -277,15 +280,23 @@ class Controller:
 		
 		if OutputBaseChoice == "": OutputBaseChoice = "payload"
 		
-		# set the output name to /outout/source/BASENAME.EXT
-		OutputFileName = outputFolder + OutputBaseChoice + "." + payload.extension
-		
+		# walk the output path and grab all the file bases, disregarding extensions
+		fileBases = []
+		for (dirpath, dirnames, filenames) in os.walk(outputFolder):
+			fileBases.extend(list(set([x.split(".")[0] for x in filenames if x.split(".")[0] != ''])))
+			break 
+
 		# as long as the file exists, increment a counter to add to the filename
 		# i.e. "payload3.py", to make sure we don't overwrite anything
+		FinalBaseChoice = OutputBaseChoice
 		x = 1
-		while os.path.isfile(OutputFileName):
-			OutputFileName = outputFolder + OutputBaseChoice + str(x) + "." + payload.extension
+		while FinalBaseChoice in fileBases:
+			FinalBaseChoice = OutputBaseChoice + str(x) 
 			x += 1
+
+		# set the output name to /outout/source/BASENAME.EXT
+		OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
+		
 		OutputFile = open(OutputFileName, 'w')
 		OutputFile.write(code)
 		OutputFile.close()
@@ -321,8 +332,11 @@ class Controller:
 		
 		# print out notes if set
 		if hasattr(payload, 'notes'):
-			message += " Notes:\t\t\t" + payload.notes
-		
+			#message += " Notes:\t\t\t" + payload.notes
+			message += helpers.formatLong("Notes:", payload.notes, frontTab=False, spacing=24)
+
+		message += "\n"
+
 		# check if compile_to_exe is in the required options, if so,
 		# call supportfiles.supportingFiles() to compile appropriately
 		if hasattr(self.payload, 'required_options'):
@@ -334,6 +348,10 @@ class Controller:
 					else:
 						supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
 
+					# if we're compiling, set the returned file name to the output .exe
+					# so we can return this for external calls to the framework
+					OutputFileName = veil.PAYLOAD_COMPILED_PATH + FinalBaseChoice + ".exe"
+
 		# print the full message containing generation notes
 		print message
 				
@@ -342,9 +360,11 @@ class Controller:
 
 		if interactive:
 			raw_input(" [>] press any key to return to the main menu: ")
-			self.MainMenu(showMessage=True)
+			#self.MainMenu(showMessage=True)
+
+		return OutputFileName
 	
-	
+
 	def PayloadMenu(self, payload, showTitle=True):
 		
 		comp = completers.PayloadCompleter(self.payload)
@@ -364,10 +384,11 @@ class Controller:
 		choice = ""
 		while choice == "":
 			
-			finished = False
+			#finished = False
 			
-			while not finished:
-				
+			# while not finished:
+			while True:
+
 				choice = raw_input(" [>] Please enter a command: ").strip()
 				
 				if choice != "":
@@ -378,12 +399,19 @@ class Controller:
 						self.PayloadInfo(payload)
 						choice = ""
 					if parts[0] == "help":
-						messages.helpmsg(self.payloadCommands)
+						if len(parts) > 1:
+							if parts[1] == "crypters" or parts[1] == "[crypters]":
+								messages.helpCrypters()
+						else:
+							messages.helpmsg(self.payloadCommands)
 						choice = ""
 					# head back to the main menu
 					if parts[0] == "main" or parts[0] == "back":
-						finished = True
-						self.MainMenu()
+						#finished = True
+						return ""
+						#self.MainMenu()
+					if parts[0] == "exit":
+						raise KeyboardInterrupt
 
 					# set specific options
 					if parts[0] == "set":
@@ -447,46 +475,44 @@ class Controller:
 						# make sure all required options are filled in first
 						if self.ValidatePayload(payload):
 							
-							finished = True
+							#finished = True
 							# actually generate the payload code
 							payloadCode = payload.generate()
 							
 							# ensure we got some code back
 							if payloadCode != "":
 								# call the output menu
-								self.OutputMenu(payload, payloadCode)
+								return self.OutputMenu(payload, payloadCode)
 							
 						else:
 							print helpers.color("\n [!] WARNING: not all required options filled\n", warning=True)
 	
 	
-	def MainMenu(self, showMessage=True):
+	def MainMenu(self, showMessage=True, loop=-1):
 		"""
 		Main interactive menu for payload generation.
 		
-		showMessage = reset the screen and show the greeting message, default=True
-		
+		showMessage = reset the screen and show the greeting message [default=True]
+		loop = number of times to loop through menu, -1 for infinite
 		"""
+
 		try:
-			
-			comp = completers.MainMenuCompleter(self.commands, self.payloads)
-			# we want to treat '/' as part of a word, so override the delimiters
-			readline.set_completer_delims(' \t\n;')
-			readline.parse_and_bind("tab: complete")
-			readline.set_completer(comp.complete)
 			cmd = ""
-			
-			while cmd == "":
+			while cmd == "" and loop != 0:
 				
+				# set out tab completion for the appropriate modules on each run
+				# as other modules sometimes reset this
+				comp = completers.MainMenuCompleter(self.commands, self.payloads)
+				readline.set_completer_delims(' \t\n;')
+				readline.parse_and_bind("tab: complete")
+				readline.set_completer(comp.complete)
+
 				if showMessage:
 					# print the title, where we are, and number of payloads loaded
 					messages.title()
 					print " Main Menu\n"
 					print "\t" + helpers.color(str(len(self.payloads))) + " payloads loaded\n"
-				
-				if self.firstRun:
 					messages.helpmsg(self.commands, showTitle=False)
-					#self.firstRun = False
 				
 				cmd = raw_input(' [>] Please enter a command: ').strip()
 				
@@ -518,7 +544,7 @@ class Controller:
 								# if the entered number matches the payload #, use that payload
 								if int(p) == x: 
 									self.payload = pay
-									self.PayloadMenu(self.payload)
+									self.outputFileName = self.PayloadMenu(self.payload)
 								x += 1
 								
 						# else choosing the payload by name
@@ -531,7 +557,7 @@ class Controller:
 								if pay.language == lang:
 									if pay.shortname == payloadName:
 										self.payload = pay
-										self.PayloadMenu(self.payload)
+										self.outputFileName = self.PayloadMenu(self.payload)
 							
 						cmd = ""
 						showMessage=True
@@ -614,15 +640,21 @@ class Controller:
 						# if the entered number matches the payload #, use that payload
 						if int(cmd) == x: 
 							self.payload = pay
-							self.PayloadMenu(self.payload)
+							self.outputFileName = self.PayloadMenu(self.payload)
 						x += 1
 					cmd = ""
 					showMessage=False
 				
 				# if nothing is entered
 				else:
+					cmd = ""
+					loop += 1
 					showMessage=True
 			
+				loop -= 1
+
+			return self.outputFileName 
+
 		# catch any ctrl + c interrupts
 		except KeyboardInterrupt:
 			print helpers.color("\n\n [!] Exiting...\n", warning=True)
