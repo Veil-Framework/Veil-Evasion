@@ -17,7 +17,7 @@ import time
 try:
 	from config import veil
 except ImportError:
-	os.system(veil.TERMINAL_CLEAR)
+	os.system('clear')
 	print '========================================================================='
 	print ' Veil First Run Detected... Initializing Script Setup...'
 	print '========================================================================='
