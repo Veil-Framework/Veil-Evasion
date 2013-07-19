@@ -10,7 +10,7 @@ def title():
 	"""
 	Print the framework title, with version.
 	"""
-	os.system('veil.TERMINAL_CLEAR')
+	os.system(veil.TERMINAL_CLEAR)
 	print '========================================================================='
 	print ' Veil | [Version]: 2.0.1'
 	print '========================================================================='
