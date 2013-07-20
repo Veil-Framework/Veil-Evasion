@@ -26,9 +26,6 @@ class Stager:
 		self.rating = "Poor/Normal/Good/Excellent"
 		self.extension = "py/cs/c/etc."
 		
-		# optional options
-		self.shellcode = shellcode.Shellcode()
-		
 		# options we require user ineraction for- format is {Option : [Value, Description]]}
 		# the code logic will parse any of these out and require the user to input a value for them
 		self.required_options = {
@@ -40,6 +37,7 @@ class Stager:
 	def generate(self):
 		
 		# Generate Shellcode Using msfvenom
+		self.shellcode = shellcode.Shellcode()
 		Shellcode = self.shellcode.generate()
 		
 		PayloadCode = "..."

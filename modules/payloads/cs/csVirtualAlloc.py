@@ -23,9 +23,6 @@ class Stager:
 		self.language = "c#"
 		self.extension = "cs"
 		
-		# optional
-		self.shellcode = shellcode.Shellcode()
-		
 		# options we require user ineraction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 		
@@ -33,6 +30,7 @@ class Stager:
 		
 	def generate(self):
 		
+		self.shellcode = shellcode.Shellcode()
 		shellcode = self.shellcode.generate()
 		shellcode = "0" + ",0".join(shellcode.split("\\")[1:])
 
