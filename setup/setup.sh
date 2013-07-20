@@ -52,5 +52,5 @@ else
 fi
 
 # run ./config/update.py
-cd ../config
+cd `dirname $0`/../config
 python update.py
