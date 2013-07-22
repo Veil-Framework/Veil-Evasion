@@ -23,9 +23,6 @@ def generateConfig(options):
 
 	config += '# OS to use (Kali/Backtrack/Debian/Windows)\n'
 	config += 'OPERATING_SYSTEM="'+options['OPERATING_SYSTEM']+'"\n\n'
-
-	config += '# Terminal clearing method to use\n'
-	config += 'TERMINAL_CLEAR="'+options['TERMINAL_CLEAR']+'"\n\n'
 	
 	config += '# Veil base install path\n'
 	config += 'VEIL_PATH="'+options['VEIL_PATH']+'"\n\n'
@@ -71,24 +68,19 @@ if __name__ == '__main__':
 			print " [*] OPERATING_SYSTEM = Kali"
 			
 			options["OPERATING_SYSTEM"] = "Kali"
-			options["TERMINAL_CLEAR"] = "clear"
-			print " [*] TERMINAL_CLEAR = clear"
 			options["METASPLOIT_PATH"] = "/usr/share/metasploit-framework/"
 			print " [*] METASPLOIT_PATH = /usr/share/metasploit-framework/"
 			
 		elif issue.startswith("BackTrack"):
 			print " [*] OPERATING_SYSTEM = BackTrack"
 			options["OPERATING_SYSTEM"] = "BackTrack"
-			options["TERMINAL_CLEAR"] = "clear"
-			print " [*] TERMINAL_CLEAR = clear"
 			options["METASPLOIT_PATH"] = "/opt/metasploit/msf3/"
 			print " [*] METASPLOIT_PATH = /opt/metasploit/msf3/"
 			
 		else:
 			print " [*] OPERATING_SYSTEM = Linux"
 			options["OPERATING_SYSTEM"] = "Linux"
-			options["TERMINAL_CLEAR"] = "clear"
-			print " [*] TERMINAL_CLEAR = clear"
+			
 			msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
 			options["METASPLOIT_PATH"] = msfpath
 		
@@ -108,8 +100,6 @@ if __name__ == '__main__':
 	elif platform.system() == "Windows":
 		print " [*] OPERATING_SYSTEM = Windows"
 		options["OPERATING_SYSTEM"] = "Windows"
-		options["TERMINAL_CLEAR"] = "cls"
-		print " [*] TERMINAL_CLEAR = cls"
 
 		veil_path = "\\".join(os.getcwd().split("\\")[:-1]) + "\\"
 		options["VEIL_PATH"] = veil_path

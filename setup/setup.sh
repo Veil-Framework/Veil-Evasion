@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# Install Dependencies
-if [ `whoami` == 'root' ]
-then
-    apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
-elif [ `which sudo|wc -l` == '1' ]
-then
-    sudo apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
-else
-    echo '[ERROR]: Either run this setup script as root or install sudo.'
-fi
+# Setup Script for Kali to use PyInstaller
 
-# Install Wine Python and Dependencies
-if [ -f ~/.wine/drive_c/Python27/python.exe ]
+# Install MinGW for C payloads
+apt-get install mingw-w64
+
+# install mono for C# payloads
+apt-get install monodoc-browser monodevelop mono-mcs wine
+
+if [ -f /root/.wine/drive_c/Python27/python.exe ]
 then
+	rm -rf ../setup
 	echo "Python already installed.. skipping install"
 else
 
@@ -44,13 +41,15 @@ else
 	rm pycrypto-2.6.win32-py2.7.exe
 	rm pyinstaller-2.0.zip
 	rm requiredfiles.zip
+	rm setup.sh
 
 	# Remove Temp Directories
 	rm -rf distutils
 	rm -rf tcl
 	rm -rf Tools
-fi
+	rm -rf ../setup
 
+fi
 # run ./config/update.py
-cd ../config
+cd `dirname $0`/../config
 python update.py
