@@ -1,3 +1,7 @@
+[07.22.2013]
+     Released.: Version 2.0.2
+     Modified.: Powershell and C# payloads to fix a bug found by think.pink
+
 [06.28.2013]
      Released.: Version 2.0.1
      Modified.: file name overwrite bug fix, main menu exit bugfix
