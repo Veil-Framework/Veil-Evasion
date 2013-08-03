@@ -31,6 +31,7 @@ class Stager:
 		self.rating = "Excellent"
 		self.extension = "py"
 
+		self.shellcode = shellcode.Shellcode()
 		# options we require user interaction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
 						"use_pyherion" : ["N", "Use the pyherion encrypter"]}
@@ -39,7 +40,6 @@ class Stager:
 	def generate(self):
 		
 		# Generate Shellcode Using msfvenom
-		self.shellcode = shellcode.Shellcode()
 		Shellcode = self.shellcode.generate()
 		
 		# Generate Random Variable Names

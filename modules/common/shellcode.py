@@ -40,6 +40,18 @@ class Shellcode:
 		# load up all the metasploit modules available
 		self.LoadModules()
 
+
+	def Reset(self):
+		"""
+		reset the state of any internal variables, everything but self.payloadTree
+		"""
+		self.msfvenomCommand = ""
+		self.msfvenomOptions = list()
+		self.customshellcode = ""
+		self.msfvenompayload= ""
+		self.options = list()
+
+
 	def LoadModules(self):
 		"""
 		Crawls the metasploit install tree and extracts available payloads
