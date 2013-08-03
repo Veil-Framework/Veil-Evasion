@@ -29,13 +29,13 @@ class Stager:
 		self.rating = "Poor"
 		self.extension = "c"
 		
+		self.shellcode = shellcode.Shellcode()
 		# options we require user ineraction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 
 	def generate(self):
 		
 		# Generate Shellcode Using msfvenom
-		self.shellcode = shellcode.Shellcode()
 		Shellcode = self.shellcode.generate()
 
 		# Generate Random Variable Names
