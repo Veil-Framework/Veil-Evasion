@@ -24,10 +24,11 @@ class Stager:
 		self.rating = "Excellent"
 		self.language = "powershell"
 		self.extension = "bat"
+
+		self.shellcode = shellcode.Shellcode()
 		
 	def psRaw(self):
 
-		self.shellcode = shellcode.Shellcode()
 		Shellcode = self.shellcode.generate()
 		Shellcode = ",0".join(Shellcode.split("\\"))[1:]
 	

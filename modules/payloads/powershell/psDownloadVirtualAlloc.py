@@ -28,6 +28,7 @@ class Stager:
 		self.language = "powershell"
 		self.extension = "txt"
 		
+		self.shellcode = shellcode.Shellcode()
 		# format is {Option : [Value, Description]]}
 		self.required_options = {"DownloadHost" : ["", "The host to download the secondary stage from"],
 						"DownloadPort" : ["80", "The port on the host to download from"]}
@@ -35,7 +36,6 @@ class Stager:
 		
 	def generate(self):
 
-		self.shellcode = shellcode.Shellcode()
 		Shellcode = self.shellcode.generate()
 		Shellcode = ",0".join(Shellcode.split("\\"))[1:]
 		
