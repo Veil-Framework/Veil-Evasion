@@ -319,6 +319,9 @@ class Controller:
 					parts += ' ' + option + ' '
 				message += parts.strip()
 
+			# reset the internal shellcode state the options don't persist
+			payload.shellcode.Reset()
+
 		# if required options were specified, output them
 		if hasattr(payload, 'required_options'):
 			message += "\n Required Options:\t"
@@ -366,7 +369,15 @@ class Controller:
 	
 
 	def PayloadMenu(self, payload, showTitle=True):
+		"""
+		Main menu for interacting with a specific payload.
 		
+		payload = the payload object we're interacting with
+		showTitle = whether to show the main Veil title menu
+		
+		Returns the output of OutputMenu() (the full path of the source file or compiled .exe)
+		"""
+
 		comp = completers.PayloadCompleter(self.payload)
 		readline.set_completer_delims(' \t\n;')
 		readline.parse_and_bind("tab: complete")
@@ -384,9 +395,6 @@ class Controller:
 		choice = ""
 		while choice == "":
 			
-			#finished = False
-			
-			# while not finished:
 			while True:
 
 				choice = raw_input(" [>] Please enter a command: ").strip()
@@ -643,7 +651,7 @@ class Controller:
 							self.outputFileName = self.PayloadMenu(self.payload)
 						x += 1
 					cmd = ""
-					showMessage=False
+					showMessage=True
 				
 				# if nothing is entered
 				else:
