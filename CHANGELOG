@@ -1,3 +1,7 @@
+[08.08.2013]
+     Released.: Version 2.0.3
+     Modified.: Fixed indentation of entire codebase
+
 [07.22.2013]
      Released.: Version 2.0.2
      Modified.: Fixed powershell and c# payloads, thanks to think.pink for letting us know of the issue
