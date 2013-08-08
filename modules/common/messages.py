@@ -17,11 +17,11 @@ def title():
     print ' [Web]: https://www.veil-evasion.com/ | [Twitter]: @veilevasion'
     print '========================================================================='
     print ""
-    
+
     if veil.OPERATING_SYSTEM != "Kali":
         print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
         print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
-    
+
     # check to make sure the current OS is supported,
     # print a warning message if it's not and exit
     if veil.OPERATING_SYSTEM == "Windows" or veil.OPERATING_SYSTEM == "Unsupported":
@@ -33,15 +33,15 @@ def helpmsg(commands, showTitle=True):
     """
     Print a help menu.
     """
-    
+
     if showTitle:
         title()
-    
+
     print " Available commands:\n"
-    
+
     # list commands in sorted order
     for cmd in sorted(commands.iterkeys(), reverse=True):
-        
+
         print "\t%s\t%s" % ('{0: <12}'.format(cmd), commands[cmd])
 
     print ""
@@ -63,7 +63,7 @@ def helpModule(module):
     module: module to write output from, format "folder.folder.module"
     """
 
-    # split module.x.y into "from module.x import y" 
+    # split module.x.y into "from module.x import y"
     t = module.split(".")
     importName = "from " + ".".join(t[:-1]) + " import " + t[-1]
 
@@ -71,7 +71,7 @@ def helpModule(module):
     exec(importName)
     moduleName = t[-1]
 
-    # extract all local functions from the imported module, 
+    # extract all local functions from the imported module,
     # referenced here by locals()[moduleName]
     functions = [locals()[moduleName].__dict__.get(a) for a in dir(locals()[moduleName]) if isinstance(locals()[moduleName].__dict__.get(a), types.FunctionType)]
 
@@ -87,5 +87,5 @@ def endmsg():
     """
     Print the exit message.
     """
-    print " [*] Your payload files have been generated, don't get caught!" 
+    print " [*] Your payload files have been generated, don't get caught!"
     print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", warning=True)

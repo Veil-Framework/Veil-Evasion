@@ -36,10 +36,9 @@ DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(Padding)
 
 
 """
-"Encryption" method that base64 encodes a given string, 
+"Encryption" method that base64 encodes a given string,
 then does a randomized alphabetic letter substitution.
 """
 def b64sub(s, key):
-	enc_tbl = string.maketrans(string.ascii_letters, key)
-	return string.translate(base64.b64encode(s), enc_tbl)
- 
+    enc_tbl = string.maketrans(string.ascii_letters, key)
+    return string.translate(base64.b64encode(s), enc_tbl)
