@@ -13,6 +13,7 @@ import re
 import socket
 import commands
 import time
+import subprocess
 
 try:
 	from config import veil
@@ -63,6 +64,7 @@ class Controller:
 		self.commands = { "use":"use a specific payload",
 			 "info":"information on a specific payload",
 			 "list":"list available languages/payloads",
+			 "update":"update Veil to the latest version",
 			 "exit":"exit Veil"}
 		
 		self.payloadCommands = {"set":"set a specific option value",
@@ -120,6 +122,20 @@ class Controller:
 		for (name, payload) in self.payloads: 
 			if payload.language == lang: print "\t%s\t\t%s" % ('{0: <16}'.format(payload.shortname), payload.rating)
 
+	def UpdateVeil(self, interactive=True):
+		"""
+		Updates Veil by invoking "git pull" on the OS
+
+		"""
+		print "\n Updating Veil via git...\n"
+		updatecommand = ['git', 'pull']
+		updater = subprocess.Popen(updatecommand, cwd=veil.VEIL_PATH, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		updoutput, upderr = updater.communicate()
+		
+		if interactive:
+			raw_input(" [>] Veil updated, press any key to continue: ")
+
+
 	def ListAllPayloads(self):
 		"""
 		Prints out the name, language and rating of all loaded payloads.
@@ -136,8 +152,7 @@ class Controller:
 			lastLang = payload.language
 			print "\t%s)\t%s\t\t%s" % (x, '{0: <24}'.format(payload.language + "/" + payload.shortname), payload.rating)
 			x+=1
-		print ""
-	
+		print ""	
 	
 	def PayloadInfo(self, payload, showTitle=True, showInfo=True):
 		"""
@@ -421,6 +436,10 @@ class Controller:
 					if parts[0] == "exit":
 						raise KeyboardInterrupt
 
+					# Update Veil via git
+					if parts[0] == "update":
+						self.UpdateVeil()
+
 					# set specific options
 					if parts[0] == "set":
 						
@@ -575,6 +594,11 @@ class Controller:
 						cmd = ""
 						showMessage=False
 				
+				elif cmd.startswith("update"):
+					self.UpdateVeil()
+					showMessage=True
+					cmd = ""
+
 				elif cmd.startswith("info"):
 					
 					if len(cmd.split()) == 1:
