@@ -4,19 +4,19 @@
 if [ `whoami` == 'root' ]
 then
 	if [ `uname -m` == 'x86_64' ]
-		then
-			dpkg --add-architecture i386
-			apt-get update
-			apt-get install wine-bin:i386
+	then
+		dpkg --add-architecture i386
+		apt-get update
+		apt-get install wine-bin:i386
 	fi
     apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
 elif [ `which sudo|wc -l` == '1' ]
 then
 	if [ `uname -m` == 'x86_64' ]
-		then
-			sudo dpkg --add-architecture i386
-			sudo apt-get update
-			sudo apt-get install wine-bin:i386
+	then
+		sudo dpkg --add-architecture i386
+		sudo apt-get update
+		sudo apt-get install wine-bin:i386
 	fi
     sudo apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
 else
