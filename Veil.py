@@ -32,6 +32,7 @@ if __name__ == '__main__':
         parser.add_argument('--msfpayload', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit payload to generate.')
         parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
         parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
+        parser.add_argument('--update', action='store_true', help='Update the Veil framework')
         args = parser.parse_args()
 
         # Print main title
@@ -39,6 +40,11 @@ if __name__ == '__main__':
 
         # instantiate the main controller object
         controller = controller.Controller()
+
+        # call the update functionality for Veil and then exit
+        if args.update:
+            controller.UpdateVeil(interactive=False)
+            sys.exit()
 
         # use interactive menu if a language isn't specified
         if not args.l:
