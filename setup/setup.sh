@@ -24,7 +24,7 @@ else
 fi
 
 # Install Wine Python and Dependencies
-if [ -f ~/.wine/drive_c/Python27/python.exe ]
+if [ -f ~/.wine/drive_c/windows/system32/python27.dll ]
 then
 	echo "Python already installed.. skipping install"
 else
