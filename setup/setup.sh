@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install Dependencies
+# Install Architecture Dependent Dependencies
 if [ `whoami` == 'root' ]
 then
 	if [ `uname -m` == 'x86_64' ]
