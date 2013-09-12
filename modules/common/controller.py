@@ -14,10 +14,8 @@ import socket
 import commands
 import time
 
-try:
-    sys.path.append("/etc/veil/")
-    import settings
-except ImportError:
+
+if not os.path.exists( "/etc/veil/settings.py" ):
     os.system('clear')
     print '========================================================================='
     print ' Veil First Run Detected... Initializing Script Setup...'
@@ -26,12 +24,12 @@ except ImportError:
     print '\n [*] Executing ./config/update.py...'
     os.system('cd config && python update.py')
 
-    try:
-        sys.path.append("/etc/veil/")
-        import settings
-    except ImportError:
-        print "\n [!] ERROR: run ./config/update.py manually\n"
-        sys.exit()
+try:
+    sys.path.append("/etc/veil/")
+    import settings
+except ImportError:
+    print "\n [!] ERROR: run ./config/update.py manually\n"
+    sys.exit()
 
 
 from os.path import join, basename, splitext
