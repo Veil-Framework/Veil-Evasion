@@ -80,7 +80,6 @@ def supportingFiles(language, payloadFile, options):
 				# extract the payload base name and turn it into an .exe
 				exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-				outputPath = settings.PAYLOAD_COMPILED_PATH
 				# TODO: os.system() is depreciated, use subprocess or commands instead
 				os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser('~/pyinstaller-2.0/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
 				os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
@@ -103,7 +102,6 @@ def supportingFiles(language, payloadFile, options):
 
 		# extract the payload base name and turn it into an .exe
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
-		outputPath = os.getcwd() + "/output/compiled/"
 
 		# Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
 		os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName)
@@ -114,7 +112,6 @@ def supportingFiles(language, payloadFile, options):
 
 		# extract the payload base name and turn it into an .exe
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
-		outputPath = os.getcwd() + "/output/compiled/"
 
 		# Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
 		os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + settings.PAYLOAD_COMPILED_PATH + exeName)
