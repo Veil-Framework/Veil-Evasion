@@ -62,11 +62,11 @@ def generateConfig(options):
 	print " [*] METASPLOIT_PATH = " + options['METASPLOIT_PATH']
 
 	# create the output compiled path if it doesn't exist
-	if not os.path.exists( "/etc/settings.py" ): 
-		os.makedirs( "/etc/settings.py" )
-		print " [!] path '/etc/settings.py' created"
+	if not os.path.exists( "/etc/veil/" ): 
+		os.makedirs( "/etc/veil/" )
+		print " [!] path '/etc/veil/' created"
 
-	f = open("/etc.py", 'w')
+	f = open("/etc/veil/etc.py", 'w')
 	f.write(config)
 	f.close()
 	
