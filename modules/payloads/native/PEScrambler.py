@@ -39,7 +39,7 @@ class Stager:
 		print helpers.color("\n[*] Running PEScrambler on " + self.required_options["original_exe"][0] + "...")
 		
 		# be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-		p = subprocess.Popen(peCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=veil.VEIL_PATH+"tools/pescrambler/", shell=True)
+		p = subprocess.Popen(peCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_PATH+"tools/pescrambler/", shell=True)
 		time.sleep(3)
 		stdout, stderr = p.communicate()
 		

