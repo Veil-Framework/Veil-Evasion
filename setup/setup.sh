@@ -17,7 +17,7 @@ func_validate(){
   if [ `whoami` != 'root' ]
   then
     echo
-    echo '[ERROR]: Either Run This Setup Script As Root Or Use Sudo.'
+    echo ' [ERROR]: Either Run This Setup Script As Root Or Use Sudo.'
     echo
     exit 1
   fi
@@ -26,16 +26,17 @@ func_validate(){
   if [ -f ~/.wine/drive_c/windows/system32/python27.dll ]
   then
     echo
-    echo "[INFO]: Wine Python Already Installed... Skipping."
+    echo " [INFO]: Wine Python Already Installed... Skipping."
     echo
-    echo '[*] Initializing Apt Package Installation'
+    echo ' [*] Initializing Apt Package Installation'
     func_apt_deps
+    func_update_config
   else
     echo
-    echo '[*] Initializing Apt Dependencies Installation'
+    echo ' [*] Initializing Apt Dependencies Installation'
     func_apt_deps
     echo
-    echo '[*] Initializing Wine Python Dependencies Installation'
+    echo ' [*] Initializing Wine Python Dependencies Installation'
     func_python_deps
   fi
 }
@@ -46,19 +47,19 @@ func_apt_deps(){
   if [ `uname -m` == 'x86_64' ]
   then
     echo
-    echo '[*] Adding i386 Architecture To x86_64 System'
+    echo ' [*] Adding i386 Architecture To x86_64 System'
     dpkg --add-architecture i386
     echo
-    echo '[*] Updating Apt Package Lists'
+    echo ' [*] Updating Apt Package Lists'
     apt-get update
     echo
-    echo '[*] Installing Wine i386 Binaries'
+    echo ' [*] Installing Wine i386 Binaries'
     apt-get install wine-bin:i386
   fi
 
   # Start Apt Dependency Install
   echo
-  echo '[*] Installing Apt Dependencies'
+  echo ' [*] Installing Apt Dependencies'
   apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
 }
 
@@ -69,18 +70,18 @@ func_python_deps(){
   # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
   # files and then just comment these next two lines out :)
   echo
-  echo '[*] Downloading Setup Files From http://www.veil-evasion.com'
+  echo ' [*] Downloading Setup Files From http://www.veil-evasion.com'
   wget https://www.veil-evasion.com/InstallMe/requiredfiles.zip --no-check-certificate
   wget https://www.veil-evasion.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate
 
   # Unzip Setup Files
   echo
-  echo '[*] Uncompressing Setup Archive'
+  echo ' [*] Uncompressing Setup Archive'
   unzip requiredfiles.zip
 
   # Prepare Wine Directories
   echo
-  echo '[*] Preparing Wine Directories'
+  echo ' [*] Preparing Wine Directories'
   mkdir -p ~/.wine/drive_c/Python27/Lib/
   cp distutils -r ~/.wine/drive_c/Python27/Lib/
   cp tcl -r ~/.wine/drive_c/Python27/
@@ -88,7 +89,7 @@ func_python_deps(){
 
   # Install Setup Files
   echo
-  echo '[*] Installing Wine Python Dependencies'
+  echo ' [*] Installing Wine Python Dependencies'
   wine msiexec /i python-2.7.5.msi
   wine pywin32-218.win32-py2.7.exe
   wine pycrypto-2.6.win32-py2.7.exe
@@ -96,7 +97,7 @@ func_python_deps(){
 
   # Clean Up Setup Files
   echo
-  echo '[*] Cleaning Up Setup Files'
+  echo ' [*] Cleaning Up Setup Files'
   rm python-2.7.5.msi
   rm pywin32-218.win32-py2.7.exe
   rm pycrypto-2.6.win32-py2.7.exe
@@ -105,14 +106,19 @@ func_python_deps(){
 
   # Remove Temp Directories
   echo
-  echo '[*] Removing Temporary Directories'
+  echo ' [*] Removing Temporary Directories'
   rm -rf distutils
   rm -rf tcl
   rm -rf Tools
 
+  # Update Veil Config
+  func_update_config
+}
+
+func_update_config(){
   # run ./config/update.py
   echo
-  echo '[*] Updating Veil Configuration'
+  echo ' [*] Updating Veil Configuration'
   cd ../config
   python update.py
 }
@@ -121,10 +127,10 @@ func_python_deps(){
 case $1 in
   # Force Clean Install Of Wine Python Dependencies
   --clean)
-    if [ `whoami` != 'root']
+    if [ `whoami` != 'root' ]
     then
       echo
-      echo '[ERROR]: Either run this setup script as root or use sudo.'
+      echo ' [ERROR]: Either Run This Setup Script As Root Or Use Sudo.'
       echo
       exit 1
     fi
