@@ -66,11 +66,11 @@ def generateConfig(options):
 		os.makedirs( "/etc/veil/" )
 		print " [!] path '/etc/veil/' created"
 
-	f = open("/etc/veil/etc.py", 'w')
+	f = open("/etc/veil/settings.py", 'w')
 	f.write(config)
 	f.close()
 	
-	print " [*] Configuration file successfully written to '/etc/settings.py'\n"
+	print " [*] Configuration file successfully written to '/etc/veil/settings.py'\n"
 
 if __name__ == '__main__':
 
