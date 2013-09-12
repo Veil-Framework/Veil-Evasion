@@ -15,7 +15,8 @@ from modules.common import messages
 from modules.common import randomizer
 from modules.common import helpers
 from modules.common import crypters
-from config import veil
+
+import settings
 
 
 class Stager:
@@ -57,7 +58,7 @@ class Stager:
                     
     def generate(self):
         
-        metsrvPath = veil.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
+        metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
         
         f = open(metsrvPath, 'rb')
         meterpreterDll = f.read()

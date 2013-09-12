@@ -16,7 +16,8 @@ import readline
 from modules.common import messages
 from modules.common import helpers
 from modules.common import completers
-from config import veil
+
+import settings
 
 class Shellcode:
 	"""
@@ -61,7 +62,7 @@ class Shellcode:
 
 		# Variable changed for compatibility with  non-root and non-Kali users
 		# Thanks to Tim Medin for the patch 
-		msfFolder = veil.METASPLOIT_PATH
+		msfFolder = settings.METASPLOIT_PATH
 
 		# I can haz multiple platforms?
 		platforms = ["windows"]
@@ -76,7 +77,7 @@ class Shellcode:
 
 			# load up all the stages (meterpreter/vnc/etc.)
 			# TODO: detect Windows and modify the paths appropriately
-			for root, dirs, files in os.walk(veil.METASPLOIT_PATH + "/modules/payloads/stages/" + platform + "/"):
+			for root, dirs, files in os.walk(settings.METASPLOIT_PATH + "/modules/payloads/stages/" + platform + "/"):
 				for f in files:
 					stageName = f.split(".")[0]
 					if "x64" in root:
@@ -96,7 +97,7 @@ class Shellcode:
 
 			# load up all the stagers (reverse_tcp, bind_tcp, etc.)
 			# TODO: detect Windows and modify the paths appropriately
-			for root, dirs, files in os.walk(veil.METASPLOIT_PATH + "/modules/payloads/stagers/" + platform + "/"):
+			for root, dirs, files in os.walk(settings.METASPLOIT_PATH + "/modules/payloads/stagers/" + platform + "/"):
 				for f in files:
 
 					if ".rb" in f:
@@ -130,7 +131,7 @@ class Shellcode:
 
 			# load up any payload singles
 			# TODO: detect Windows and modify the paths appropriately
-			for root, dirs, files in os.walk(veil.METASPLOIT_PATH + "/modules/payloads/singles/" + platform + "/"):
+			for root, dirs, files in os.walk(settings.METASPLOIT_PATH + "/modules/payloads/singles/" + platform + "/"):
 				for f in files:
 
 					if ".rb" in f:
@@ -382,7 +383,7 @@ class Shellcode:
 			else:
 				# Stript out extra characters, new lines, etc., just leave the shellcode.
 				# Tim Medin's patch for non-root non-kali users
-				FuncShellcode = commands.getoutput(veil.METASPLOIT_PATH + self.msfvenomCommand)
+				FuncShellcode = commands.getoutput(settings.METASPLOIT_PATH + self.msfvenomCommand)
 				FuncShellcode = FuncShellcode[82:-1]
 				FuncShellcode = FuncShellcode.strip()
 				return FuncShellcode

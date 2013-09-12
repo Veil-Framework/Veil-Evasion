@@ -17,7 +17,6 @@ import time
 from modules.common import controller
 from modules.common import messages
 from modules.common import supportfiles
-from config import veil
 
 if __name__ == '__main__':
     try:

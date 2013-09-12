@@ -15,7 +15,8 @@ import commands
 import time
 
 try:
-    from config import veil
+    sys.path.append("/etc/veil/")
+    import settings
 except ImportError:
     os.system('clear')
     print '========================================================================='
@@ -26,7 +27,8 @@ except ImportError:
     os.system('cd config && python update.py')
 
     try:
-        from config import veil
+        sys.path.append("/etc/veil/")
+        import settings
     except ImportError:
         print "\n [!] ERROR: run ./config/update.py manually\n"
         sys.exit()
@@ -91,7 +93,7 @@ class Controller:
         """
 
         # TODO: detect Windows and modify the paths appropriately
-        d = dict((splitext(basename(path))[0], imp.load_source(splitext(basename(path))[0],path)) for path in glob.glob(join(veil.VEIL_PATH + "/modules/payloads/*/",'[!_]*.py')) )
+        d = dict((splitext(basename(path))[0], imp.load_source(splitext(basename(path))[0],path)) for path in glob.glob(join(settings.VEIL_PATH + "/modules/payloads/*/",'[!_]*.py')) )
         for name in d.keys():
             stager = d[name].Stager()
             # if specific languages to use are specified, only load those payload modules
@@ -271,9 +273,9 @@ class Controller:
 
         # if we get .exe code back, output to the compiled folder, otherwise write to the source folder
         if payload.extension == "exe":
-            outputFolder = veil.PAYLOAD_COMPILED_PATH
+            outputFolder = settings.PAYLOAD_COMPILED_PATH
         else:
-            outputFolder = veil.PAYLOAD_SOURCE_PATH
+            outputFolder = settings.PAYLOAD_SOURCE_PATH
 
         # only show get input if we're doing the interactive menu
         if interactive:
@@ -359,7 +361,7 @@ class Controller:
 
                     # if we're compiling, set the returned file name to the output .exe
                     # so we can return this for external calls to the framework
-                    OutputFileName = veil.PAYLOAD_COMPILED_PATH + FinalBaseChoice + ".exe"
+                    OutputFileName = settings.PAYLOAD_COMPILED_PATH + FinalBaseChoice + ".exe"
 
         # print the full message containing generation notes
         print message

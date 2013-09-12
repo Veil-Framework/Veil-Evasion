@@ -12,8 +12,7 @@ from modules.common import randomizer
 from modules.common import helpers
 
 # the main config file
-from config import veil
-
+import settings
 
 class Stager:
 	
@@ -32,7 +31,7 @@ class Stager:
 		
 		# randomize the output file so we don't overwrite anything
 		randName = randomizer.randomString(5) + ".exe"
-		outputFile = veil.TEMP_DIR + randName
+		outputFile = settings.TEMP_DIR + randName
 		
 		# the command to invoke hyperion. TODO: windows compatibility
 		peCommand = "wine PEScrambler.exe -i " + self.required_options["original_exe"][0] + " -o " + outputFile

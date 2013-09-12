@@ -17,7 +17,8 @@ import base64
 from modules.common import shellcode
 from modules.common import helpers
 from modules.common import randomizer
-from config import veil
+
+import settings
 
 class Stager:
 	

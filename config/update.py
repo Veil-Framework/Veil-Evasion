@@ -4,7 +4,7 @@ import platform, os, sys
 
 """
 
-Take an options dictionary and update ./config/veil.py
+Take an options dictionary and update /etc/settings.py
 
 """
 def generateConfig(options):
@@ -61,11 +61,16 @@ def generateConfig(options):
 	config += 'METASPLOIT_PATH="' + options['METASPLOIT_PATH'] + '"\n\n'
 	print " [*] METASPLOIT_PATH = " + options['METASPLOIT_PATH']
 
-	f = open("veil.py", 'w')
+	# create the output compiled path if it doesn't exist
+	if not os.path.exists( "/etc/settings.py" ): 
+		os.makedirs( "/etc/settings.py" )
+		print " [!] path '/etc/settings.py' created"
+
+	f = open("/etc.py", 'w')
 	f.write(config)
 	f.close()
 	
-	print " [*] Configuration file successfully written to 'veil.py'\n"
+	print " [*] Configuration file successfully written to '/etc/settings.py'\n"
 
 if __name__ == '__main__':
 
