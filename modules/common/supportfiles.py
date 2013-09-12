@@ -81,7 +81,7 @@ def supportingFiles(language, payloadFile, options):
 				exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
 				# TODO: os.system() is depreciated, use subprocess or commands instead
-				os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser('~/pyinstaller-2.0/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+				os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
 				os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
 				os.system('rm -rf dist')
 				os.system('rm -rf build')
