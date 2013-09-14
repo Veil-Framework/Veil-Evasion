@@ -21,7 +21,7 @@ class Stager:
     
     def __init__(self):
         # required options
-        self.shortname = "base64Encode"
+        self.shortname = "Base64Encode"
         self.description = "Base64 encoded shellcode is decoded at runtime and executed in memory"
         self.language = "python"
         self.rating = "Excellent"
