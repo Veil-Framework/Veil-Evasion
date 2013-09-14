@@ -25,7 +25,7 @@ func_validate(){
   fi
 
   # Check If Wine Python Is Already Installed
-  if [ -f ~/.wine/drive_c/windows/system32/python27.dll ]
+  if [ -f ~/.wine/drive_c/windows/system32/python27.dll ] && [ -f ~/.wine/drive_c/Python27/python.exe ]
   then
     echo
     echo " [*] Wine Python Already Installed... Skipping."
