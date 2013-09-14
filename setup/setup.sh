@@ -2,13 +2,15 @@
 
 # Print Title Function
 func_title(){
+  # Clear (For Prettyness)
+  clear
+
   # Echo Title
   echo '========================================================================='
   echo ' Veil Setup Script | [Updated]: 09.11.2013'
   echo '========================================================================='
   echo ' [Web]: https://www.veil-evasion.com | [Twitter]: @veilevasion'
   echo '========================================================================='
-  echo
 }
 
 # Validation Checks Function
@@ -26,7 +28,7 @@ func_validate(){
   if [ -f ~/.wine/drive_c/windows/system32/python27.dll ]
   then
     echo
-    echo " [INFO]: Wine Python Already Installed... Skipping."
+    echo " [*] Wine Python Already Installed... Skipping."
     echo
     echo ' [*] Initializing Apt Package Installation'
     func_apt_deps
@@ -93,7 +95,13 @@ func_python_deps(){
   wine msiexec /i python-2.7.5.msi
   wine pywin32-218.win32-py2.7.exe
   wine pycrypto-2.6.win32-py2.7.exe
-  unzip -d ~/ pyinstaller-2.0.zip
+  if [ -d "/usr/share/pyinstaller" ]
+  then
+    echo
+    echo ' [*] PyInstaller Already Installed... Skipping.'
+  else
+    unzip -d /opt pyinstaller-2.0.zip
+  fi
 
   # Clean Up Setup Files
   echo
