@@ -38,7 +38,7 @@ class Stager:
 		# options we require user interaction for- format is {Option : [Value, Description]]}
 		self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
 						"use_pyherion" : ["N", "Use the pyherion encrypter"],
-						"inject_method" : ["virtual", "Injection method, [virtual]alloc or [void]pointer"]}
+						"inject_method" : ["virtual", "[virtual]alloc or [void]pointer"]}
 		
 		
 	def generate(self):

@@ -32,7 +32,7 @@ class Stager:
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                "inject_method" : ["void", "Injection method, [virtual]alloc or [void]pointer"],
+                                "inject_method" : ["void", "[virtual]alloc or [void]pointer"],
                                 "LHOST" : ["", "IP of the metasploit handler"],
                                 "LPORT" : ["", "Port of the metasploit handler"]}
         
