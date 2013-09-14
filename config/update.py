@@ -65,16 +65,30 @@ def generateConfig(options):
 	config += 'PYINSTALLER_PATH="' + options['PYINSTALLER_PATH'] + '"\n\n'
 	print " [*] PYINSTALLER_PATH = " + options['PYINSTALLER_PATH']
 	
-	# create the output compiled path if it doesn't exist
-	if not os.path.exists( "/etc/veil/" ): 
-		os.makedirs( "/etc/veil/" )
-		print " [*] Path '/etc/veil/' Created"
-
-	f = open("/etc/veil/settings.py", 'w')
-	f.write(config)
-	f.close()
-	
-	print " [*] Configuration file successfully written to '/etc/veil/settings.py'\n"
+	if platform.system() == "Linux":
+		issue = open("/etc/issue").read()
+		if issue.startswith("Kali"):
+			# create the output compiled path if it doesn't exist
+			if not os.path.exists("/etc/veil/"): 
+				os.makedirs("/etc/veil/")
+				print " [*] Path '/etc/veil/' Created"
+			f = open("/etc/veil/settings.py", 'w')
+			f.write(config)
+			f.close()
+			print " [*] Configuration File Written To '/etc/veil/settings.py'\n"
+		else:
+			f = open("settings.py", 'w')
+			f.write(config)
+			f.close()
+			print " [*] Configuration File Written To " + options['VEIL_PATH'] + "config/settings.py\n"
+	elif platform.system() == "Windows":
+		f = open("settings.py", 'w')
+		f.write(config)
+		f.close()
+		print " [*] Configuration File Written To " + options['VEIL_PATH'] + "config/settings.py\n"
+	else:
+		print " [!] ERROR: PLATFORM NOT SUPPORTED"
+		sys.exit()
 
 if __name__ == '__main__':
 
@@ -89,18 +103,21 @@ if __name__ == '__main__':
 			options["OPERATING_SYSTEM"] = "Kali"
 			options["TERMINAL_CLEAR"] = "clear"
 			options["METASPLOIT_PATH"] = "/usr/share/metasploit-framework/"
-			options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller/"
+			if os.path.isdir('/usr/share/pyinstaller'):
+				options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller/"
+			else:
+				options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
 		elif issue.startswith("BackTrack"):
 			options["OPERATING_SYSTEM"] = "BackTrack"
 			options["TERMINAL_CLEAR"] = "clear"
 			options["METASPLOIT_PATH"] = "/opt/metasploit/msf3/"
-			options["PYINSTALLER_PATH"] = "~/pyinstaller-2.0/"
+			options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
 		else:
 			options["OPERATING_SYSTEM"] = "Linux"
 			options["TERMINAL_CLEAR"] = "clear"
 			msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
 			options["METASPLOIT_PATH"] = msfpath
-			options["PYINSTALLER_PATH"] = "~/pyinstaller-2.0/"
+			options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
 		
 		veil_path = "/".join(os.getcwd().split("/")[:-1]) + "/"
 		options["VEIL_PATH"] = veil_path
