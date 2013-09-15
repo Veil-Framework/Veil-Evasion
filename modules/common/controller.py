@@ -15,7 +15,21 @@ import commands
 import time
 
 
-if not os.path.exists( "/etc/veil/settings.py" ):
+if os.path.exists("/etc/veil/settings.py"):
+    try:
+        sys.path.append("/etc/veil/")
+        import settings
+    except ImportError:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+elif os.path.exists("./config/settings.py"):
+    try:
+        sys.path.append("./config")
+        import settings
+    except ImportError:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+else:
     os.system('clear')
     print '========================================================================='
     print ' Veil First Run Detected... Initializing Script Setup...'
@@ -23,14 +37,6 @@ if not os.path.exists( "/etc/veil/settings.py" ):
     # run the config if it hasn't been run
     print '\n [*] Executing ./config/update.py...'
     os.system('cd config && python update.py')
-
-try:
-    sys.path.append("/etc/veil/")
-    import settings
-except ImportError:
-    print "\n [!] ERROR: run ./config/update.py manually\n"
-    sys.exit()
-
 
 from os.path import join, basename, splitext
 from modules.common import messages
