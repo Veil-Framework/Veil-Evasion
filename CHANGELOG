@@ -1,3 +1,13 @@
+[9.15.2013]
+     Released.: 2.0.6
+     Added....: --clean flag to setup script to force reinstallation of dependencies to fix issues
+     Added....: PYINSTALLER_PATH variable to Veil configuration to meet Kali FHS request
+     Added....: Python payloads now all have void pointer and virtualalloc injection methods
+     Modified.: supportfiles.py to use new PYINSTALLER_PATH variable
+     Modified.: Cosmetics
+     Modified.: Output folder for payloads moved to ~/veil-output/
+     Modfiied.: Configuration file for veil moved to /etc/veil/settings.py
+
 [08.29.2013]
      Released.: Version 2.0.5
      Modified.: Updated the file which the setup script searches for when installing/configuring Veil

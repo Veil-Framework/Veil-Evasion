@@ -14,7 +14,7 @@ Author of the module.
 from modules.common import shellcode
 
 # the main config file
-from config import veil
+import settings
 
 class Stager:
 	
