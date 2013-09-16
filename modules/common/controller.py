@@ -107,7 +107,7 @@ class Controller:
             else: self.payloads.append( (name, stager) )
 
         # sort the payloads by language name
-        self.payloads = sorted(self.payloads, key=lambda x: (x[0]))
+        self.payloads = sorted(self.payloads, key=lambda x: (x[1].language))
 
 
     def ListLangs(self):
