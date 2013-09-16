@@ -15,6 +15,7 @@ import commands
 import time
 
 
+# try to find and import the settings.py config file
 if os.path.exists("/etc/veil/settings.py"):
     try:
         sys.path.append("/etc/veil/")
@@ -30,6 +31,7 @@ elif os.path.exists("./config/settings.py"):
         print "\n [!] ERROR: run ./config/update.py manually\n"
         sys.exit()
 else:
+    # if the file isn't found, try to run the update script
     os.system('clear')
     print '========================================================================='
     print ' Veil First Run Detected... Initializing Script Setup...'
@@ -37,6 +39,26 @@ else:
     # run the config if it hasn't been run
     print '\n [*] Executing ./config/update.py...'
     os.system('cd config && python update.py')
+
+    # check for the config again and error out if it can't be found.
+    if os.path.exists("/etc/veil/settings.py"):
+        try:
+            sys.path.append("/etc/veil/")
+            import settings
+        except ImportError:
+            print "\n [!] ERROR: run ./config/update.py manually\n"
+            sys.exit()
+    elif os.path.exists("./config/settings.py"):
+        try:
+            sys.path.append("./config")
+            import settings
+        except ImportError:
+            print "\n [!] ERROR: run ./config/update.py manually\n"
+            sys.exit()
+    else:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+
 
 from os.path import join, basename, splitext
 from modules.common import messages
