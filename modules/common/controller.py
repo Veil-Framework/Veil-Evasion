@@ -129,6 +129,7 @@ class Controller:
             else: self.payloads.append( (name, stager) )
 
         # sort the payloads by language name
+        self.payloads = sorted(self.payloads, key=lambda x: (x[1].shortname))
         self.payloads = sorted(self.payloads, key=lambda x: (x[1].language))
 
 
