@@ -3,28 +3,29 @@ Common terminal messages used across the framework.
 """
 
 import os, sys, types
-from config import veil
+
+import settings
 from modules.common import helpers
 
 def title():
 	"""
 	Print the framework title, with version.
 	"""
-	os.system(veil.TERMINAL_CLEAR)
+	os.system(settings.TERMINAL_CLEAR)
 	print '========================================================================='
-	print ' Veil | [Version]: 2.0.5'
+	print ' Veil | [Version]: 2.0.6'
 	print '========================================================================='
 	print ' [Web]: https://www.veil-evasion.com/ | [Twitter]: @veilevasion'
 	print '========================================================================='
 	print ""
 	
-	if veil.OPERATING_SYSTEM != "Kali":
+	if settings.OPERATING_SYSTEM != "Kali":
 		print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
 		print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
 	
 	# check to make sure the current OS is supported,
 	# print a warning message if it's not and exit
-	if veil.OPERATING_SYSTEM == "Windows" or veil.OPERATING_SYSTEM == "Unsupported":
+	if settings.OPERATING_SYSTEM == "Windows" or settings.OPERATING_SYSTEM == "Unsupported":
 		print helpers.color(' [!] ERROR: Your operating system is not currently supported...\n', warning=True)
 		print helpers.color(' [!] ERROR: Request your distribution at the GitHub repository...\n', warning=True)
 		sys.exit()

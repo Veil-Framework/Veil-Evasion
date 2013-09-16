@@ -8,7 +8,8 @@ import sys
 from modules.common import shellcode
 from modules.common import messages
 from modules.common import helpers
-from config import veil
+
+import settings
 
 def supportingFiles(language, payloadFile, options):
 	"""
@@ -24,7 +25,7 @@ def supportingFiles(language, payloadFile, options):
 		# if we aren't passed any options, do the interactive menu
 		if len(options) == 0:
 
-			if veil.OPERATING_SYSTEM == "Windows":
+			if settings.OPERATING_SYSTEM == "Windows":
 				options['method'] = "py2exe"
 			else:
 				# if we have a linux distro, continue...
@@ -44,7 +45,7 @@ def supportingFiles(language, payloadFile, options):
 			nameBase = payloadFile.split("/")[-1].split(".")[0]
 
 			# Generate setup.py File for Py2Exe
-			SetupFile = open(veil.PAYLOAD_SOURCE_PATH + '/setup.py', 'w')
+			SetupFile = open(settings.PAYLOAD_SOURCE_PATH + '/setup.py', 'w')
 			SetupFile.write("from distutils.core import setup\n")
 			SetupFile.write("import py2exe, sys, os\n\n")
 			SetupFile.write("setup(\n")
@@ -55,7 +56,7 @@ def supportingFiles(language, payloadFile, options):
 			SetupFile.close()
 
 			# Generate Batch script for Compiling on Windows Using Py2Exe
-			RunmeFile = open(veil.PAYLOAD_SOURCE_PATH + '/runme.bat', 'w')
+			RunmeFile = open(settings.PAYLOAD_SOURCE_PATH + '/runme.bat', 'w')
 			RunmeFile.write('rem Batch Script for compiling python code into an executable\n')
 			RunmeFile.write('rem on windows with py2exe\n')
 			RunmeFile.write('rem Usage: Drop into your Python folder and click, or anywhere if Python is in your system path\n\n')
@@ -68,7 +69,7 @@ def supportingFiles(language, payloadFile, options):
 			RunmeFile.write('rmdir /S /Q dist\n')
 			RunmeFile.close()
 
-			print helpers.color("\npy2exe files 'setup.py' and 'runme.bat' written to:\n"+veil.PAYLOAD_SOURCE_PATH + "\n")
+			print helpers.color("\npy2exe files 'setup.py' and 'runme.bat' written to:\n"+settings.PAYLOAD_SOURCE_PATH + "\n")
 
 		# Else, Use Pyinstaller (used by default)
 		else:
@@ -79,17 +80,16 @@ def supportingFiles(language, payloadFile, options):
 				# extract the payload base name and turn it into an .exe
 				exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-				outputPath = veil.PAYLOAD_COMPILED_PATH
 				# TODO: os.system() is depreciated, use subprocess or commands instead
-				os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser('~/pyinstaller-2.0/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
-				os.system('mv dist/'+exeName+' ' + veil.PAYLOAD_COMPILED_PATH)
+				os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+				os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
 				os.system('rm -rf dist')
 				os.system('rm -rf build')
 				os.system('rm *.spec')
 				os.system('rm logdict*.*')
 
 				messages.title()
-				print "\n [*] Executable written to: " +  helpers.color(veil.PAYLOAD_COMPILED_PATH + exeName)
+				print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
 			else:
 				# Tim Medin's Patch for non-root non-kali users
@@ -102,23 +102,21 @@ def supportingFiles(language, payloadFile, options):
 
 		# extract the payload base name and turn it into an .exe
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
-		outputPath = os.getcwd() + "/output/compiled/"
 
 		# Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
-		os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + veil.PAYLOAD_COMPILED_PATH + exeName)
+		os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
-		print "\n [*] Executable written to: " +  helpers.color(veil.PAYLOAD_COMPILED_PATH + exeName)
+		print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
 	elif language == "c#":
 
 		# extract the payload base name and turn it into an .exe
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
-		outputPath = os.getcwd() + "/output/compiled/"
 
 		# Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
-		os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + veil.PAYLOAD_COMPILED_PATH + exeName)
+		os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
-		print "\n [*] Executable written to: " +  helpers.color(veil.PAYLOAD_COMPILED_PATH + exeName)
+		print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
 
 	else:
