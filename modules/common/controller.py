@@ -482,7 +482,12 @@ class Controller:
                                         if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
                                             print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
                                         else:
-                                            payload.required_options[option][0] = value
+                                            try:
+                                                payload.required_options[option][0] = value
+                                            except KeyError:
+                                                print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                            except AttributeError:
+                                                print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
 
                                     # assume we've been passed a domain name
                                     else:
