@@ -1,3 +1,7 @@
+[10.15.2013]
+     Released.: 2.1.0
+     Added....: Validation to LHOST and LPORT parameters when providing a value before prompted.  Thanks to issue #26 (Lesiah) for bringing this to out attention.
+
 [9.15.2013]
      Released.: 2.0.6
      Added....: --clean flag to setup script to force reinstallation of dependencies to fix issues
