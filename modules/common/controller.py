@@ -505,7 +505,12 @@ class Controller:
                                     if int(value) <= 0 or int(value) >= 65535:
                                         print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
                                     else:
-                                        payload.required_options[option][0] = value
+                                        try:
+                                            payload.required_options[option][0] = value
+                                        except KeyError:
+                                            print helpers.color("\n [!] ERROR: Specify LPORT value in the following screen.\n", warning=True)
+                                        except AttributeError:
+                                            print helpers.color("\n [!] ERROR: Specify LPORT value in the following screen.\n", warning=True)
                                 except ValueError:
                                     print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
 
