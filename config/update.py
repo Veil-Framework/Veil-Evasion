@@ -64,6 +64,10 @@ def generateConfig(options):
 	config += '# The path to pyinstaller, for example: /usr/share/pyinstaller/\n'
 	config += 'PYINSTALLER_PATH="' + options['PYINSTALLER_PATH'] + '"\n\n'
 	print " [*] PYINSTALLER_PATH = " + options['PYINSTALLER_PATH']
+
+	config += '# Default options to pass to msfvenom for shellcode creation\n'
+	config += 'MSFVENOM_OPTIONS="' + options['MSFVENOM_OPTIONS'] + '"\n\n'
+	print " [*] MSFVENOM_OPTIONS = " + options['MSFVENOM_OPTIONS']
 	
 	if platform.system() == "Linux":
 		issue = open("/etc/issue").read()
@@ -124,6 +128,7 @@ if __name__ == '__main__':
 		options["PAYLOAD_SOURCE_PATH"] = "~/veil-output/source/"
 		options["PAYLOAD_COMPILED_PATH"] = "~/veil-output/compiled/"
 		options["TEMP_DIR"]="/tmp/"
+		options["MSFVENOM_OPTIONS"]=""
 
 	# not current supported
 	elif platform.system() == "Windows":
@@ -142,6 +147,8 @@ if __name__ == '__main__':
 
 		pyinspath = raw_input(" [>] Please enter the path of your pyinstaller installation: ")
 		options["PYINSTALLER_PATH"] = pyinspath
+
+		options["MSFVENOM_OPTIONS"]=""
 	
 	# unsupported platform... 
 	else:

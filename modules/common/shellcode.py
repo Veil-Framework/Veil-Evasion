@@ -170,9 +170,14 @@ class Shellcode:
 		payload = payloadAndOptions[0]
 		options = payloadAndOptions[1]
 
+		# grab any specified msfvenom options in the /etc/veil/settings.py file
+		msfvenomOptions = ""
+		if hasattr(settings, "MSFVENOM_OPTIONS"):
+			msfvenomOptions = settings.MSFVENOM_OPTIONS
+
 		# build the msfvenom command
 		# TODO: detect Windows and modify the msfvenom command appropriately
-		self.msfvenomCommand = "msfvenom -p " + payload
+		self.msfvenomCommand = "msfvenom " + msfvenomOptions + " -p " + payload
 
 		# add options only if we have some
 		if options:
@@ -345,9 +350,14 @@ class Shellcode:
 						extraValues.append(selection)
 					else: break
 
+				# grab any specified msfvenom options in the /etc/veil/settings.py file
+				msfvenomOptions = ""
+				if hasattr(settings, "MSFVENOM_OPTIONS"):
+					msfvenomOptions = settings.MSFVENOM_OPTIONS
+
 				# build out the msfvenom command
 				# TODO: detect Windows and modify the paths appropriately
-				self.msfvenomCommand = "msfvenom -p " + payloadSelected
+				self.msfvenomCommand = "msfvenom " + msfvenomOptions + " -p " + payloadSelected
 				for option in self.msfvenomOptions:
 					self.msfvenomCommand += " " + option
 					self.options.append(option)
