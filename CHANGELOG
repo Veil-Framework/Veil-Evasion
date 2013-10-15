@@ -1,7 +1,10 @@
 [10.15.2013]
      Released.: 2.1.0
+     Added....: The Backdoor Factory (https://github.com/secretsquirrel/the-backdoor-factory) payload into native/*
      Added....: Validation to LHOST and LPORT parameters when providing a value before prompted.  Thanks to issue #26 (Lesiah) for bringing this to out attention.
+     Added....: Default msfvenom options can now be specified in /etc/veil/settings.py
      Re-Added.: Update functionality within Veil-Evasion was accidentally removed at some point.  This update re-adds that functionality to the main menu.
+     Modified.: self-contained .dll payloads now fixed
 
 [9.15.2013]
      Released.: 2.0.6
