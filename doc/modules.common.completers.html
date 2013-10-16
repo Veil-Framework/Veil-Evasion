@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="modules.html"><font color="#ffffff">modules</font></a>.<a href="modules.common.html"><font color="#ffffff">common</font></a>.completers</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/root/git/veil-public/modules/common/completers.py">/root/git/veil-public/modules/common/completers.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/mnt/hgfs/git/github/Veil/modules/common/completers.py">/mnt/hgfs/git/github/Veil/modules/common/completers.py</a></font></td></tr></table>
     <p><tt>Contains&nbsp;any&nbsp;classes&nbsp;used&nbsp;for&nbsp;tab&nbsp;completion.<br>
 &nbsp;<br>
 &nbsp;<br>
@@ -21,9 +21,10 @@ Reference&nbsp;-&nbsp;<a href="http://stackoverflow.com/questions/5637124/tab-co
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="commands.html">commands</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
 </td><td width="25%" valign=top><a href="re.html">re</a><br>
 </td><td width="25%" valign=top><a href="readline.html">readline</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -38,6 +39,7 @@ Reference&nbsp;-&nbsp;<a href="http://stackoverflow.com/questions/5637124/tab-co
 </font></dt><dt><font face="helvetica, arial"><a href="modules.common.completers.html#MSFCompleter">MSFCompleter</a>
 </font></dt><dt><font face="helvetica, arial"><a href="modules.common.completers.html#MSFPortCompleter">MSFPortCompleter</a>
 </font></dt><dt><font face="helvetica, arial"><a href="modules.common.completers.html#MainMenuCompleter">MainMenuCompleter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="modules.common.completers.html#PathCompleter">PathCompleter</a>
 </font></dt><dt><font face="helvetica, arial"><a href="modules.common.completers.html#PayloadCompleter">PayloadCompleter</a>
 </font></dt></dl>
 </dd>
@@ -75,7 +77,7 @@ Data descriptors defined here:<br>
 Used&nbsp;in&nbsp;./modules/common/shellcode.py<br>
 &nbsp;<br>
 Takes&nbsp;a&nbsp;payloadTree&nbsp;next&nbsp;dictionary&nbsp;as&nbsp;an&nbsp;instantiation&nbsp;argument,&nbsp;of&nbsp;the&nbsp;form<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;payloadTree&nbsp;=&nbsp;{"windows"&nbsp;:&nbsp;{"meterpreter",&nbsp;"shell",...},&nbsp;"linux"&nbsp;:&nbsp;{...}}<br>&nbsp;</tt></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;payloadTree&nbsp;=&nbsp;{"windows"&nbsp;:&nbsp;{"meterpreter",&nbsp;"shell",...},&nbsp;"linux"&nbsp;:&nbsp;{...}}<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="MSFCompleter-__init__"><strong>__init__</strong></a>(self, payloadTree)</dt></dl>
@@ -133,6 +135,30 @@ Takes&nbsp;a&nbsp;list&nbsp;of&nbsp;available&nbsp;commands,&nbsp;and&nbsp;loade
 <dl><dt><a name="MainMenuCompleter-complete_list"><strong>complete_list</strong></a>(self, args)</dt><dd><tt>List&nbsp;the&nbsp;languages&nbsp;you&nbsp;can&nbsp;list</tt></dd></dl>
 
 <dl><dt><a name="MainMenuCompleter-complete_use"><strong>complete_use</strong></a>(self, args)</dt><dd><tt>Complete&nbsp;payload/module</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PathCompleter">class <strong>PathCompleter</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Class&nbsp;used&nbsp;for&nbsp;tab&nbsp;completion&nbsp;of&nbsp;files&nbsp;on&nbsp;the&nbsp;local&nbsp;path.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PathCompleter-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="PathCompleter-complete"><strong>complete</strong></a>(self, text, state)</dt></dl>
+
+<dl><dt><a name="PathCompleter-complete_path"><strong>complete_path</strong></a>(self, args)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>

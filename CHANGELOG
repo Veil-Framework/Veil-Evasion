@@ -1,4 +1,10 @@
 [10.15.2013] 
+     Released.: 2.1.1
+     Added....: msf handler.rc scripts are now generated, config options available in /etc/veil/settings.py
+     Modified.: bug fix in Backdoor Factory code to ensure code caves are valid
+     Modified.: updated the documentation in ./doc/
+
+[10.15.2013] 
      Released.: 2.1.0
      Added....: The Backdoor Factory (https://github.com/secretsquirrel/the-backdoor-factory) payload into native/*
      Added....: Validation to LHOST and LPORT parameters when providing a value before prompted.  Thanks to issue #26 (Lesiah) for bringing this to out attention.

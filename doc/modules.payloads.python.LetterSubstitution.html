@@ -1,20 +1,21 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: module modules.payloads.python.pyDESVAlloc</title>
+<html><head><title>Python: module modules.payloads.python.LetterSubstitution</title>
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="modules.html"><font color="#ffffff">modules</font></a>.<a href="modules.payloads.html"><font color="#ffffff">payloads</font></a>.<a href="modules.payloads.python.html"><font color="#ffffff">python</font></a>.pyDESVAlloc</strong></big></big></font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="modules.html"><font color="#ffffff">modules</font></a>.<a href="modules.payloads.html"><font color="#ffffff">payloads</font></a>.<a href="modules.payloads.python.html"><font color="#ffffff">python</font></a>.LetterSubstitution</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/root/git/veil-public/modules/payloads/python/pyDESVAlloc.py">/root/git/veil-public/modules/payloads/python/pyDESVAlloc.py</a></font></td></tr></table>
-    <p><tt>This&nbsp;payload&nbsp;has&nbsp;DES&nbsp;encrypted&nbsp;shellcode&nbsp;stored&nbsp;within&nbsp;itself.&nbsp;&nbsp;At&nbsp;runtime,&nbsp;the&nbsp;executable<br>
-uses&nbsp;the&nbsp;key&nbsp;within&nbsp;the&nbsp;file&nbsp;to&nbsp;decrypt&nbsp;the&nbsp;shellcode,&nbsp;injects&nbsp;it&nbsp;into&nbsp;memory,&nbsp;and&nbsp;executes&nbsp;it.<br>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/mnt/hgfs/git/github/Veil/modules/payloads/python/LetterSubstitution.py">/mnt/hgfs/git/github/Veil/modules/payloads/python/LetterSubstitution.py</a></font></td></tr></table>
+    <p><tt>Currently,&nbsp;this&nbsp;code&nbsp;takes&nbsp;normal&nbsp;shellcode,&nbsp;and&nbsp;replaces&nbsp;the&nbsp;a&nbsp;hex&nbsp;character&nbsp;with&nbsp;a&nbsp;random&nbsp;non&nbsp;hex&nbsp;letter.&nbsp;&nbsp;At&nbsp;runtime,<br>
+the&nbsp;executables&nbsp;reverses&nbsp;the&nbsp;letter&nbsp;substitution&nbsp;and&nbsp;executes&nbsp;the&nbsp;shellcode<br>
 &nbsp;<br>
-Great&nbsp;examples&nbsp;and&nbsp;code&nbsp;adapted&nbsp;from&nbsp;<br>
-<a href="http://www.laurentluce.com/posts/python-and-cryptography-with-pycrypto/">http://www.laurentluce.com/posts/python-and-cryptography-with-pycrypto/</a><br>
-module&nbsp;by&nbsp;@christruncer</tt></p>
+Letter&nbsp;substitution&nbsp;code&nbsp;was&nbsp;adapted&nbsp;from:<br>
+<a href="http://www.tutorialspoint.com/python/string_maketrans.htm">http://www.tutorialspoint.com/python/string_maketrans.htm</a><br>
+module&nbsp;by&nbsp;@christruncer<br>
+contributed&nbsp;to&nbsp;by&nbsp;@EdvardHolst</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -26,9 +27,11 @@ module&nbsp;by&nbsp;@christruncer</tt></p>
 <a href="modules.common.crypters.html">modules.common.crypters</a><br>
 </td><td width="25%" valign=top><a href="modules.common.encryption.html">modules.common.encryption</a><br>
 <a href="modules.common.messages.html">modules.common.messages</a><br>
-</td><td width="25%" valign=top><a href="modules.common.randomizer.html">modules.common.randomizer</a><br>
-<a href="modules.common.shellcode.html">modules.common.shellcode</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="random.html">random</a><br>
+<a href="modules.common.randomizer.html">modules.common.randomizer</a><br>
+</td><td width="25%" valign=top><a href="modules.common.shellcode.html">modules.common.shellcode</a><br>
+<a href="string.html">string</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -36,7 +39,7 @@ module&nbsp;by&nbsp;@christruncer</tt></p>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="modules.payloads.python.pyDESVAlloc.html#Stager">Stager</a>
+<dt><font face="helvetica, arial"><a href="modules.payloads.python.LetterSubstitution.html#Stager">Stager</a>
 </font></dt></dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
