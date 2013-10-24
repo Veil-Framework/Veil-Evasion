@@ -68,7 +68,19 @@ def generateConfig(options):
 	config += '# Default options to pass to msfvenom for shellcode creation\n'
 	config += 'MSFVENOM_OPTIONS="' + options['MSFVENOM_OPTIONS'] + '"\n\n'
 	print " [*] MSFVENOM_OPTIONS = " + options['MSFVENOM_OPTIONS']
-	
+
+	handler_path = os.path.expanduser(options["HANDLER_PATH"])
+	# create the output compiled path if it doesn't exist
+	if not os.path.exists( handler_path ): 
+		os.makedirs( handler_path )
+		print " [*] Path '" + handler_path + "' Created"
+
+	config += '# Whether to generate a msf handler script and where to place it\n'
+	config += 'GENERATE_HANDLER_SCRIPT="' + options['GENERATE_HANDLER_SCRIPT'] + '"\n'
+	print " [*] GENERATE_HANDLER_SCRIPT = " + options['GENERATE_HANDLER_SCRIPT']
+	config += 'HANDLER_PATH="' + handler_path + '"\n\n'
+	print " [*] HANDLER_PATH = " + handler_path
+
 	if platform.system() == "Linux":
 		issue = open("/etc/issue").read()
 		if issue.startswith("Kali"):
@@ -129,6 +141,9 @@ if __name__ == '__main__':
 		options["PAYLOAD_COMPILED_PATH"] = "~/veil-output/compiled/"
 		options["TEMP_DIR"]="/tmp/"
 		options["MSFVENOM_OPTIONS"]=""
+		options["GENERATE_HANDLER_SCRIPT"] = "True"
+		options["HANDLER_PATH"] = "~/veil-output/handlers/"
+
 
 	# not current supported
 	elif platform.system() == "Windows":
