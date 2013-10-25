@@ -1948,7 +1948,13 @@ def find_cave(flItms, shellcode_length, resumeExe):
         while True:
             print "*" * 50
             rand = random.choice(pickACave.keys())
+            
+            # ensure the first cave isn't chosen and none of the sections are "None"
+            while rand == 1 or pickACave[rand][0].strip() == "None":
+				rand = random.choice(pickACave.keys())
+            
             selection = rand
+
             #selection = raw_input("[!] Enter your selection: ")
             try:
                 selection = int(selection)

