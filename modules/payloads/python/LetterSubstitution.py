@@ -38,7 +38,7 @@ class Stager:
 	def generate(self):
 		#Random letter substition variables
 		hex_letters = "abcdef"
-		non_hex_letters = "ghijklmnopqrstuvwxyz"
+		non_hex_letters = "ghijklmnopqrstuvwyz"
 		encode_with_this = random.choice(hex_letters)
 		decode_with_this = random.choice(non_hex_letters)
 
