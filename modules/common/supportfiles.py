@@ -104,7 +104,7 @@ def supportingFiles(language, payloadFile, options):
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
 		# Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
-		os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName)
+		os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + " -lwsock32")
 
 		print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
