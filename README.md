@@ -23,12 +23,12 @@ Greetz:
 1.  Python (tested with x86 - http://www.python.org/download/releases/2.7/)
 2.  Py2Exe (http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/)
 3.  PyCrypto (http://www.voidspace.org.uk/python/modules.shtml)
-
+4.  PyWin32 (http://sourceforge.net/projects/pywin32/files/pywin32/Build%20218/pywin32-218.win32-py2.7.exe/download)
 
 ##Setup (tldr;)
 
 Run setup script on Kali x86 (for Pyinstaller).
-Install Python 2.7, Py2Exe, and PyCrypto on a Windows computer (for Py2Exe).  
+Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2Exe).  
 
 ##Description
 Veil was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil from the command line, and follow the menu to generate a payload.  Upon creating the payload, veil will ask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
