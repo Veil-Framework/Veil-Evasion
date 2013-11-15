@@ -1,5 +1,6 @@
 [11.15.2013]
-     Released.: 2.1.3
+     Released.: 2.2.0
+     Added....: c/meter_rev_tcp and c/meter_rev_tcp_service payloads
      Modified.: LetterSub python payload to prevent potential issue with 'x' as a modified character
      
 [10.23.2013] 
