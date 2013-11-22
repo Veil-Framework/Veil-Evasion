@@ -16,11 +16,10 @@ from modules.common import shellcode
 # the main config file
 import settings
 
-class Stager:
+class Payload:
 
     def __init__(self):
         # required options
-        self.shortname = "BackdoorFactory"
         self.description = "Automates running of the BackdoorFactory"
         self.language = "native"
         self.rating = "Normal"

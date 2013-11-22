@@ -20,11 +20,10 @@ from modules.common import messages
 from modules.common import randomizer
 from modules.common import crypters
 
-class Stager:
+class Payload:
     
     def __init__(self):
         # required options
-        self.shortname = "FlatInjection"
         self.description = "No obfuscation, basic injection of shellcode through virtualalloc or void pointer reference."
         self.language = "python"
         self.rating = "Normal"

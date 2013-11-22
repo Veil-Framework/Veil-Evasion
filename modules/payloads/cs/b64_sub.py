@@ -15,14 +15,13 @@ import string, random
 from modules.common import shellcode
 from modules.common import encryption
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required
-		self.shortname = "b64SubVirtualAlloc"
 		self.description = "C# method that base64/letter substitutes the shellcode to inject"
 		self.rating = "Normal"
-		self.language = "c#"
+		self.language = "cs"
 		self.extension = "cs"
 		
 		self.shellcode = shellcode.Shellcode()

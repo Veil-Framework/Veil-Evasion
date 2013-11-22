@@ -1,3 +1,11 @@
+[11.22.2013]
+     Released.: 2.2.1
+     Modified.: payload module loading now builds name based on menu structure dynamically, up to 5 levels deep
+     Modified.: reorganized payload menu structure and payload names
+     Modified.: payload.shortname no longer needed in payload modules
+     Modified.: -l command line flag consolidated into just -p, eliminated unnessary code
+     Modified.: menu UI/color tweaks
+
 [11.15.2013]
      Released.: 2.2.0
      Added....: c/meter_rev_tcp and c/meter_rev_tcp_service payloads

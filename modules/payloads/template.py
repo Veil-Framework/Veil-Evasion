@@ -16,11 +16,10 @@ from modules.common import shellcode
 # the main config file
 import settings
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required options
-		self.shortname = "VirtualAllocLolz"
 		self.description = "description"
 		self.language = "python/cs/powershell/whatever"
 		self.rating = "Poor/Normal/Good/Excellent"

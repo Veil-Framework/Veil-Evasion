@@ -17,11 +17,10 @@ from modules.common import crypters
 from modules.common import encryption
 
 
-class Stager:
+class Payload:
     
     def __init__(self):
         # required options
-        self.shortname = "Base64Encode"
         self.description = "Base64 encoded shellcode is decoded at runtime and executed in memory"
         self.language = "python"
         self.rating = "Excellent"

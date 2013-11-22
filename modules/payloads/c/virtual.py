@@ -18,11 +18,10 @@ from modules.common import crypters
 from modules.common import encryption
 
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required options
-		self.shortname = "VirtualAlloc"
 		self.description = "C VirtualAlloc method for inline shellcode injection"
 		self.language = "c"
 		self.rating = "Poor"

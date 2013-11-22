@@ -26,72 +26,77 @@ class MainMenuCompleter(object):
         self.commands = cmds
         self.payloads = payloads
 
-    def complete_list(self, args):
-        """List the languages you can list"""
-        
-        langs = ["all", "langs", "payloads"]
-        for (name, payload) in self.payloads:
-            langs.append(payload.language)
-        langs = list(set(langs))
-
-        if len(args) < 2:
-            res = [ l + ' ' for l in langs if l.startswith(args[0])] + [None]
-        # restrict infinite completion
-        else:
-            res = []
-            
-        return res
-
     def complete_use(self, args):
         """Complete payload/module"""
-        
-        res = []
-        
-        langs = []
-        for (name, payload) in self.payloads:
-            langs.append(payload.language)
-        langs = list(set(langs))
 
-        # if we're printing the language
+        res = []
+        payloads = []
+
+        for (name, payload) in self.payloads:
+            payloads.append(name)
+
+        # return all payloads if we just have "use"
         if len(args[0].split("/")) == 1:
-            res = [ l + '/' for l in langs if l.startswith(args[0])] + [None]
-        # if we're printing the payload
+            res = [ m for m in payloads if m.startswith(args[0])] + [None]
+
         else:
-            
-            lang,part = args[0].split("/")
+            # get the language
+            lang = args[0].split("/")[0]
+            # get the rest of the paths
+            rest = "/".join(args[0].split("/")[1:])
+
             payloads = []
             for (name, payload) in self.payloads:
-                if payload.language == lang:
-                    payloads.append(payload.shortname)
-                res = [ lang + '/' + p + ' ' for p in payloads if p.startswith(part)] + [None]
+
+                parts = name.split("/")
+
+                # iterate down the split parts so we can handle the nested payload structure
+                for x in xrange(len(parts)):
+
+                    # if the first part of the iterated payload matches the language, append it
+                    if parts[x] == lang:
+                        payloads.append("/".join(parts[x+1:]))
+
+                res = [ lang + '/' + m + ' ' for m in payloads if m.startswith(rest)] + [None]
                 
         return res
+
     
     def complete_info(self, args):
         """Complete payload/module"""
-        
-        res = []
-        
-        langs = []
-        for (name, payload) in self.payloads:
-            langs.append(payload.language)
-        langs = list(set(langs))
 
-        # if we're printing the language
+        res = []
+        payloads = []
+
+        for (name, payload) in self.payloads:
+            payloads.append(name)
+
+        # return all payloads if we just have "use"
         if len(args[0].split("/")) == 1:
-            res = [ l + '/' for l in langs if l.startswith(args[0])] + [None]
-        # if we're printing the payload
+            res = [ m for m in payloads if m.startswith(args[0])] + [None]
+
         else:
-            
-            lang,part = args[0].split("/")
+            # get the language
+            lang = args[0].split("/")[0]
+            # get the rest of the paths
+            rest = "/".join(args[0].split("/")[1:])
+
             payloads = []
             for (name, payload) in self.payloads:
-                if payload.language == lang:
-                    payloads.append(payload.shortname)
-                res = [ lang + '/' + p + ' ' for p in payloads if p.startswith(part)] + [None]
+
+                parts = name.split("/")
+
+                # iterate down the split parts so we can handle the nested payload structure
+                for x in xrange(len(parts)):
+
+                    # if the first part of the iterated payload matches the language, append it
+                    if parts[x] == lang:
+                        payloads.append("/".join(parts[x+1:]))
+
+                res = [ lang + '/' + m + ' ' for m in payloads if m.startswith(rest)] + [None]
                 
         return res
-        
+
 
     def complete(self, text, state):
         
@@ -126,11 +131,7 @@ class PayloadCompleter(object):
 
     def __init__(self, payload):
         self.payload = payload
-        """self.commands = {"set":"set a specific option value",
-                        "info":"show information about the payload",
-                        "help":"show help menu for payload",
-                        "back":"go to the main menu",
-                        "generate":"generate payload"}"""
+
         self.commands = {"set":"set a specific option value",
                         "info":"show information about the payload",
                         "help [crypters]":"show help menu for payload or crypters",

@@ -20,10 +20,9 @@ from modules.common import randomizer
 
 import settings
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
-		self.shortname = "DownloadVirtualAlloc"
 		self.description = "Powershell method that downloads a secondary powershell command from a webserver"
 		self.rating = "Excellent"
 		self.language = "powershell"

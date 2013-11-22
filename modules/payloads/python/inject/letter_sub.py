@@ -19,11 +19,10 @@ from modules.common import randomizer
 from modules.common import crypters
 from modules.common import encryption
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required options
-		self.shortname = "LetterSubstitution"
 		self.description = "A letter used in shellcode is replaced with a different letter. At runtime, the exe reverses the letter substitution and executes the shellcode"
 		self.language = "python"
 		self.rating = "Excellent"

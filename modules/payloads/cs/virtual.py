@@ -13,14 +13,13 @@ TODO: obfuscation!
 
 from modules.common import shellcode
 
-class Stager:
+class Payload:
 	
 	def __init__(self):
 		# required
-		self.shortname = "VirtualAlloc"
 		self.description = "C# VirtualAlloc method for inline shellcode injection"
 		self.rating = "Poor"
-		self.language = "c#"
+		self.language = "cs"
 		self.extension = "cs"
 		
 		self.shellcode = shellcode.Shellcode()

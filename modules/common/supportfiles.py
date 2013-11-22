@@ -108,7 +108,7 @@ def supportingFiles(language, payloadFile, options):
 
 		print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
-	elif language == "c#":
+	elif language == "cs":
 
 		# extract the payload base name and turn it into an .exe
 		exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
@@ -121,6 +121,6 @@ def supportingFiles(language, payloadFile, options):
 
 	else:
 		messages.title()
-		print helpers.color("\n [!] ERROR: Only python, c, and c# compiling is currently supported.\n", warning=True)
+		print helpers.color("\n [!] ERROR: Only python, c, and c# compilation is currently supported.\n", warning=True)
 
 

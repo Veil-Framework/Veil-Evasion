@@ -19,11 +19,10 @@ from modules.common import crypters
 import settings
 
 
-class Stager:
+class Payload:
     
     def __init__(self):
         # required options
-        self.shortname = "MeterHTTPSContained"
         self.description = "self-contained windows/meterpreter/reverse_https stager, no shellcode"
         self.language = "python"
         self.rating = "Excellent"
