@@ -270,7 +270,7 @@ class Controller:
         return self.payload.generate()
 
 
-    def OutputMenu(self, payload, code, showTitle=True, interactive=True, OutputBaseChoice=""):
+    def OutputMenu(self, payload, code, showTitle=True, interactive=True, overwrite=False, OutputBaseChoice=""):
         """
         Write a chunk of payload code to a specified ouput file base.
         Also outputs a handler script if required from the options.
@@ -298,19 +298,24 @@ class Controller:
 
         if OutputBaseChoice == "": OutputBaseChoice = "payload"
 
-        # walk the output path and grab all the file bases, disregarding extensions
-        fileBases = []
-        for (dirpath, dirnames, filenames) in os.walk(outputFolder):
-            fileBases.extend(list(set([x.split(".")[0] for x in filenames if x.split(".")[0] != ''])))
-            break
-
-        # as long as the file exists, increment a counter to add to the filename
-        # i.e. "payload3.py", to make sure we don't overwrite anything
+        # if we are overwriting, this is the base choice used
         FinalBaseChoice = OutputBaseChoice
-        x = 1
-        while FinalBaseChoice in fileBases:
-            FinalBaseChoice = OutputBaseChoice + str(x)
-            x += 1
+
+        # if we're not overwriting output files, walk the existing and increment
+        if not overwrite:
+            # walk the output path and grab all the file bases, disregarding extensions
+            fileBases = []
+            for (dirpath, dirnames, filenames) in os.walk(outputFolder):
+                fileBases.extend(list(set([x.split(".")[0] for x in filenames if x.split(".")[0] != ''])))
+                break
+
+            # as long as the file exists, increment a counter to add to the filename
+            # i.e. "payload3.py", to make sure we don't overwrite anything
+            FinalBaseChoice = OutputBaseChoice
+            x = 1
+            while FinalBaseChoice in fileBases:
+                FinalBaseChoice = OutputBaseChoice + str(x)
+                x += 1
 
         # set the output name to /outout/source/BASENAME.EXT
         OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension

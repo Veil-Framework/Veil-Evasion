@@ -32,6 +32,7 @@ if __name__ == '__main__':
         parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
         parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
         parser.add_argument('--update', action='store_true', help='Update the Veil framework.')
+        parser.add_argument('--overwrite', action='store_true', help='Overwrite payload/source output files if they already exist.')
         args = parser.parse_args()
 
         # Print main title
@@ -78,7 +79,7 @@ if __name__ == '__main__':
         code = controller.GeneratePayload()
 
         # write out the payload code to the proper output file
-        outName = controller.OutputMenu(controller.payload, code, showTitle=False, interactive=False, OutputBaseChoice=args.o)
+        outName = controller.OutputMenu(controller.payload, code, showTitle=False, interactive=False, overwrite=args.overwrite, OutputBaseChoice=args.o)
 
 
     # Catch ctrl + c interrupts from the user
