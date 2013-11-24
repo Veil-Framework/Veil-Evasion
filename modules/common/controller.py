@@ -119,7 +119,8 @@ class Controller:
         # crawl up to 5 levels down the module path
         for x in xrange(1,5):    
             # make the folder structure the key for the module
-            d = dict( ("/".join(path.split("/")[3:])[:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join("./modules/payloads/" + "*/" * x,'[!_]*.py')) )
+
+            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
 
             # instantiate the payload stager
             for name in d.keys():
