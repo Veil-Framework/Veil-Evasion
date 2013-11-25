@@ -1,3 +1,7 @@
+[11.24.2013]
+     Modified.: Bug fix to allow Veil to be used from any folder location
+     Added....: --overwrite option to overwrite existing source/.exe's produced
+     
 [11.22.2013]
      Released.: 2.2.1
      Modified.: payload module loading now builds name based on menu structure dynamically, up to 5 levels deep
