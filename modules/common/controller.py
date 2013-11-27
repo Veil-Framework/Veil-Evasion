@@ -176,8 +176,8 @@ class Controller:
             messages.title()
 
         if showInfo:
-            # extract the payload class name from the instantiated object, then chop off the language
-            payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[1:])
+            # extract the payload class name from the instantiated object, then chop off the load folder prefix
+            payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
 
             print helpers.color(" Payload information:\n")
             print "\tName:\t\t" + payloadname
@@ -325,7 +325,8 @@ class Controller:
         OutputFile.close()
 
         # start building the information string for the generated payload
-        payloadname = str(payload.__class__).split(".")[0]
+        # extract the payload class name from the instantiated object, then chop off the load folder prefix
+        payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
         message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
 
         if hasattr(payload, 'shellcode'):
@@ -391,7 +392,8 @@ class Controller:
 
                 # if not BDF, try to extract the handler type from the payload name
                 else:
-                    payloadname = str(payload.__class__).split(".")[0]
+                    # extract the payload class name from the instantiated object, then chop off the load folder prefix
+                    payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
                     if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
                     elif "https" in payloadname.lower():
@@ -479,7 +481,7 @@ class Controller:
             messages.title()
 
         # extract the payload class name from the instantiated object
-        payloadname = str(payload.__class__).split(".")[0]
+        payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
         print " Payload: " + helpers.color(payloadname) + " loaded\n"
 
         self.PayloadInfo(payload, showTitle=False, showInfo=False)
