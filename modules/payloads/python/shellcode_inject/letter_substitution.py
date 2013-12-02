@@ -14,10 +14,8 @@ from Crypto.Cipher import DES
 import string, random
 
 from modules.common import shellcode
-from modules.common import messages
 from modules.common import randomizer
 from modules.common import crypters
-from modules.common import encryption
 
 class Payload:
 	

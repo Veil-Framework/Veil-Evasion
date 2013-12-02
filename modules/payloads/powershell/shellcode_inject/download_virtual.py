@@ -15,7 +15,6 @@ Module built by @the_grayhound
 import base64
 
 from modules.common import shellcode
-from modules.common import helpers
 from modules.common import randomizer
 
 import settings

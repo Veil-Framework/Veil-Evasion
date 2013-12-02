@@ -10,11 +10,9 @@ Inspiration from https://github.com/rsmudge/metasploit-loader
 Module built by @the_grayhound
 
 """
+
 import random
-from modules.common import messages
 from modules.common import randomizer
-from modules.common import crypters
-from modules.common import encryption
 from modules.common import helpers
 
 class Payload:

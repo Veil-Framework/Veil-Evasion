@@ -9,7 +9,6 @@ More information from
 
 import sys, time, subprocess
 
-from modules.common import randomizer
 from modules.common import helpers
 from modules.common import shellcode
 

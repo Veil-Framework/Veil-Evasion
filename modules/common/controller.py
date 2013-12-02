@@ -163,6 +163,35 @@ class Controller:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
 
+    def CleanPayloads(interactive=True):
+        """
+        Cleans out the payload source/compiled folders.
+        """
+        settings.PAYLOAD_SOURCE_PATH
+        settings.PAYLOAD_COMPILED_PATH
+
+        if interactive:
+            choice = raw_input("\n [>] Are you sure you want to clean payload folderers? [y/N] ")
+
+            if choice.lower() == "y":
+                print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
+                os.system('rm %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
+
+                print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
+                os.system('rm %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
+
+                choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
+        
+        else:
+            print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
+            os.system('rm %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
+
+            print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
+            os.system('rm %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
+
+            print "\n [*] Folders cleaned\n"
+
+
     def PayloadInfo(self, payload, showTitle=True, showInfo=True):
         """
         Print out information about a specified payload.
@@ -177,7 +206,7 @@ class Controller:
 
         if showInfo:
             # extract the payload class name from the instantiated object, then chop off the load folder prefix
-            payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
+            payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
 
             print helpers.color(" Payload information:\n")
             print "\tName:\t\t" + payloadname
@@ -326,7 +355,7 @@ class Controller:
 
         # start building the information string for the generated payload
         # extract the payload class name from the instantiated object, then chop off the load folder prefix
-        payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
+        payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
         message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
 
         if hasattr(payload, 'shellcode'):
@@ -393,7 +422,7 @@ class Controller:
                 # if not BDF, try to extract the handler type from the payload name
                 else:
                     # extract the payload class name from the instantiated object, then chop off the load folder prefix
-                    payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
+                    payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
                     if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
                     elif "https" in payloadname.lower():
@@ -481,7 +510,10 @@ class Controller:
             messages.title()
 
         # extract the payload class name from the instantiated object
-        payloadname = "/".join(str(payload.__class__).split(".")[0].split("/")[3:])
+        # YES, I know this is a giant hack :(
+        # basically need to find "payloads" in the path name, then build
+        # everything as appropriate
+        payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
         print " Payload: " + helpers.color(payloadname) + " loaded\n"
 
         self.PayloadInfo(payload, showTitle=False, showInfo=False)
@@ -520,6 +552,7 @@ class Controller:
                     if parts[0] == "update":
                         self.UpdateVeil()
 
+                    print "parts:",parts[0]
                     # set specific options
                     if parts[0] == "set":
 
@@ -685,6 +718,12 @@ class Controller:
 
                 elif cmd.startswith("update"):
                     self.UpdateVeil()
+                    showMessage=True
+                    cmd = ""
+
+                # clean payload folders
+                if cmd.startswith("clean"):
+                    self.CleanPayloads()
                     showMessage=True
                     cmd = ""
 

@@ -11,7 +11,6 @@ Concept and module by @the_grayhound
 
 import struct, string, random, sys, os
 
-from modules.common import messages
 from modules.common import randomizer
 from modules.common import helpers
 from modules.common import crypters

@@ -1,7 +1,9 @@
-[11.24.2013]
-     Modified.: Bug fix to allow Veil to be used from any folder location
+[12.1.2013]
      Added....: --overwrite option to overwrite existing source/.exe's produced
-     Updated..: Self Contained Payloads.  Thanks to Achoo for letting us know - https://www.veil-evasion.com/forums/index.php?/topic/4-self-contained-payloads-not-working/#entry11
+     Added....: "clean" command to clean out payload compiled/source folders
+     Modified.: various bug fixes
+     Modified.: Bug fix to allow Veil to be used from any folder location
+     Updated..: Self Contained Payloads.  Thanks to Achoo for letting us know.
      
 [11.22.2013]
      Released.: 2.2.1
