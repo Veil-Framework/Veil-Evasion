@@ -552,7 +552,6 @@ class Controller:
                     if parts[0] == "update":
                         self.UpdateVeil()
 
-                    print "parts:",parts[0]
                     # set specific options
                     if parts[0] == "set":
 
