@@ -393,12 +393,11 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(payload, 'required_options'):
-            message += "\n Required Options:\t"
             t = ""
             # sort the dictionary by key before we output, so it looks nice
             for key in sorted(payload.required_options.iterkeys()):
                 t += " " + key + "=" + payload.required_options[key][0] + " "
-            message += t.strip()
+            message += "\n" + helpers.formatLong("Required Options:", t.strip(), frontTab=False, spacing=24)
 
             # check if any options specify that we should build a handler out
             keys = payload.required_options.keys()
