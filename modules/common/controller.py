@@ -427,7 +427,7 @@ class Controller:
                     elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
                     elif "http" in payloadname.lower():
-                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                        handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
                     else: pass
 
                 handler += "set LHOST 0.0.0.0\n"
