@@ -28,9 +28,9 @@ class Payload:
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"orig_exe" : ["psinfo.exe", "The executable to run Backdoor Factory on"],
-								 "payload" : ["meter_tcp","meter_tcp, meter_https, rev_shell, custom"],
-								 "LHOST" : ["127.0.0.1", "IP of the metasploit handler"],
-								 "LPORT" : ["4444", "Port of the metasploit handler"]}
+                                 "payload" : ["meter_tcp","meter_tcp, meter_https, rev_shell, custom"],
+                                 "LHOST" : ["127.0.0.1", "IP of the metasploit handler"],
+                                 "LPORT" : ["4444", "Port of the metasploit handler"]}
 
     def generate(self):
 

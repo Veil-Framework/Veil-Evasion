@@ -1,9 +1,17 @@
-[12.1.2013]
+[12.3.2013]
+     Released.: 2.2.2
      Added....: --overwrite option to overwrite existing source/.exe's produced
-     Added....: "clean" command to clean out payload compiled/source folders
-     Modified.: various bug fixes
-     Modified.: Bug fix to allow Veil to be used from any folder location
-     Updated..: Self Contained Payloads.  Thanks to Achoo for letting us know.
+     Added....: "clean" command and "--clean" option to clean out payload compiled/source folders
+     Modified.: payload import cleanup and various bug fixes, converted all tabs to spaces
+     Modified.: randomString() length now defaults to between 6-15 characters
+     Modified.: modules/common/randomizer.py integrated into modules/common/helpers.py
+     Modified.: modules/common/crypters.py integrated into modules/common/encryption.py
+     Modified.: payload modules rewritten with new module names (from above)
+     Modified.: encryption usage condolidated in encryption.py, python modules changed as appropriate
+     Modified.: bug fix to allow Veil to be used from any folder location
+     Modified.: payloadCompleter() now takes a dynamic command list
+     Modified.: internal command object changed from dictionary to list to preserve display order
+     Updated..: .dll patch in python self contained payloads (thanks to Achoo for letting us know)
      
 [11.22.2013]
      Released.: 2.2.1

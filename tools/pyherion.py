@@ -10,7 +10,7 @@ Python 'crypter' that builds an dynamic AES/base64 encoded launcher
 
 
 Standalone version of the same functionality integrated into Veil,
-in ./modules/common/crypters.py
+in ./modules/common/encryption.py
 
 """
 

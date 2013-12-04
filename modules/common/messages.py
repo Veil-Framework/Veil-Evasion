@@ -8,54 +8,45 @@ import settings
 from modules.common import helpers
 
 def title():
-	"""
-	Print the framework title, with version.
-	"""
-	os.system(settings.TERMINAL_CLEAR)
-	print '========================================================================='
-	print ' Veil | [Version]: 2.2.1'
-	print '========================================================================='
-	print ' [Web]: https://www.veil-evasion.com/ | [Twitter]: @veilevasion'
-	print '========================================================================='
-	print ""
-	
-	if settings.OPERATING_SYSTEM != "Kali":
-		print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
-		print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
-	
-	# check to make sure the current OS is supported,
-	# print a warning message if it's not and exit
-	if settings.OPERATING_SYSTEM == "Windows" or settings.OPERATING_SYSTEM == "Unsupported":
-		print helpers.color(' [!] ERROR: Your operating system is not currently supported...\n', warning=True)
-		print helpers.color(' [!] ERROR: Request your distribution at the GitHub repository...\n', warning=True)
-		sys.exit()
+    """
+    Print the framework title, with version.
+    """
+    os.system(settings.TERMINAL_CLEAR)
+    print '========================================================================='
+    print ' Veil | [Version]: 2.2.2'
+    print '========================================================================='
+    print ' [Web]: https://www.veil-evasion.com/ | [Twitter]: @veilevasion'
+    print '========================================================================='
+    print ""
+    
+    if settings.OPERATING_SYSTEM != "Kali":
+        print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
+        print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
+    
+    # check to make sure the current OS is supported,
+    # print a warning message if it's not and exit
+    if settings.OPERATING_SYSTEM == "Windows" or settings.OPERATING_SYSTEM == "Unsupported":
+        print helpers.color(' [!] ERROR: Your operating system is not currently supported...\n', warning=True)
+        print helpers.color(' [!] ERROR: Request your distribution at the GitHub repository...\n', warning=True)
+        sys.exit()
 
 def helpmsg(commands, showTitle=True):
-	"""
-	Print a help menu.
-	"""
-	
-	if showTitle:
-		title()
-	
-	print " Available commands:\n"
-	
-	# list commands in sorted order
-	for cmd in sorted(commands.iterkeys(), reverse=True):
-		
-		print "\t%s\t%s" % ('{0: <12}'.format(cmd), commands[cmd])
-
-	print ""
-
-def helpCrypters():
     """
-    Invoke helpModule() on the crypters module, displaying everything nicely.
+    Print a help menu.
     """
+    
+    if showTitle:
+        title()
+    
+    print " Available commands:\n"
+    
+    # list commands in sorted order
+    #for cmd in sorted(commands.iterkeys(), reverse=True):
+    for (cmd, desc) in commands:
+        
+        print "\t%s\t%s" % ('{0: <12}'.format(cmd), desc)
 
-    title()
-    print " Available crypters\n\n"
-    helpModule("modules.common.crypters")
-    print "\n"
+    print ""
 
 def helpModule(module):
     """
@@ -85,8 +76,8 @@ def helpModule(module):
         print helpers.formatLong(function.func_name, doc)
 
 def endmsg():
-	"""
-	Print the exit message.
-	"""
-	print " [*] Your payload files have been generated, don't get caught!" 
-	print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", warning=True)
+    """
+    Print the exit message.
+    """
+    print " [*] Your payload files have been generated, don't get caught!" 
+    print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", warning=True)

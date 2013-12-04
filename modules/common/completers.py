@@ -11,7 +11,6 @@ Reference - http://stackoverflow.com/questions/5637124/tab-completion-in-pythons
 import readline
 import commands
 import re
-import commands
 import os
 
 
@@ -23,7 +22,7 @@ class MainMenuCompleter(object):
     
     """
     def __init__(self, cmds, payloads):
-        self.commands = cmds
+        self.commands = [cmd for (cmd,desc) in cmds]
         self.payloads = payloads
 
     def complete_use(self, args):
@@ -129,15 +128,9 @@ class MainMenuCompleter(object):
 
 class PayloadCompleter(object):
 
-    def __init__(self, payload):
+    def __init__(self, cmds, payload):
+        self.commands = [cmd for (cmd,desc) in cmds]
         self.payload = payload
-
-        self.commands = {"set":"set a specific option value",
-                        "info":"show information about the payload",
-                        "help [crypters]":"show help menu for payload or crypters",
-                        "generate":"generate payload",
-                        "back":"go to the main menu",
-                        "exit":"exit Veil"}
 
     def complete_set(self, args):
         """List the options you can set"""

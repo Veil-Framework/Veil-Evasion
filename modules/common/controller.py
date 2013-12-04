@@ -94,19 +94,18 @@ class Controller:
 
         self.outputFileName = ""
 
-        # "help":"print help screen",
-        self.commands = { "use":"use a specific payload",
-                 "info":"information on a specific payload",
-                 "list":"list available payloads",
-                 "update":"update Veil to the latest version",
-                 "exit":"exit Veil"}
+        self.commands = [   ("use","use a specific payload"),
+                            ("info","information on a specific payload"),
+                            ("list","list available payloads"),
+                            ("update","update Veil to the latest version"),
+                            ("clean","clean out payload folders"),
+                            ("exit","exit Veil")]
 
-        self.payloadCommands = {"set":"set a specific option value",
-                        "info":"show information about the payload",
-                        "help [crypters]":"show help menu for payload or crypters",
-                        "generate":"generate payload",
-                        "back":"go to the main menu",
-                        "exit":"exit Veil"}
+        self.payloadCommands = [    ("set","set a specific option value"),
+                                    ("info","show information about the payload"),
+                                    ("generate","generate payload"),
+                                    ("back","go to the main menu"),
+                                    ("exit","exit Veil")]
 
         self.LoadPayloads()
 
@@ -163,31 +162,36 @@ class Controller:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
 
-    def CleanPayloads(interactive=True):
+    def CleanPayloads(self, interactive=True):
         """
-        Cleans out the payload source/compiled folders.
+        Cleans out the payload source/compiled/handler folders.
         """
-        settings.PAYLOAD_SOURCE_PATH
-        settings.PAYLOAD_COMPILED_PATH
-
+        
+        # prompt for confirmation if we're in the interactive menu
         if interactive:
-            choice = raw_input("\n [>] Are you sure you want to clean payload folderers? [y/N] ")
+            choice = raw_input("\n [>] Are you sure you want to clean payload folders? [y/N] ")
 
             if choice.lower() == "y":
                 print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
-                os.system('rm %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
+                os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
 
                 print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
-                os.system('rm %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
+                os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+
+                print " [*] Cleaning %s" %(settings.HANDLER_PATH)
+                os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
 
                 choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
         
         else:
             print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
-            os.system('rm %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
+            os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
 
             print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
-            os.system('rm %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
+            os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+
+            print " [*] Cleaning %s" %(settings.HANDLER_PATH)
+            os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
 
             print "\n [*] Folders cleaned\n"
 
@@ -499,7 +503,7 @@ class Controller:
         Returns the output of OutputMenu() (the full path of the source file or compiled .exe)
         """
 
-        comp = completers.PayloadCompleter(self.payload)
+        comp = completers.PayloadCompleter(self.payloadCommands, self.payload)
         readline.set_completer_delims(' \t\n;')
         readline.parse_and_bind("tab: complete")
         readline.set_completer(comp.complete)
@@ -533,11 +537,7 @@ class Controller:
                         self.PayloadInfo(payload)
                         choice = ""
                     if parts[0] == "help":
-                        if len(parts) > 1:
-                            if parts[1] == "crypters" or parts[1] == "[crypters]":
-                                messages.helpCrypters()
-                        else:
-                            messages.helpmsg(self.payloadCommands)
+                        messages.helpmsg(self.payloadCommands)
                         choice = ""
                     # head back to the main menu
                     if parts[0] == "main" or parts[0] == "back":
@@ -669,9 +669,7 @@ class Controller:
 
                 # handle our tab completed commands
                 if cmd.startswith("help"):
-                    #messages.helpmsg(self.commands)
                     messages.title()
-                    self.commands
                     cmd = ""
                     showMessage=False
 

