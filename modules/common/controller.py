@@ -487,18 +487,18 @@ class Controller:
         # hash with VTNotify to detect if it's been flagged
         try:
             CompiledHashFile = settings.HASH_LIST
+            HashFile = open(CompiledHashFile, 'a')
+            OutputFile = open(OutputFileName, 'rb')
+            Sha1Hasher = hashlib.sha1()
+            Sha1Hasher.update(OutputFile.read())
+            SHA1Hash = Sha1Hasher.hexdigest()
+            OutputFile.close()
+            HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
+            HashFile.close()
         except:
             # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
             print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
 
-        HashFile = open(CompiledHashFile, 'a')
-        OutputFile = open(OutputFileName, 'rb')
-        Sha1Hasher = hashlib.sha1()
-        Sha1Hasher.update(OutputFile.read())
-        SHA1Hash = Sha1Hasher.hexdigest()
-        OutputFile.close()
-        HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
-        HashFile.close()
 
         # print the end message
         messages.endmsg()
