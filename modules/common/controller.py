@@ -14,6 +14,7 @@ import socket
 import commands
 import time
 import subprocess
+import hashlib
 
 
 # try to find and import the settings.py config file
@@ -443,7 +444,6 @@ class Controller:
                 handler += "set AutoRunScript post/windows/manage/migrate\n"
                 handler += "exploit -j\n"
 
-
         message += "\n Payload File:\t\t"+OutputFileName + "\n"
 
         # if we're generating the handler script, write it out
@@ -482,6 +482,23 @@ class Controller:
 
         # print the full message containing generation notes
         print message
+
+        # This block of code is going to be used to SHA1 hash our compiled payloads to potentially submit the
+        # hash with VTNotify to detect if it's been flagged
+        try:
+            CompiledHashFile = settings.HASH_LIST
+        except:
+            # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
+            print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
+
+        HashFile = open(CompiledHashFile, 'a')
+        OutputFile = open(OutputFileName, 'rb')
+        Sha1Hasher = hashlib.sha1()
+        Sha1Hasher.update(OutputFile.read())
+        SHA1Hash = Sha1Hasher.hexdigest()
+        OutputFile.close()
+        HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
+        HashFile.close()
 
         # print the end message
         messages.endmsg()

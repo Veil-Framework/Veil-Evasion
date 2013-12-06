@@ -1,3 +1,6 @@
+[Upcoming]
+     Added....: Added a hashing function to store/document sha1 hashes of Veil compiled payloads
+
 [12.3.2013]
      Released.: 2.2.2
      Added....: --overwrite option to overwrite existing source/.exe's produced
