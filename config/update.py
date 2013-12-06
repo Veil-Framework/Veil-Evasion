@@ -81,6 +81,10 @@ def generateConfig(options):
     config += 'HANDLER_PATH="' + handler_path + '"\n\n'
     print " [*] HANDLER_PATH = " + handler_path
 
+    hash_path = os.path.expanduser(options["HASH_LIST"])
+    config += 'HASH_LIST="' + hash_path + '"\n\n'
+    print " [*] HASH_LIST = " + hash_path
+
     if platform.system() == "Linux":
         issue = open("/etc/issue").read()
         if issue.startswith("Kali"):
@@ -143,6 +147,7 @@ if __name__ == '__main__':
         options["MSFVENOM_OPTIONS"]=""
         options["GENERATE_HANDLER_SCRIPT"] = "True"
         options["HANDLER_PATH"] = "~/veil-output/handlers/"
+        options["HASH_LIST"] = "~/veil-output/hash.txt"
 
 
     # not current supported
