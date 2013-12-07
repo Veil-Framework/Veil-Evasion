@@ -147,7 +147,7 @@ if __name__ == '__main__':
         options["MSFVENOM_OPTIONS"]=""
         options["GENERATE_HANDLER_SCRIPT"] = "True"
         options["HANDLER_PATH"] = "~/veil-output/handlers/"
-        options["HASH_LIST"] = "~/veil-output/hash.txt"
+        options["HASH_LIST"] = "~/veil-output/hashes.txt"
 
 
     # not current supported
