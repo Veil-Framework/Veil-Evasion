@@ -8,7 +8,7 @@ The secondary command is a powershell encrypted inline shellcode injector.
 Original concept from  http://obscuresecurity.blogspot.com/2013/03/powersploit-metasploit-shells.html
 
 
-Module built by @the_grayhound
+Module built by @harmj0y
 
 """
 

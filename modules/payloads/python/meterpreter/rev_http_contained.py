@@ -5,7 +5,7 @@ meterpreter reverse_http payload compresses/bas64 encodes it
 and then builds a python injection wrapper to inject the contained 
 meterpreter dll into memory.
 
-Concept and module by @the_grayhound
+Concept and module by @harmj0y
 
 """
 

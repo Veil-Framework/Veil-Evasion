@@ -9,7 +9,7 @@ attempt to obfuscate the call tree.
 
 Inspiration from https://github.com/rsmudge/metasploit-loader
 
-Module built by @the_grayhound
+Module built by @harmj0y
 
 """
 

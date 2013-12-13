@@ -1,5 +1,10 @@
-[Upcoming]
-     Added....: Added a hashing function to store/document sha1 hashes of Veil compiled payloads
+[12.14.2013]
+     Released.: 2.3.0
+     Added....: cs/meterpreter/rev_tcp and python/meterpreter/rev_tcp stagers
+     Added....: added a hashing function to store/document sha1 hashes of Veil compiled payloads
+     Added....: fork of @mubix's vt-notify script to ./tools/vt-notify/
+     Added....: python payloads can be set to expire after X days
+     Added....: basic obfuscation into all C# payloads
 
 [12.3.2013]
      Released.: 2.2.2

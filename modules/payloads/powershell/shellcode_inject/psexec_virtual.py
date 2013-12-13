@@ -8,7 +8,7 @@ Original concept from Matthew Graeber: http://www.exploit-monday.com/2011/10/exp
 Note: the architecture independent invoker was developed independently from 
     https://www.trustedsec.com/may-2013/native-powershell-x86-shellcode-injection-on-64-bit-platforms/
     
-Port to the msf resource file by @the_grayhound
+Port to the msf resource file by @harmj0y
 
 """
 

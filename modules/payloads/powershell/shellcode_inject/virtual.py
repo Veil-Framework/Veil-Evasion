@@ -8,7 +8,7 @@ Note: the architecture independent invoker was developed independently from
     https://www.trustedsec.com/may-2013/native-powershell-x86-shellcode-injection-on-64-bit-platforms/
 
 
-Module built by @the_grayhound
+Module built by @harmj0y
 
 """
 
