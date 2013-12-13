@@ -111,13 +111,13 @@ class Shellcode:
                         if "bind" in f:
                             if "x64" in root:
                                 for stage in stagesX64:
-                                    self.payloadTree[platform]["x64"][stage][moduleName] = ["LHOST"] + extraOptions
+                                    self.payloadTree[platform]["x64"][stage][moduleName] = ["LPORT"] + extraOptions
                             elif "x86" in root:
                                 for stage in stagesX86:
-                                    self.payloadTree[platform]["x86"][stage][moduleName] = ["LHOST"] + extraOptions
+                                    self.payloadTree[platform]["x86"][stage][moduleName] = ["LPORT"] + extraOptions
                             else:
                                 for stage in stagesX86:
-                                    self.payloadTree[platform][stage][moduleName] = ["LHOST"] + extraOptions
+                                    self.payloadTree[platform][stage][moduleName] = ["LPORT"] + extraOptions
                         if "reverse" in f:
                             if "x64" in root:
                                 for stage in stagesX64:
@@ -147,7 +147,7 @@ class Shellcode:
                                     # only append if there isn't a default already filled in
                                     totalOptions.append(cmd)
                         if "bind" in f:
-                            totalOptions.append("LHOST")
+                            totalOptions.append("LPORT")
                         if "reverse" in f:
                             totalOptions.append("LHOST")
                             totalOptions.append("LPORT")
