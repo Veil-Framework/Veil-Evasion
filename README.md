@@ -2,7 +2,7 @@
 
 Veil is a tool designed to generate metasploit payloads that bypass common anti-virus solutions.
 
-Veil is currently under active support by @ChrisTruncer, @TheMightyShiv, @The_Grayhound
+Veil is currently under active support by @ChrisTruncer, @TheMightyShiv, @HarmJ0y
 
 Greetz: 
 @jasonjfrank

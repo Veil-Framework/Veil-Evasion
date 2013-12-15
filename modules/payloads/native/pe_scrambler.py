@@ -1,12 +1,12 @@
 """
 
-Automates the running the the Hyperion crypter on an existing .exe
+Automates the running the PEScrambler on an existing .exe
 
-More information (Nullsecurity) - http://www.nullsecurity.net/papers/nullsec-bsides-slides.pdf
+PEScrambler by Nick Harbour - http://code.google.com/p/pescrambler/
 
 """
 
-import sys, time, subprocess
+import sys, time, subprocess, time
 
 from modules.common import helpers
 
@@ -17,13 +17,13 @@ class Payload:
     
     def __init__(self):
         # required options
-        self.description = "Automates the running of the Hyperion crypter on an existing .exe"
+        self.description = "Automates the running of the PEScrambler crypter on an existing .exe"
         self.language = "native"
         self.rating = "Normal"
         self.extension = "exe"
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"original_exe" : ["", "The executable to run Hyperion on"]}
+        self.required_options = {"original_exe" : ["", "The executable to run PEScrambler on"]}
         
     def generate(self):
         
@@ -32,12 +32,13 @@ class Payload:
         outputFile = settings.TEMP_DIR + randName
         
         # the command to invoke hyperion. TODO: windows compatibility
-        hyperionCommand = "wine hyperion.exe " + self.required_options["original_exe"][0] + " " + outputFile
-        
-        print helpers.color("\n[*] Running Hyperion on " + self.required_options["original_exe"][0] + "...")
+        peCommand = "wine PEScrambler.exe -i " + self.required_options["original_exe"][0] + " -o " + outputFile
+
+        print helpers.color("\n[*] Running PEScrambler on " + self.required_options["original_exe"][0] + "...")
         
         # be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-        p = subprocess.Popen(hyperionCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_PATH+"tools/hyperion/", shell=True)
+        p = subprocess.Popen(peCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_PATH+"tools/pescrambler/", shell=True)
+        time.sleep(3)
         stdout, stderr = p.communicate()
         
         try:
@@ -46,7 +47,7 @@ class Payload:
             PayloadCode = f.read()
             f.close()
         except IOError:
-            print "\nError during Hyperion execution:\n" + helpers.color(stdout, warning=True)
+            print "\nError during PEScrambler execution:\n" + helpers.color(stdout, warning=True)
             raw_input("\n[>] Press any key to return to the main menu:")
             return ""
         
