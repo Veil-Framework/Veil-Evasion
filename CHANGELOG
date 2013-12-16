@@ -1,4 +1,4 @@
-[12.14.2013]
+[12.15.2013]
      Released.: 2.3.0
      Added....: cs/meterpreter/rev_tcp and python/meterpreter/rev_tcp stagers
      Added....: added a hashing function to store/document sha1 hashes of Veil compiled payloads
