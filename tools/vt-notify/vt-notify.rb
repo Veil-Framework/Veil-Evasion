@@ -16,7 +16,16 @@ require 'net/http'
 require 'digest/sha1'
 require 'optparse'
 require 'net/smtp'
-require 'gmail'
+
+if $stdout.isatty
+    begin
+        require 'gmail'
+    rescue LoadError
+        puts "Interactive use requires the gmail gem."  
+        puts "Please install it with \"sudo gem install gmail\""
+        exit 1
+    end
+end
 
 def send_email(to,opts={})
     #  http://fuelyourcoding.com/emailify-your-app-with-gmail-and-ruby/

@@ -15,6 +15,7 @@ import commands
 import time
 import subprocess
 import hashlib
+from subprocess import Popen, PIPE
 
 
 # try to find and import the settings.py config file
@@ -100,6 +101,7 @@ class Controller:
                             ("list","list available payloads"),
                             ("update","update Veil to the latest version"),
                             ("clean","clean out payload folders"),
+                            ("amipwned","Checks payload hash vs. VirusTotal"),
                             ("exit","exit Veil")]
 
         self.payloadCommands = [    ("set","set a specific option value"),
@@ -162,6 +164,27 @@ class Controller:
         if interactive:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
+    def AmIPwned(self, interactive=True):
+        """
+        Checks payload hashes in hashes.txt vs VirusTotal
+        """
+
+        # Command for in-menu vt-notify check against hashes within hash file
+        # It's only triggered if selected in menu and file isn't empty
+        if os.stat(settings.HASH_LIST)[6] != 0:
+            amipwnedcommand = settings.VEIL_PATH + "tools/vt-notify/vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
+            amipwnedout= Popen(amipwnedcommand.split(), stdout=PIPE)
+            for line in amipwnedout.stdout:
+                if "Checked:" in line:
+                    print " [*] " + line.strip()
+                elif "Not found:" in line:
+                    print " [*] " + line.strip()
+                elif "Found:" in line:
+                    print " [*] " + line.strip()
+            raw_input("     Hit enter to continue...")
+        else:
+            print "Hash file is empty, generate a payload first!"
+            raw_input("Press enter to continue...")
 
     def CleanPayloads(self, interactive=True):
         """
@@ -182,6 +205,10 @@ class Controller:
                 print " [*] Cleaning %s" %(settings.HANDLER_PATH)
                 os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
 
+                print " [*] cleaning %s" %(settings.HASH_LIST)
+                os.system('rm %s 2>/dev/null' %(settings.HASH_LIST))
+                os.system('touch ' + settings.HASH_LIST)
+
                 choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
         
         else:
@@ -193,6 +220,10 @@ class Controller:
 
             print " [*] Cleaning %s" %(settings.HANDLER_PATH)
             os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
+
+            print " [*] cleaning %s" %(settings.HASH_LIST)
+            os.system('rm %s 2>/dev/null' %(settings.HASH_LIST))
+            os.system('touch ' + settings.HASH_LIST)
 
             print "\n [*] Folders cleaned\n"
 
@@ -731,6 +762,11 @@ class Controller:
 
                 elif cmd.startswith("update"):
                     self.UpdateVeil()
+                    showMessage=True
+                    cmd = ""
+
+                elif cmd.startswith("amipwned"):
+                    self.AmIPwned()
                     showMessage=True
                     cmd = ""
 
