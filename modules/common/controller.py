@@ -171,20 +171,25 @@ class Controller:
 
         # Command for in-menu vt-notify check against hashes within hash file
         # It's only triggered if selected in menu and file isn't empty
-        if os.stat(settings.HASH_LIST)[6] != 0:
-            amipwnedcommand = settings.VEIL_PATH + "tools/vt-notify/vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
-            amipwnedout= Popen(amipwnedcommand.split(), stdout=PIPE)
-            for line in amipwnedout.stdout:
-                if "Checked:" in line:
-                    print " [*] " + line.strip()
-                elif "Not found:" in line:
-                    print " [*] " + line.strip()
-                elif "Found:" in line:
-                    print " [*] " + line.strip()
-            raw_input("     Hit enter to continue...")
-        else:
-            print "Hash file is empty, generate a payload first!"
-            raw_input("Press enter to continue...")
+        try:
+            if os.stat(settings.HASH_LIST)[6] != 0:
+                amipwnedcommand = settings.VEIL_PATH + "tools/vt-notify/vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
+                amipwnedout= Popen(amipwnedcommand.split(), stdout=PIPE)
+                for line in amipwnedout.stdout:
+                    if "Checked:" in line:
+                        print " [*] " + line.strip()
+                    elif "Not found:" in line:
+                        print " [*] " + line.strip()
+                    elif "Found:" in line:
+                        print " [*] " + line.strip()
+                raw_input("     Hit enter to continue...")
+            else:
+                print " [*] Hash file is empty, generate a payload first!"
+                raw_input(" [*] Press enter to continue...")
+        except OSError:
+            print " [*] You can't check your payloads if you haven't generated any yet!"
+            print " [*] Generate a payload and try again!"
+            raw_input(" [*] Press enter to continue...")
 
     def CleanPayloads(self, interactive=True):
         """
