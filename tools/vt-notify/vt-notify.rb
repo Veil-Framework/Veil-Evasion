@@ -17,16 +17,6 @@ require 'digest/sha1'
 require 'optparse'
 require 'net/smtp'
 
-if $stdout.isatty
-    begin
-        require 'gmail'
-    rescue LoadError
-        puts "Interactive use requires the gmail gem."  
-        puts "Please install it with \"sudo gem install gmail\""
-        exit 1
-    end
-end
-
 def send_email(to,opts={})
     #  http://fuelyourcoding.com/emailify-your-app-with-gmail-and-ruby/
     Gmail.new($gmailusername, $gmailpassword) do |gmail|
@@ -75,6 +65,15 @@ def parse_results(result, hashNameList)
         puts "#{result['resource']}:#{hashNameList[result['resource']]} was found #{result['positives']} out of #{result['total']} on #{result['scan_date']}"
         if $PROGRAM_NAME
             if $emailaddr
+                if $stdout.isatty
+                    begin
+                        require 'gmail'
+                    rescue LoadError
+                        puts "Interactive use requires the gmail gem."  
+                        puts "Please install it with \"sudo gem install gmail\""
+                        exit 1
+                    end
+                end
                 send_email $emailaddr, :body => "#{result['resource']}:#{hashNameList[result['resource']]} was found #{result['positives']} out of #{result['total']} on #{result['scan_date']}\n Permalink: #{result['permalink']}"
             else
                 puts "[!] No gmail credential file specified."
