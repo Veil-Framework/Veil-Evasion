@@ -101,7 +101,7 @@ class Controller:
                             ("list","list available payloads"),
                             ("update","update Veil to the latest version"),
                             ("clean","clean out payload folders"),
-                            ("amipwned","Checks payload hash vs. VirusTotal"),
+                            ("checkvt","check payload hashes vs. VirusTotal"),
                             ("exit","exit Veil")]
 
         self.payloadCommands = [    ("set","set a specific option value"),
@@ -164,32 +164,39 @@ class Controller:
         if interactive:
             raw_input(" [>] Veil updated, press any key to continue: ")
 
-    def AmIPwned(self, interactive=True):
+
+    def CheckVT(self, interactive=True):
         """
-        Checks payload hashes in hashes.txt vs VirusTotal
+        Checks payload hashes in veil-output/hashes.txt vs VirusTotal
         """
 
         # Command for in-menu vt-notify check against hashes within hash file
         # It's only triggered if selected in menu and file isn't empty
         try:
             if os.stat(settings.HASH_LIST)[6] != 0:
-                amipwnedcommand = settings.VEIL_PATH + "tools/vt-notify/vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
-                amipwnedout= Popen(amipwnedcommand.split(), stdout=PIPE)
-                for line in amipwnedout.stdout:
-                    if "Checked:" in line:
-                        print " [*] " + line.strip()
-                    elif "Not found:" in line:
-                        print " [*] " + line.strip()
-                    elif "Found:" in line:
-                        print " [*] " + line.strip()
-                raw_input("     Hit enter to continue...")
+                checkVTcommand = "./vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
+                print helpers.color("\n [*] Checking Virus Total for payload hashes...\n")
+                checkVTout = Popen(checkVTcommand.split(), stdout=PIPE, cwd=settings.VEIL_PATH + "tools/vt-notify/")
+
+                found = False
+                for line in checkVTout.stdout:
+                    if "was found" in line:
+                        filehash, filename = line.split()[0].split(":")
+                        print helpers.color(" [!] File %s with hash %s found!" %(filename, filehash), warning=True)
+                        found = True
+                if found == False:
+                    print " [*] No payloads found on VirusTotal!"
+
+                raw_input("\n [>] Hit enter to continue...")
+
             else:
-                print " [*] Hash file is empty, generate a payload first!"
-                raw_input(" [*] Press enter to continue...")
-        except OSError:
-            print " [*] You can't check your payloads if you haven't generated any yet!"
-            print " [*] Generate a payload and try again!"
-            raw_input(" [*] Press enter to continue...")
+                print helpers.color("\n [!] Hash file is empty, generate a payload first!", warning=True)
+                raw_input("\n [>] Press enter to continue...")
+
+        except OSError as e:
+            print helpers.color("\n [!] Error: hash list %s not found" %(settings.HASH_LIST), warning=True)
+            raw_input("\n [>] Press enter to continue...")
+
 
     def CleanPayloads(self, interactive=True):
         """
@@ -213,6 +220,9 @@ class Controller:
                 print " [*] cleaning %s" %(settings.HASH_LIST)
                 os.system('rm %s 2>/dev/null' %(settings.HASH_LIST))
                 os.system('touch ' + settings.HASH_LIST)
+
+                print " [*] cleaning ./tools/vt-notify/results.log"
+                os.system('rm ./tools/vt-notify/results.log 2>/dev/null')
 
                 choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
         
@@ -770,8 +780,8 @@ class Controller:
                     showMessage=True
                     cmd = ""
 
-                elif cmd.startswith("amipwned"):
-                    self.AmIPwned()
+                elif cmd.startswith("checkvt"):
+                    self.CheckVT()
                     showMessage=True
                     cmd = ""
 
