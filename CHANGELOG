@@ -1,3 +1,7 @@
+[12.18.2013]
+     Released.: 2.3.1
+     Added....: virustotal checking command to the main menu
+
 [12.15.2013]
      Released.: 2.3.0
      Added....: cs/meterpreter/rev_tcp and python/meterpreter/rev_tcp stagers
