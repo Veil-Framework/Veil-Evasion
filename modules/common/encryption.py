@@ -77,6 +77,20 @@ def encryptAES(s):
     # return a tuple of (encodedText, randomKey)
     return (encrypted, key)
 
+def knownPlaintext(known_key, random_plaintext):
+    """
+    Uses key passed in to encrypt a random string which is 
+    used in a known plaintext attack to brute force its 
+    own key
+    """
+    # Create our cipher object with our known key
+    stallion = AES.new(known_key)
+
+    # Our random string is encrypted and encoded
+    encrypted_string = EncodeAES(stallion, random_plaintext)
+
+    # return our encrypted known plaintext
+    return encrypted_string
 
 def encryptDES(s):
     """
