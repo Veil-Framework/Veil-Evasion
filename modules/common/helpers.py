@@ -92,6 +92,18 @@ def randomKey(b=32):
     """
     return ''.join(random.choice(string.ascii_letters + string.digits + "{}!@#$^&()*&[]|,./?") for x in range(b))
 
+def randomNumbers(b=6):
+    """
+    Returns a random string/key of "b" characters in length, defaults to 5
+    """
+    random_number = int(''.join(random.choice(string.digits) for x in range(b))) + 10000
+
+    if random_number < 100000:
+        random_number = random_number + 100000
+
+    return random_number
+
+
 def randomLetter():
     """
     Returns a random ascii letter.
