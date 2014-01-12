@@ -408,7 +408,8 @@ class Controller:
         # extract the payload class name from the instantiated object, then chop off the load folder prefix
         payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
         message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
-
+        handler = ""
+        
         if hasattr(payload, 'shellcode'):
             # check if msfvenom was used or something custom, print appropriately
             if payload.shellcode.customshellcode != "":
@@ -495,11 +496,12 @@ class Controller:
         # if we're generating the handler script, write it out
         try:
             if settings.GENERATE_HANDLER_SCRIPT.lower() == "true":
-                handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
-                handlerFile = open(handlerFileName, 'w')
-                handlerFile.write(handler)
-                handlerFile.close()
-                message += " Handler File:\t\t"+handlerFileName + "\n"
+                if handler != "":
+                    handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
+                    handlerFile = open(handlerFileName, 'w')
+                    handlerFile.write(handler)
+                    handlerFile.close()
+                    message += " Handler File:\t\t"+handlerFileName + "\n"
         except:
             # is that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
             print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
