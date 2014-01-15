@@ -1,10 +1,13 @@
-#Veil
+#Veil-Evasion
 
-Veil is a tool designed to generate metasploit payloads that bypass common anti-virus solutions.
+Veil-Evasion is a tool designed to generate metasploit payloads that bypass common anti-virus solutions.
 
-Veil is currently under active support by @ChrisTruncer, @TheMightyShiv, @HarmJ0y
+NOTE: ./setup/setup.sh should be re-run on every major version update. If you receive any major errors on running Veil-Evasion, first try re-running this script to install any additional packages and update the common configuration file.
 
-Greetz: 
+
+Veil-Evasion is currently under active support by @ChrisTruncer, @TheMightyShiv, @HarmJ0y
+
+Thanks to:
 @jasonjfrank
 @mjmaley
 @davidpmcguire
@@ -19,7 +22,7 @@ Greetz:
 1.  Install Python 2.7
 2.  Install PyCrypto >= 2.3
 
-### Windows
+### Windows (for Py2Exe compilation)
 1.  Python (tested with x86 - http://www.python.org/download/releases/2.7/)
 2.  Py2Exe (http://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/)
 3.  PyCrypto (http://www.voidspace.org.uk/python/modules.shtml)
@@ -27,15 +30,15 @@ Greetz:
 
 ##Setup (tldr;)
 
-Run setup script on Kali x86 (for Pyinstaller).
+Run ./setup.sh on Kali x86 (for Pyinstaller).
 Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2Exe).  
 
 ##Description
-Veil was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil from the command line, and follow the menu to generate a payload.  Upon creating the payload, veil will ask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
+Veil-Evasion was designed to run on Kali Linux, but should function on any system capable of executing python scripts.  Simply call Veil-Evasion from the command line, and follow the menu to generate a payload.  Upon creating the payload, Veil-Evasion will ask if you would like the payload file to be converted into an executable by Pyinstaller or Py2Exe.
 
-If using Pyinstaller, Veil will convert your payload into an executable within Kali.
+If using Pyinstaller, Veil-Evasion will convert your payload into an executable within Kali.
 
-If using Py2Exe, Veil will create three files:
+If using Py2Exe, Veil-Evasion will create three files:
 
 * payload.py - The payload file
 * setup.py - Required file for Py2Exe

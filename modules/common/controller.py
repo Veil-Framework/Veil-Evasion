@@ -1,5 +1,5 @@
 """
-Contains the main controller object for Veil.
+Contains the main controller object for Veil-Evasion.
 
 """
 
@@ -23,6 +23,22 @@ if os.path.exists("/etc/veil/settings.py"):
     try:
         sys.path.append("/etc/veil/")
         import settings
+
+        # check for a few updated values to see if we have a new or old settings.py file
+        try:
+            settings.VEIL_EVASION_PATH
+        except AttributeError:
+            os.system('clear')
+            print '========================================================================='
+            print ' New major Veil-Evasion version installed'
+            print ' Re-running ./setup/setup.sh'
+            print '========================================================================='
+            time.sleep(3)
+            os.system('cd setup && ./setup.sh')
+
+            # reload the settings import to refresh the values
+            reload(settings)
+
     except ImportError:
         print "\n [!] ERROR: run ./config/update.py manually\n"
         sys.exit()
@@ -40,8 +56,8 @@ else:
     print ' Veil First Run Detected... Initializing Script Setup...'
     print '========================================================================='
     # run the config if it hasn't been run
-    print '\n [*] Executing ./config/update.py...'
-    os.system('cd config && python update.py')
+    print '\n [*] Executing ./setup/setup.sh'
+    os.system('cd setup && ./setup.sh')
 
     # check for the config again and error out if it can't be found.
     if os.path.exists("/etc/veil/settings.py"):
@@ -122,7 +138,7 @@ class Controller:
         for x in xrange(1,5):    
             # make the folder structure the key for the module
 
-            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
+            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_EVASION_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
 
             # instantiate the payload stager
             for name in d.keys():
@@ -158,7 +174,7 @@ class Controller:
         """
         print "\n Updating Veil via git...\n"
         updatecommand = ['git', 'pull']
-        updater = subprocess.Popen(updatecommand, cwd=settings.VEIL_PATH, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        updater = subprocess.Popen(updatecommand, cwd=settings.VEIL_EVASION_PATH, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         updoutput, upderr = updater.communicate()
 
         if interactive:
@@ -176,7 +192,7 @@ class Controller:
             if os.stat(settings.HASH_LIST)[6] != 0:
                 checkVTcommand = "./vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
                 print helpers.color("\n [*] Checking Virus Total for payload hashes...\n")
-                checkVTout = Popen(checkVTcommand.split(), stdout=PIPE, cwd=settings.VEIL_PATH + "tools/vt-notify/")
+                checkVTout = Popen(checkVTcommand.split(), stdout=PIPE, cwd=settings.VEIL_EVASION_PATH + "tools/vt-notify/")
 
                 found = False
                 for line in checkVTout.stdout:
