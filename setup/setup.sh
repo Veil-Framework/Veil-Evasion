@@ -7,9 +7,9 @@ func_title(){
 
   # Echo Title
   echo '========================================================================='
-  echo ' Veil Setup Script | [Updated]: 09.11.2013'
+  echo ' Veil-Evasion Setup Script | [Updated]: 01.15.2015'
   echo '========================================================================='
-  echo ' [Web]: https://www.veil-evasion.com | [Twitter]: @veilevasion'
+  echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '========================================================================='
 }
 
@@ -72,9 +72,9 @@ func_python_deps(){
   # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
   # files and then just comment these next two lines out :)
   echo
-  echo ' [*] Downloading Setup Files From http://www.veil-evasion.com'
-  wget https://www.veil-evasion.com/InstallMe/requiredfiles.zip --no-check-certificate
-  wget https://www.veil-evasion.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate
+  echo ' [*] Downloading Setup Files From http://www.veil-framework.com'
+  wget https://www.veil-framework.com/InstallMe/requiredfiles.zip --no-check-certificate
+  wget https://www.veil-framework.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate
 
   # Unzip Setup Files
   echo
@@ -126,7 +126,7 @@ func_python_deps(){
 func_update_config(){
   # run ./config/update.py
   echo
-  echo ' [*] Updating Veil Configuration'
+  echo ' [*] Updating Veil-Framework Configuration'
   cd ../config
   python update.py
 }

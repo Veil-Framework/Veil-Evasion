@@ -1,3 +1,11 @@
+[12.15.2014]
+     Released.: 2.4.0
+     Added....: python/meterpreter/rev_http[s] stagers
+     Added....: logic to check for version upgrades
+     Updated..: "Veil" references changed to "Veil-Evasion" and "Veil-Framework" as appropriate
+     Updated..: misc bug fixes
+     Updated..: updated README.md file
+
 [12.18.2013]
      Released.: 2.3.1
      Added....: virustotal checking command to the main menu

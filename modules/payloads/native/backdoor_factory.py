@@ -66,12 +66,12 @@ class Payload:
         print helpers.color("\n [*] Running The Backdoor Factory...")
 
         # be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-        p = subprocess.Popen(backdoorCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_PATH+"tools/backdoor/", shell=True)
+        p = subprocess.Popen(backdoorCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_EVASION_PATH+"tools/backdoor/", shell=True)
         stdout, stderr = p.communicate()
 
         try:
             # read in the output .exe from /tmp/
-            f = open(settings.VEIL_PATH+"tools/backdoor/backdoored/payload.exe", 'rb')
+            f = open(settings.VEIL_EVASION_PATH+"tools/backdoor/backdoored/payload.exe", 'rb')
             PayloadCode = f.read()
             f.close()
         except IOError:

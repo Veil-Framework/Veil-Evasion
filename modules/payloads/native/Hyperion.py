@@ -37,7 +37,7 @@ class Payload:
         print helpers.color("\n[*] Running Hyperion on " + self.required_options["original_exe"][0] + "...")
         
         # be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-        p = subprocess.Popen(hyperionCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_PATH+"tools/hyperion/", shell=True)
+        p = subprocess.Popen(hyperionCommand, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_EVASION_PATH+"tools/hyperion/", shell=True)
         stdout, stderr = p.communicate()
         
         try:

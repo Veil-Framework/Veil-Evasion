@@ -13,9 +13,9 @@ def title():
     """
     os.system(settings.TERMINAL_CLEAR)
     print '========================================================================='
-    print ' Veil | [Version]: 2.3.1'
+    print ' Veil-Evasion | [Version]: 2.4.0'
     print '========================================================================='
-    print ' [Web]: https://www.veil-evasion.com/ | [Twitter]: @veilevasion'
+    print ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
     print '========================================================================='
     print ""
     

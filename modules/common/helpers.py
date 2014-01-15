@@ -3,7 +3,7 @@ Contains any miscellaneous helper methods useful across multiple modules.
 
 """
 
-import random, string, base64, zlib, re, textwrap
+import random, string, base64, zlib, re, textwrap, commands
 
     
 def color(string, status=True, warning=False, bold=True):
@@ -37,7 +37,13 @@ def deflate( string_val ):
     zlibbed_str = zlib.compress( string_val )
     compressed_string = zlibbed_str[2:-4]
     return base64.b64encode( compressed_string )
-    
+
+def LHOST():
+    """
+    Return the IP of eth0
+    """ 
+    return commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1][5:]
+
 def isValidHostname(hostname):
     """
     Try to validate the passed host name, return True or False.
@@ -91,6 +97,18 @@ def randomKey(b=32):
     Returns a random string/key of "b" characters in length, defaults to 32
     """
     return ''.join(random.choice(string.ascii_letters + string.digits + "{}!@#$^&()*&[]|,./?") for x in range(b))
+
+def randomNumbers(b=6):
+    """
+    Returns a random string/key of "b" characters in length, defaults to 5
+    """
+    random_number = int(''.join(random.choice(string.digits) for x in range(b))) + 10000
+
+    if random_number < 100000:
+        random_number = random_number + 100000
+
+    return random_number
+
 
 def randomLetter():
     """
