@@ -440,22 +440,23 @@ sub generatePayload {
 #
 ###################################################
 
+menubar("Veil-Evasion", "veilinterface", 2);
+
 # modify the main "Attacks" menu
-popup attacks {
-    menu "Veil-Evasion" {
-        item "Generate" {
-            veil_dialog();
-        }
-        item "Current PSEXEC Payload" {
-            global('$psexecPayloadPath');
-            # clear out the text if you want to clear the psexec payload used
-            $psexecPayloadPath = prompt_text("Current PSEXEC Payload:", $psexecPayloadPath);
-        }
-        item "Set Veil-Evasion Path" {
-            prompt_veil_path();
-        }
+popup veilinterface {
+    item "Generate" {
+        veil_dialog();
+    }
+    item "Current PSEXEC Payload" {
+        global('$psexecPayloadPath');
+        # clear out the text if you want to clear the psexec payload used
+        $psexecPayloadPath = prompt_text("Current PSEXEC Payload:", $psexecPayloadPath);
+    }
+    item "Set Veil-Evasion Path" {
+        prompt_veil_path();
     }
 }
+
 
 ###################################################
 #
