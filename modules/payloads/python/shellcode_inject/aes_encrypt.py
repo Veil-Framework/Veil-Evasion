@@ -323,4 +323,4 @@ class Payload:
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
-                return PayloadCod
+                return PayloadCode
