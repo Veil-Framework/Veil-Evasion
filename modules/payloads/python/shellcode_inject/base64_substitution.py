@@ -32,7 +32,7 @@ class Payload:
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
+                                 "inject_method" : ["Virtual", "Virtual, Void, Heap"],
                                  "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
 
     def generate(self):
