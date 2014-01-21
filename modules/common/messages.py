@@ -13,7 +13,7 @@ def title():
     """
     os.system(settings.TERMINAL_CLEAR)
     print '========================================================================='
-    print ' Veil-Evasion | [Version]: 2.4.3'
+    print ' Veil-Evasion | [Version]: 2.4.4'
     print '========================================================================='
     print ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
     print '========================================================================='
