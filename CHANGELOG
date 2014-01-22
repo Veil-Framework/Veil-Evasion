@@ -1,20 +1,24 @@
-[12.20.2014]
+[1.22.2014]
+     Released.: 2.4.5
+     Modified.: Reverted accidental change of migrate in controller, added war file check
+
+[1.20.2014]
      Released.: 2.4.4
      Modified.: resource scripts now call post/windows/manage/smart_migrate instead of post/windows/manage/migrate
 
-[12.19.2014]
+[1.19.2014]
      Released.: 2.4.3
      Modified.: Fixed LHOST being properly parsed for resource script generation
 
-[12.18.2014]
+[1.18.2014]
      Released.: 2.4.2
      Added....: Added heap memory injection method to python payloads
 
-[12.16.2014]
+[1.16.2014]
      Released.: 2.4.1
      Added....: tools/cortana/veil_evasion.cna Cortana script for Armitage/Cobalt Strike integration
 
-[12.15.2014]
+[1.15.2014]
      Released.: 2.4.0
      Added....: python/meterpreter/rev_http[s] stagers
      Added....: logic to check for version upgrades
