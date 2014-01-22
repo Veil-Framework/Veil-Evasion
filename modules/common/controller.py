@@ -378,7 +378,7 @@ class Controller:
         """
 
         # if we get .exe code back, output to the compiled folder, otherwise write to the source folder
-        if payload.extension == "exe":
+        if payload.extension == "exe" or payload.extension == "war":
             outputFolder = settings.PAYLOAD_COMPILED_PATH
         else:
             outputFolder = settings.PAYLOAD_SOURCE_PATH
