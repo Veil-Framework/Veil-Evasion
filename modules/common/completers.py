@@ -132,8 +132,52 @@ class PayloadCompleter(object):
         self.commands = [cmd for (cmd,desc) in cmds]
         self.payload = payload
 
+
+    def _listdir(self, root):
+        """
+        Complete a directory path.
+        """
+        res = []
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            if os.path.isdir(path):
+                name += os.sep
+            res.append(name)
+        return res
+
+    def _complete_path(self, path=None):
+        """
+        Complete a file path.
+        """
+        if not path:
+            return self._listdir('.')
+        dirname, rest = os.path.split(path)
+        tmp = dirname if dirname else '.'
+        res = [os.path.join(dirname, p)
+                for p in self._listdir(tmp) if p.startswith(rest)]
+        # more than one match, or single match which does not exist (typo)
+        if len(res) > 1 or not os.path.exists(path):
+            return res
+        # resolved to a single directory, so return list of files below it
+        if os.path.isdir(path):
+            return [os.path.join(path, p) for p in self._listdir(path)]
+        # exact file match terminates this completion
+        return [path + ' ']
+
+    def complete_path(self, args):
+        """
+        Entry point for path completion.
+        """
+        if not args:
+            return self._complete_path('.')
+        # treat the last arg as a path and complete it
+        return self._complete_path(args[-1])
+
+
     def complete_set(self, args):
-        """List the options you can set"""
+        """
+        Complete all options for the 'set' command.
+        """
         
         res = []
         
@@ -143,19 +187,34 @@ class PayloadCompleter(object):
             
             if args[0] != "":
                 if args[0].strip() == "LHOST":
+                    # autocomplete the IP for LHOST
                     res = [commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1][5:]] + [None]
+                elif args[0].strip() == "LPORT":
+                    # autocomplete the common MSF port of 4444 for LPORT
+                    res = ["4444"] + [None]
+                elif args[0].strip() == "original_exe":
+                    # tab-complete a file path for an exe
+                    res = self.complete_path(args)
+                # elif args[0].strip() == "other path-needing option":
+                #     # tab-complete a file path
+                #     res = self.complete_path(args)
                 else:
                     # if there's a space at the end, return nothing
                     # otherwise, return a completion of the set command
                     if args[0][-1] != " ":
                         res = [ o + ' ' for o in options if o.startswith(args[0])] + [None]
+            else:
+                # return all required_options available to 'set'
+                res = [ o + ' ' for o in options] + [None]
 
         return res
 
 
     def complete(self, text, state):
-        
-        "Generic readline completion entry point."
+        """
+        Generic readline completion entry point.
+        """
+
         buffer = readline.get_line_buffer()
         line = readline.get_line_buffer().split()
         
