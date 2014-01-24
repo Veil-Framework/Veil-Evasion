@@ -1,6 +1,7 @@
-[1.22.2014]
+[1.24.2014]
      Released.: 2.4.5
      Modified.: Reverted accidental change of migrate in controller, added war file check
+     Modified.: error checking introduced on prompting the user for the output file base
 
 [1.20.2014]
      Released.: 2.4.4

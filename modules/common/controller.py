@@ -392,6 +392,17 @@ class Controller:
             print " [*] Press [enter] for 'payload'"
             OutputBaseChoice = raw_input(" [>] Please enter the base name for output files: ")
 
+            # ensure we get a base name and not a full path
+            while OutputBaseChoice != "" and "/" in OutputBaseChoice:
+                OutputBaseChoice = raw_input(helpers.color(" [!] Please enter a base name, not a full path: ", warning=True))
+
+        # for invalid output base choices that are passed by arguments
+        else:
+            if "/" in OutputBaseChoice:
+                print helpers.color(" [!] Please provide a base name, not a path, for the output base", warning=True)
+                print helpers.color(" [!] Defaulting to 'payload' for output base...", warning=True)
+            OutputBaseChoice = "payload"
+
         if OutputBaseChoice == "": OutputBaseChoice = "payload"
 
         # if we are overwriting, this is the base choice used
