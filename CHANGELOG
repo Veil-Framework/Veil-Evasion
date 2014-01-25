@@ -2,6 +2,7 @@
      Released.: 2.4.5
      Modified.: Reverted accidental change of migrate in controller, added war file check
      Modified.: error checking introduced on prompting the user for the output file base
+     Modified.: added in tab-completion of LPORT and 'original_exe' in module menus
 
 [1.20.2014]
      Released.: 2.4.4
