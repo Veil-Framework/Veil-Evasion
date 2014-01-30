@@ -694,7 +694,7 @@ class Controller:
                                     # assume we've been passed a domain name
                                     else:
                                         if helpers.isValidHostname(value):
-                                            pass
+                                            payload.required_options[option][0] = value
                                         else:
                                             print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
