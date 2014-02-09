@@ -13,6 +13,9 @@ import commands
 import re
 import os
 
+class none(object):
+    def complete(self, args):
+        return [None]
 
 class MainMenuCompleter(object):
     """
@@ -199,10 +202,8 @@ class PayloadCompleter(object):
                 #     # tab-complete a file path
                 #     res = self.complete_path(args)
                 else:
-                    # if there's a space at the end, return nothing
-                    # otherwise, return a completion of the set command
-                    if args[0][-1] != " ":
-                        res = [ o + ' ' for o in options if o.startswith(args[0])] + [None]
+                    # complete the command in the list ONLY if it's partially completed
+                    res = [ o + ' ' for o in options if (o.startswith(args[0]) and o != args[0] )] + [None]
             else:
                 # return all required_options available to 'set'
                 res = [ o + ' ' for o in options] + [None]
