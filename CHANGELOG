@@ -1,3 +1,7 @@
+[2.15.2014]
+     Released.: 2.5.0
+     Added....: War payload wrapper and python file wrapper added as Veil-Evasion's first auxiliary modules
+
 [1.24.2014]
      Released.: 2.4.5
      Modified.: Reverted accidental change of migrate in controller, added war file check
