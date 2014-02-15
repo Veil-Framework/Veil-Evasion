@@ -345,6 +345,8 @@ class Shellcode:
                 # allow the user to input any extra OPTION=value pairs
                 extraValues = list()
                 while True:
+                    # clear out the tab completion
+                    readline.set_completer(completers.none().complete)
                     selection = raw_input(' [>] Enter extra msfvenom options in OPTION=value syntax: ')
                     if selection != "":
                         extraValues.append(selection)

