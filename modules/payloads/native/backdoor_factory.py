@@ -21,8 +21,8 @@ class Payload:
 
     def __init__(self):
         # required options
-        self.description = "Import of the BackdoorFactory"
-        self.description +=" Supports PE and ELF file formats"
+        self.description = "Import of the BackdoorFactory."
+        self.description +=" Supports PE and ELF file formats."
 	self.description +=" Author: Joshua Pitts @midnite_runr"
 	self.language = "native"
         self.rating = "Normal"
