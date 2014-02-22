@@ -377,9 +377,12 @@ class Controller:
         Returns the full name the source was written to.
         """
 
-        # if we get .exe code back, output to the compiled folder, otherwise write to the source folder
+        # if we get .exe or ELF (with no base) code back, output to the compiled folder, otherwise write to the source folder
         if payload.extension == "exe" or payload.extension == "war":
             outputFolder = settings.PAYLOAD_COMPILED_PATH
+	# Check for ELF binary
+	elif hasattr(payload, 'type') and payload.type == "ELF":
+	    outputFolder = settings.PAYLOAD_COMPILED_PATH
         else:
             outputFolder = settings.PAYLOAD_SOURCE_PATH
 
@@ -424,8 +427,11 @@ class Controller:
                 FinalBaseChoice = OutputBaseChoice + str(x)
                 x += 1
 
-        # set the output name to /outout/source/BASENAME.EXT
-        OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
+        # set the output name to /outout/source/BASENAME.EXT unless it is an ELF then no extension
+        if hasattr(payload, 'type') and payload.type == "ELF":
+	    OutputFileName = outputFolder + FinalBaseChoice + payload.extension
+	else:
+	    OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
 
         OutputFile = open(OutputFileName, 'w')
         OutputFile.write(code)
