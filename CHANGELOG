@@ -1,3 +1,8 @@
+[3.4.2014]
+     Released.: 2.5.1
+     Modified.: Removed smart_migrate from generated resource file due to forum thread saying it caused detection of the payload (https://www.veil-framework.com/forums/index.php/topic/90-auto-migrate/)
+     Modified.: Fixed bug in resource script generation for Backdoor Factory Payloads to now include the LHOST within the resource script.
+
 [2.15.2014]
      Released.: 2.5.0
      Added....: War payload wrapper and python file wrapper added as Veil-Evasion's first auxiliary modules
