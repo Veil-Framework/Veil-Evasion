@@ -12,6 +12,7 @@ import os
 import sys
 import re
 import readline
+import subprocess
 
 from modules.common import messages
 from modules.common import helpers
@@ -395,7 +396,7 @@ class Shellcode:
             else:
                 # Stript out extra characters, new lines, etc., just leave the shellcode.
                 # Tim Medin's patch for non-root non-kali users
-                FuncShellcode = commands.getoutput(settings.METASPLOIT_PATH + self.msfvenomCommand)
-                FuncShellcode = FuncShellcode[82:-1]
+                FuncShellcode = subprocess.check_output(settings.METASPLOIT_PATH + self.msfvenomCommand, shell=True)
+                FuncShellcode = FuncShellcode[22:-1]
                 FuncShellcode = FuncShellcode.strip()
                 return FuncShellcode
