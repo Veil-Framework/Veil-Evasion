@@ -396,7 +396,32 @@ class Shellcode:
             else:
                 # Stript out extra characters, new lines, etc., just leave the shellcode.
                 # Tim Medin's patch for non-root non-kali users
+
                 FuncShellcode = subprocess.check_output(settings.METASPLOIT_PATH + self.msfvenomCommand, shell=True)
-                FuncShellcode = FuncShellcode[22:-1]
-                FuncShellcode = FuncShellcode.strip()
-                return FuncShellcode
+
+                # try to get the current MSF build version do we can determine how to
+                # parse the shellcode
+                # pretty sure it was this commit that changed everything-
+                #   https://github.com/rapid7/metasploit-framework/commit/4dd60631cbc88e8e6d5322a94a492714ff83fe2f
+                try:
+                    # get the latest metasploit build version
+                    f = open(settings.METASPLOIT_PATH + "/build_rev.txt")
+                    lines = f.readlines()
+                    f.close()
+
+                    # extract the build version/data
+                    version = lines[0]
+                    major,date = version.split("-")
+
+                    #  2014021901 - the version build date where msfvenom shellcode changed
+                    if int(date) < 2014021901:
+                        # use the old way
+                        return FuncShellcode[82:-1].strip()
+                    else:
+                        # new way
+                        return FuncShellcode[22:-1].strip()
+
+                # on error, default to the new version
+                except:
+                    return FuncShellcode[22:-1].strip()
+
