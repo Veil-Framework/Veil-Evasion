@@ -1,5 +1,7 @@
 [3.14.2014]
+     Released.: 2.6.0
      Added....: Added basic JSON-RPC interface into the main Veil-Evasion.py launcher
+     Added....: c/meterpreter/rev_http[_service]
 
 [3.11.2014]
      Modified.: Added backwards compatibility for shellcode generation.
