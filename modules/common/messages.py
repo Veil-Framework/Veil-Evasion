@@ -5,7 +5,72 @@ Common terminal messages used across the framework.
 import os, sys, types
 
 import settings
-from modules.common import helpers
+import helpers
+
+
+version = "2.5.2"
+
+
+# try to find and import the settings.py config file
+if os.path.exists("/etc/veil/settings.py"):
+    try:
+        sys.path.append("/etc/veil/")
+        import settings
+
+        # check for a few updated values to see if we have a new or old settings.py file
+        try:
+            settings.VEIL_EVASION_PATH
+        except AttributeError:
+            os.system('clear')
+            print '========================================================================='
+            print ' New major Veil-Evasion version installed'
+            print ' Re-running ./setup/setup.sh'
+            print '========================================================================='
+            time.sleep(3)
+            os.system('cd setup && ./setup.sh')
+
+            # reload the settings import to refresh the values
+            reload(settings)
+
+    except ImportError:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+elif os.path.exists("./config/settings.py"):
+    try:
+        sys.path.append("./config")
+        import settings
+    except ImportError:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+else:
+    # if the file isn't found, try to run the update script
+    os.system('clear')
+    print '========================================================================='
+    print ' Veil First Run Detected... Initializing Script Setup...'
+    print '========================================================================='
+    # run the config if it hasn't been run
+    print '\n [*] Executing ./setup/setup.sh'
+    os.system('cd setup && ./setup.sh')
+
+    # check for the config again and error out if it can't be found.
+    if os.path.exists("/etc/veil/settings.py"):
+        try:
+            sys.path.append("/etc/veil/")
+            import settings
+        except ImportError:
+            print "\n [!] ERROR: run ./config/update.py manually\n"
+            sys.exit()
+    elif os.path.exists("./config/settings.py"):
+        try:
+            sys.path.append("./config")
+            import settings
+        except ImportError:
+            print "\n [!] ERROR: run ./config/update.py manually\n"
+            sys.exit()
+    else:
+        print "\n [!] ERROR: run ./config/update.py manually\n"
+        sys.exit()
+
 
 def title():
     """
@@ -13,7 +78,7 @@ def title():
     """
     os.system(settings.TERMINAL_CLEAR)
     print '========================================================================='
-    print ' Veil-Evasion | [Version]: 2.5.2'
+    print ' Veil-Evasion | [Version]: ' + version
     print '========================================================================='
     print ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
     print '========================================================================='

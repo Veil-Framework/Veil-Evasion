@@ -1,3 +1,6 @@
+[3.14.2014]
+     Added....: Added basic JSON-RPC interface into the main Veil-Evasion.py launcher
+
 [3.11.2014]
      Modified.: Added backwards compatibility for shellcode generation.
 

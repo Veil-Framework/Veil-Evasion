@@ -380,9 +380,9 @@ class Controller:
         # if we get .exe or ELF (with no base) code back, output to the compiled folder, otherwise write to the source folder
         if payload.extension == "exe" or payload.extension == "war":
             outputFolder = settings.PAYLOAD_COMPILED_PATH
-	# Check for ELF binary
-	elif hasattr(payload, 'type') and payload.type == "ELF":
-	    outputFolder = settings.PAYLOAD_COMPILED_PATH
+        # Check for ELF binary
+        elif hasattr(payload, 'type') and payload.type == "ELF":
+            outputFolder = settings.PAYLOAD_COMPILED_PATH
         else:
             outputFolder = settings.PAYLOAD_SOURCE_PATH
 
@@ -404,7 +404,7 @@ class Controller:
             if "/" in OutputBaseChoice:
                 print helpers.color(" [!] Please provide a base name, not a path, for the output base", warning=True)
                 print helpers.color(" [!] Defaulting to 'payload' for output base...", warning=True)
-            OutputBaseChoice = "payload"
+                OutputBaseChoice = "payload"
 
         if OutputBaseChoice == "": OutputBaseChoice = "payload"
 
@@ -429,9 +429,9 @@ class Controller:
 
         # set the output name to /outout/source/BASENAME.EXT unless it is an ELF then no extension
         if hasattr(payload, 'type') and payload.type == "ELF":
-	    OutputFileName = outputFolder + FinalBaseChoice + payload.extension
-	else:
-	    OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
+            OutputFileName = outputFolder + FinalBaseChoice + payload.extension
+        else:
+            OutputFileName = outputFolder + FinalBaseChoice + "." + payload.extension
 
         OutputFile = open(OutputFileName, 'w')
         OutputFile.write(code)
