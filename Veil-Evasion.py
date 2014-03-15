@@ -11,7 +11,21 @@ are provided.
 
 # Import Modules
 import sys, argparse, time, os, base64, socket
-import symmetricjsonrpc
+try:
+    import symmetricjsonrpc
+except ImportError:
+    print '========================================================================='
+    print ' Necessary install component missing'
+    print ' Re-running ./setup/setup.sh'
+    print '========================================================================='
+    time.sleep(3)
+    os.system('cd setup && ./setup.sh')
+    try:
+        import symmetricjsonrpc
+    except ImportError:
+        print '\n [!] Error importing pip'
+        print " [!] Please run 'pip install symmetricjsonrpc' manually\n"
+        sys.exit()
 
 from modules.common import controller
 from modules.common import messages

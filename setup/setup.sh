@@ -24,6 +24,20 @@ func_validate(){
     exit 1
   fi
 
+  # install the symmetricjsonrpc pip if it isn't already there
+  if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]
+  then
+    echo 
+    echo ' [*] pip symmetricjsonrpc already installed, skipping.'
+    echo
+  else
+    echo
+    echo ' [*] Installing symmetricjsonrpc pip.'
+    echo 
+    pip install symmetricjsonrpc
+    echo
+  fi
+
   # Check If Wine Python Is Already Installed
   if [ -f ~/.wine/drive_c/windows/system32/python27.dll ] && [ -f ~/.wine/drive_c/Python27/python.exe ]
   then
