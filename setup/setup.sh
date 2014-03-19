@@ -34,6 +34,7 @@ func_validate(){
     echo
     echo ' [*] Installing symmetricjsonrpc pip.'
     echo 
+    apt-get install python-pip
     pip install symmetricjsonrpc
     echo
   fi
