@@ -1,3 +1,7 @@
+[4.15.2014]
+     Released.: 2.7.0
+     Added....: Shellcode injection into an existing process payload
+
 [3.14.2014]
      Released.: 2.6.0
      Added....: Added basic JSON-RPC interface into the main Veil-Evasion.py launcher
