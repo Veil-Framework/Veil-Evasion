@@ -1,3 +1,6 @@
+[4.24.2014]
+	 Modified.: Msfvenom call now includes a specific encoder to use to hopefully prevent bad characters from appearing that were still included with shikata ga nai
+
 [4.15.2014]
      Released.: 2.7.0
      Added....: Shellcode injection into an existing process payload
