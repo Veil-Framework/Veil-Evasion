@@ -1,5 +1,9 @@
+[5.5.2014]
+     Released.: 2.7.1
+     Modified.: Bug fix for the obfuscation used in c/meterpreter/* payloads
+
 [4.24.2014]
-	 Modified.: Msfvenom call now includes a specific encoder to use to hopefully prevent bad characters from appearing that were still included with shikata ga nai
+	Modified.: Msfvenom call now includes a specific encoder to use to hopefully prevent bad characters from appearing that were still included with shikata ga nai
 
 [4.15.2014]
      Released.: 2.7.0
