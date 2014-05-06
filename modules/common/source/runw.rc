@@ -1,0 +1,11 @@
+#include "resource.h"
+#define APSTUDIO_READONLY_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif
+IDI_ICON1               ICON    DISCARDABLE     "./icons/7.ico"
+#endif

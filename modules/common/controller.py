@@ -566,15 +566,25 @@ class Controller:
         if hasattr(self.payload, 'required_options'):
             if "compile_to_exe" in self.payload.required_options:
                 value = self.payload.required_options['compile_to_exe'][0].lower()[0]
+
                 if value == "y" or value==True:
-                    if interactive:
-                        supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+
+                    # check if we're using Pwnstaller to generate a new Python loader
+                    if "use_pwnstaller" in self.payload.required_options:
+                        pwnstallerValue = self.payload.required_options['compile_to_exe'][0].lower()[0]
+                        if pwnstallerValue == "y" or pwnstallerValue==True:
+                            supportfiles.generatePwnstaller()
+                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
                     else:
-                        supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
+                        if interactive:
+                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+                        else:
+                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
 
                     # if we're compiling, set the returned file name to the output .exe
                     # so we can return this for external calls to the framework
                     OutputFileName = settings.PAYLOAD_COMPILED_PATH + FinalBaseChoice + ".exe"
+ 
 
         # print the full message containing generation notes
         print message
