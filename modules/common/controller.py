@@ -571,10 +571,16 @@ class Controller:
 
                     # check if we're using Pwnstaller to generate a new Python loader
                     if "use_pwnstaller" in self.payload.required_options:
-                        pwnstallerValue = self.payload.required_options['compile_to_exe'][0].lower()[0]
+                        pwnstallerValue = self.payload.required_options['use_pwnstaller'][0].lower()[0]
                         if pwnstallerValue == "y" or pwnstallerValue==True:
-                            supportfiles.generatePwnstaller()
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
+                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pwnstaller'})
+                        else:
+                            # if interactive, allow the user to choose the method
+                            if interactive:
+                                supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+                            # otherwise specify the default, pyinstaller
+                            else:
+                                supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
                     else:
                         if interactive:
                             supportfiles.supportingFiles(self.payload.language, OutputFileName, {})

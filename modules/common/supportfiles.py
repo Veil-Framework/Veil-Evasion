@@ -34,14 +34,17 @@ def supportingFiles(language, payloadFile, options):
                 options['method'] = "py2exe"
             else:
                 # if we have a linux distro, continue...
-                # Determine if the user wants Pyinstaller or Py2Exe.
+                # Determine if the user wants Pyinstaller, Pwnstaller, or Py2Exe.
                 print '\n [?] How would you like to create your payload executable?\n'
                 print '     1 - Pyinstaller (default)'
-                print '     2 - Py2Exe\n'
+                print '     2 - Pwnstaller (obfuscated Pyinstaller loader)'
+                print '     3 - Py2Exe\n'
 
-                PyMaker = raw_input(" [>] Please enter the number of your choice: ")
-                if PyMaker == "1" or PyMaker == "":
+                choice = raw_input(" [>] Please enter the number of your choice: ")
+                if choice == "1" or choice == "":
                     options['method'] = "pyinstaller"
+                elif choice == "2":
+                    options['method'] = "pwnstaller"
                 else:
                     options['method'] = "py2exe"
 
@@ -76,8 +79,17 @@ def supportingFiles(language, payloadFile, options):
 
             print helpers.color("\npy2exe files 'setup.py' and 'runme.bat' written to:\n"+settings.PAYLOAD_SOURCE_PATH + "\n")
 
-        # Else, Use Pyinstaller (used by default)
+        # Else, Use Pyinstaller (used by default) or Pwnstaller
         else:
+
+            if options['method'] == "pwnstaller":
+                # generate the pwnstaller runw.exe loader and copy it into the correct location
+                generatePwnstaller()
+            else:
+                # copy the original runw.exe into the proper location
+                runwPath = settings.VEIL_EVASION_PATH+"tools/runw_orig.exe"
+                os.system("cp "+runwPath+" " + settings.PYINSTALLER_PATH + "support/loader/Windows-32bit/runw.exe")
+
             # Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
             # Thanks to Tim Medin for patching for non-root non-kali users
             if(os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
@@ -1195,7 +1207,8 @@ def pwnstallerGenerateRunwrc():
     # get a random icon
     # Creative Commons icons from https://www.iconfinder.com/search/?q=iconset%3Aflat-ui-icons-24-px
     #   license - http://creativecommons.org/licenses/by/3.0/
-    code += "IDI_ICON1               ICON    DISCARDABLE     \"./icons/%s\"\n" %(random.choice(os.listdir("./icons")))
+    iconPath = settings.VEIL_EVASION_PATH + "/modules/common/source/icons/"
+    code += "IDI_ICON1               ICON    DISCARDABLE     \"./icons/%s\"\n" %(random.choice(os.listdir(iconPath)))
     code += "#endif\n"
 
     return code
@@ -1342,9 +1355,9 @@ def generatePwnstaller():
     Build the randomized source files for Pwnstaller, compile everything
     up, and move the loader to the appropriate Pyinstaller location.
     """
+
     os.system('clear')
 
-    print ""
     print "========================================================================="
     print " Pwnstaller | [Version]: %s" %(PWNSTALLER_VERSION) 
     print "========================================================================="
