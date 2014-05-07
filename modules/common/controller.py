@@ -366,7 +366,7 @@ class Controller:
         return self.payload.generate()
 
 
-    def OutputMenu(self, payload, code, showTitle=True, interactive=True, overwrite=False, OutputBaseChoice=""):
+    def OutputMenu(self, payload, code, showTitle=True, interactive=True, args=None):
         """
         Write a chunk of payload code to a specified ouput file base.
         Also outputs a handler script if required from the options.
@@ -376,6 +376,11 @@ class Controller:
 
         Returns the full name the source was written to.
         """
+
+        # if we have arguments passed, extract out the values we want
+        if args:
+            OutputBaseChoice = args.o
+            overwrite = args.overwrite
 
         # if we get .exe or ELF (with no base) code back, output to the compiled folder, otherwise write to the source folder
         if payload.extension == "exe" or payload.extension == "war":
@@ -569,21 +574,14 @@ class Controller:
 
                 if value == "y" or value==True:
 
-                    # check if we're using Pwnstaller to generate a new Python loader
-                    if "use_pwnstaller" in self.payload.required_options:
-                        pwnstallerValue = self.payload.required_options['use_pwnstaller'][0].lower()[0]
-                        if pwnstallerValue == "y" or pwnstallerValue==True:
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pwnstaller'})
-                        else:
-                            # if interactive, allow the user to choose the method
-                            if interactive:
-                                supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
-                            # otherwise specify the default, pyinstaller
-                            else:
-                                supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
+                    # check if the --pwnstaller flag was passed
+                    if args and args.pwnstaller:
+                        supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pwnstaller'})
                     else:
+                        # if interactive, allow the user to choose the method
                         if interactive:
                             supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+                        # otherwise specify the default, pyinstaller
                         else:
                             supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
 
@@ -622,7 +620,7 @@ class Controller:
         return OutputFileName
 
 
-    def PayloadMenu(self, payload, showTitle=True):
+    def PayloadMenu(self, payload, showTitle=True, args=None):
         """
         Main menu for interacting with a specific payload.
 
@@ -759,13 +757,13 @@ class Controller:
                             # ensure we got some code back
                             if payloadCode != "":
                                 # call the output menu
-                                return self.OutputMenu(payload, payloadCode)
+                                return self.OutputMenu(payload, payloadCode, args=args)
 
                         else:
                             print helpers.color("\n [!] WARNING: not all required options filled\n", warning=True)
 
 
-    def MainMenu(self, showMessage=True):
+    def MainMenu(self, showMessage=True, args=None):
         """
         Main interactive menu for payload generation.
 
@@ -822,7 +820,7 @@ class Controller:
                                 # if the entered number matches the payload #, use that payload
                                 if int(p) == x:
                                     self.payload = pay
-                                    self.outputFileName = self.PayloadMenu(self.payload)
+                                    self.outputFileName = self.PayloadMenu(self.payload, args=args)
                                 x += 1
 
                         # else choosing the payload by name
@@ -831,7 +829,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
-                                    self.outputFileName = self.PayloadMenu(self.payload)                                        
+                                    self.outputFileName = self.PayloadMenu(self.payload, args=args)                                        
 
                         cmd = ""
                         showMessage=True
@@ -919,7 +917,7 @@ class Controller:
                         # if the entered number matches the payload #, use that payload
                         if int(cmd) == x:
                             self.payload = pay
-                            self.outputFileName = self.PayloadMenu(self.payload)
+                            self.outputFileName = self.PayloadMenu(self.payload, args=args)
                         x += 1
                     cmd = ""
                     showMessage=True
@@ -929,7 +927,7 @@ class Controller:
                     cmd = ""
                     showMessage=True
 
-                # if we're looping forever on the main menu (Veil.py behsvior)
+                # if we're looping forever on the main menu (Veil.py behavior)
                 # reset the output filname to nothing so we don't break the while
                 if not self.oneRun:
                     self.outputFileName = ""

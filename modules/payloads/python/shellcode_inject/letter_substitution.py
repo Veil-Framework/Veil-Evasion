@@ -37,7 +37,6 @@ class Payload:
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "use_pwnstaller" : ["N", "Use the Pwnstaller loader"],
                                  "inject_method" : ["Virtual", "Virtual, Heap, or Void"],
                                  "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
     
