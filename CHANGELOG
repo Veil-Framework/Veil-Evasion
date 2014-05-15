@@ -1,3 +1,7 @@
+[5.15.2014]
+     Released.: 2.8.0
+     Added....: cs/meterpreter/rev_http and cs/meterpreter/rev_https payloads
+
 [5.6.2014]
      Released.: 2.7.2
      Modified.: integrated Pwnstaller loader obfuscation into Python payloads
