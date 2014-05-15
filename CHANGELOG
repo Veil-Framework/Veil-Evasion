@@ -1,3 +1,18 @@
+[5.15.2014]
+     Released.: 2.8.0
+     Added....: cs/meterpreter/rev_http and cs/meterpreter/rev_https payloads
+
+[5.6.2014]
+     Released.: 2.7.2
+     Modified.: integrated Pwnstaller loader obfuscation into Python payloads
+
+[5.5.2014]
+     Released.: 2.7.1
+     Modified.: Bug fix for the obfuscation used in c/meterpreter/* payloads
+
+[4.24.2014]
+	Modified.: Msfvenom call now includes a specific encoder to use to hopefully prevent bad characters from appearing that were still included with shikata ga nai
+
 [4.15.2014]
      Released.: 2.7.0
      Added....: Shellcode injection into an existing process payload

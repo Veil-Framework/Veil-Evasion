@@ -185,9 +185,14 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
 
                                 # generate the payload code
                                 code = con.GeneratePayload()
+                                
+                                class Args(object): pass
+                                args = Args()
+                                args.overwrite=overwrite
+                                args.o = outputbase
 
                                 # write out the payload code to the proper output file
-                                outName = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, overwrite=overwrite, OutputBaseChoice=outputbase)
+                                outName = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
 
                                 # return the written filename
                                 return outName
@@ -253,6 +258,7 @@ if __name__ == '__main__':
         parser.add_argument('--msfpayload', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit shellcode to generate.')
         parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
         parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
+        parser.add_argument('--pwnstaller', action='store_true', help='Use the Pwnstaller obfuscated loader.')
         parser.add_argument('--update', action='store_true', help='Update the Veil framework.')
         parser.add_argument('--clean', action='store_true', help='Clean out payload folders.')
         parser.add_argument('--overwrite', action='store_true', help='Overwrite payload/source output files if they already exist.')
@@ -288,7 +294,7 @@ if __name__ == '__main__':
 
         # use interactive menu if a payload isn't specified
         if not args.p:
-            controller.MainMenu()
+            controller.MainMenu(args=args)
             sys.exit()
 
         # list languages available if "-p" is present but no payload specified
@@ -319,7 +325,7 @@ if __name__ == '__main__':
         code = controller.GeneratePayload()
 
         # write out the payload code to the proper output file
-        outName = controller.OutputMenu(controller.payload, code, showTitle=False, interactive=False, overwrite=args.overwrite, OutputBaseChoice=args.o)
+        outName = controller.OutputMenu(controller.payload, code, showTitle=False, interactive=False, args=args)
 
     # Catch ctrl + c interrupts from the user
     except KeyboardInterrupt:

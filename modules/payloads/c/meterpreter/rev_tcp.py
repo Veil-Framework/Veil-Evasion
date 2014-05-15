@@ -41,7 +41,7 @@ class Payload:
         
         # max length string for obfuscation
         global_max_string_length = 10000
-        max_string_length = random.randint(1,global_max_string_length)
+        max_string_length = random.randint(100,global_max_string_length)
         max_num_strings = 10000
         
         # TODO: add in more string processing functions
@@ -65,7 +65,7 @@ class Payload:
         randVar5 = helpers.randomString()
 
         stringGenFunctions = [  (randName1, "char* %s(){ char *%s = %s(\"%s\"); return strstr( %s, \"%s\" );}" %(randName1, randVar1, stringModFunctions[0][0], randString1, randVar1, randString1[len(randString1)/2])),
-                                (randName2, "char* %s(){ char %s[%s/2], %s[%s/2]; strcpy(%s,\"%s\"); strcpy(%s,\"%s\"); return %s(strcat( %s, %s)); }" % (randName2, randVar2, max_string_length, randVar3, max_string_length, randVar2, helpers.randomString(50), randVar3, helpers.randomString(50), stringModFunctions[1][0], randVar2, randVar3)),
+                                (randName2, "char* %s(){ char %s[%s], %s[%s/2]; strcpy(%s,\"%s\"); strcpy(%s,\"%s\"); return %s(strcat( %s, %s)); }" % (randName2, randVar2, max_string_length, randVar3, max_string_length, randVar2, helpers.randomString(50), randVar3, helpers.randomString(50), stringModFunctions[1][0], randVar2, randVar3)),
                                 (randName3, "char* %s() { char %s[%s] = \"%s\"; char *%s = strupr(%s); return strlwr(%s); }" % (randName3, randVar4, max_string_length, helpers.randomString(50), randVar5, randVar4, randVar5))
                              ]
         helpers.shuffle(stringGenFunctions)
