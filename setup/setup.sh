@@ -77,7 +77,7 @@ func_apt_deps(){
   # Start Apt Dependency Install
   echo
   echo ' [*] Installing Apt Dependencies'
-  apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto
+  apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto python-pefile
 }
 
 # Install Wine Python Dependent Dependencies
