@@ -377,6 +377,9 @@ class Controller:
         Returns the full name the source was written to.
         """
 
+        OutputBaseChoice = ""
+        overwrite = False
+
         # if we have arguments passed, extract out the values we want
         if args:
             OutputBaseChoice = args.o
