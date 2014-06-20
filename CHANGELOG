@@ -1,3 +1,8 @@
+[6.15.2014]
+     Released.: 2.9.0
+     Added....: c/shellcode_inject/flat payload (Contains all shellcode injection techniques)
+     Modified.: Backdoor Factory now is at its latest release.
+
 [5.15.2014]
      Released.: 2.8.0
      Added....: cs/meterpreter/rev_http and cs/meterpreter/rev_https payloads
