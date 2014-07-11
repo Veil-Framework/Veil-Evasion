@@ -1,3 +1,7 @@
+[7.11.2014]
+     Released.: 2.9.2
+     Modified.: bug fix for meterpreter/rev_https payload
+
 [7.10.2014]
      Released.: 2.9.1
      Modified.: bug fix for option parsing of new Metasploit payload modules
