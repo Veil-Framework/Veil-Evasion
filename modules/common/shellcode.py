@@ -107,7 +107,7 @@ class Shellcode:
                         lines = open(root + "/" + f).readlines()
                         for line in lines:
                             if "OptString" in line.strip() and "true" in line.strip():
-                                cmd, options = eval(")".join(line.strip().replace("true", "True").split("OptString.new(")[1].split(")")[:-1]))
+                                cmd = line.strip().split(",")[0].replace("OptString.new(","")[1:-1]
                                 extraOptions.append(cmd)
                         if "bind" in f:
                             if "x64" in root:
@@ -143,10 +143,8 @@ class Shellcode:
 
                         for line in lines:
                             if "OptString" in line.strip() and "true" in line.strip():
-                                cmd, options = eval(")".join(line.strip().replace("true", "True").split("OptString.new(")[1].split(")")[:-1]))
-                                if len(options) == 2:
-                                    # only append if there isn't a default already filled in
-                                    totalOptions.append(cmd)
+                                cmd = line.strip().split(",")[0].replace("OptString.new(","")[1:-1]
+                                totalOptions.append(cmd)
                         if "bind" in f:
                             totalOptions.append("LPORT")
                         if "reverse" in f:
