@@ -56,6 +56,18 @@ func_validate(){
     echo ' [*] Initializing Wine Python Dependencies Installation'
     func_python_deps
   fi
+
+  # Check Capstone dependency for backdoor factory
+  if [ -f /etc/ld.so.conf.d/capstone.conf ]
+  then
+    echo
+    echo " [*] Capstone already installed... Skipping."
+    echo
+  else
+    echo
+    echo ' [*] Initializing Git Repo Based Dependencies Installation'
+    func_git_deps
+  fi
 }
 
 # Install Architecture Dependent Dependencies
@@ -78,6 +90,28 @@ func_apt_deps(){
   echo
   echo ' [*] Installing Apt Dependencies'
   apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto python-pefile
+}
+
+# Git repo dependencies
+func_git_deps(){
+    echo
+    echo ' [*] Installing Git Repo Based Dependencies'
+    git clone https://github.com/aquynh/capstone/
+    cd capstone
+    git checkout next
+    ./make.sh
+    ./make.sh install
+    cd bindings/python
+    make install
+    cd ../../..
+    rm -rf capstone
+    uname -a | grep -i kali &> /dev/null 
+    if [ $? -eq 0 ]; then
+        echo "Adding capstone path for Kali64 in /etc/ls.so.conf.d/capstone.conf"
+        echo "#capstone shared libs" >> /etc/ld.so.conf.d/capstone.conf
+        echo "/usr/lib64" >> /etc/ld.so.conf.d/capstone.conf
+        ldconfig
+    fi
 }
 
 # Install Wine Python Dependent Dependencies
@@ -161,6 +195,7 @@ case $1 in
     func_title
     func_apt_deps
     func_python_deps
+    func_git_deps
     ;;
   # Print Help Menu
   -h|--help)
