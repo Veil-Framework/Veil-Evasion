@@ -84,6 +84,6 @@ class Payload:
         payloadCode += "%s(%s)\n" %(injectMethodName, data2Name)
 
         if self.required_options["use_pyherion"][0].lower() == "y":
-            payloadCode = crypters.pyherion(payloadCode)
+            payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode
