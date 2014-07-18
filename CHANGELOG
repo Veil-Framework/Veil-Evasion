@@ -1,5 +1,9 @@
+[7.16.2014]
+     Released.: 2.10.1
+     Updated..: Setup script and Backdoor Factory have been updated for compatibility with the latest version of backdoor factory.
+
 [7.15.2014]
-     Relased.: 2.10.0
+     Released.: 2.10.0
      Added....: powershell/meterpreter/rev_tcp
      
 [7.11.2014]
