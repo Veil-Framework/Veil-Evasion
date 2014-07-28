@@ -309,7 +309,7 @@ class Shellcode:
                                     if hostParts[-1].isdigit():
 
                                         # do a regex IP validation
-                                        if ':' not in value and '.' not in value:
+                                        if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
                                             print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
                                             value = ""
 
