@@ -1,3 +1,7 @@
+[7.28.2014]
+     Released.: 2.10.2
+     Modified.: Users can now provide IPv6 addresses for LHOST values.  Thanks to henryk for the suggestion.
+
 [7.16.2014]
      Released.: 2.10.1
      Updated..: Setup script and Backdoor Factory have been updated for compatibility with the latest version of backdoor factory.

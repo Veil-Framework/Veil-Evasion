@@ -300,24 +300,37 @@ class Shellcode:
                             readline.set_completer(completers.IPCompleter().complete)
                             value = raw_input(' [>] Enter value for \'LHOST\', [tab] for local IP: ')
 
-                            hostParts = value.split(".")
-                            if len(hostParts) > 1:
+                            if '.' in value:
 
-                                # if the last chunk is a number, assume it's an IP address
-                                if hostParts[-1].isdigit():
+                                hostParts = value.split(".")
+                                if len(hostParts) > 1:
 
-                                    # do a regex IP validation
-                                    if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
-                                        print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
-                                        value = ""
+                                    # if the last chunk is a number, assume it's an IP address
+                                    if hostParts[-1].isdigit():
 
-                                # otherwise assume we've been passed a domain name
+                                        # do a regex IP validation
+                                        if ':' not in value and '.' not in value:
+                                            print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
+                                            value = ""
+
+                                    # otherwise assume we've been passed a domain name
+                                    else:
+                                        if not helpers.isValidHostname(value):
+                                            print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
+                                            value = ""
+
+                                # if we don't have at least one period in the hostname/IP
                                 else:
-                                    if not helpers.isValidHostname(value):
-                                        print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
-                                        value = ""
+                                    print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
+                                    value = ""
 
-                            # if we don't have at least one period in the hostname/IP
+                            elif ':' in value:
+                                try:
+                                    socket.inet_pton(socket.AF_INET6, value)
+                                except socket.error:
+                                    print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
+                                    value = ""
+
                             else:
                                 print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                 value = ""
