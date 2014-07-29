@@ -1,3 +1,6 @@
+[7.29.2014]
+     Modified.: Powershell shellcode inject virtual payload modified to work correctly.  Thanks to henryk for pointing this out to us.
+
 [7.28.2014]
      Released.: 2.10.2
      Modified.: Users can now provide IPv6 addresses for LHOST values.  Thanks to henryk for the suggestion.
