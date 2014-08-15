@@ -697,32 +697,45 @@ class Controller:
 
                             # validate LHOST
                             if option == "LHOST":
-                                hostParts = value.split(".")
+                                if '.' in value:
+                                    hostParts = value.split(".")
 
-                                if len(hostParts) > 1:
+                                    if len(hostParts) > 1:
 
-                                    # if the last chunk is a number, assume it's an IP address
-                                    if hostParts[-1].isdigit():
-                                        # do a regex IP validation
-                                        if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
-                                            print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
+                                        # if the last chunk is a number, assume it's an IP address
+                                        if hostParts[-1].isdigit():
+                                            # do a regex IP validation
+                                            if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
+                                                print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
+                                            else:
+                                                try:
+                                                    payload.required_options[option][0] = value
+                                                except KeyError:
+                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                                except AttributeError:
+                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+
+                                        # assume we've been passed a domain name
                                         else:
-                                            try:
+                                            if helpers.isValidHostname(value):
                                                 payload.required_options[option][0] = value
-                                            except KeyError:
-                                                print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
-                                            except AttributeError:
-                                                print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                            else:
+                                                print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
-                                    # assume we've been passed a domain name
                                     else:
-                                        if helpers.isValidHostname(value):
-                                            payload.required_options[option][0] = value
-                                        else:
-                                            print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
+                                        print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
+
+                                elif ':' in value:
+                                    try:
+                                        socket.inet_pton(socket.AF_INET6, value)
+                                        payload.required_options[option][0] = value
+                                    except socket.error:
+                                        print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
+                                        value = ""
 
                                 else:
                                     print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
+                                    value = ""
 
                             # validate LPORT
                             elif option  == "LPORT":
