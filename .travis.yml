@@ -2,5 +2,5 @@ language: python
 python:
   - "2.7"
 script:
-  - "cd Veil-Evasion"
+  - "pwd"
   - "sudo ./Veil-Evasion.py -h"
