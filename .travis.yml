@@ -1,0 +1,30 @@
+language: python
+python:
+  - "2.7"
+before_install:
+  - "sudo apt-get update -qq"
+  - "sudo apt-get install -y python-pip mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto python-pefile"
+  - "git clone https://github.com/aquynh/capstone/"
+  - "cd capstone"
+  - "git checkout next"
+  - "./make.sh"
+  - "./make.sh install"
+  - "cd bindings/python"
+  - "make install"
+  - "cd ../../.."
+  - "rm -rf capstone"
+  - "wget https://www.veil-framework.com/InstallMe/requiredfiles.zip --no-check-certificate"
+  - "wget https://www.veil-framework.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate"
+  - "unzip requiredfiles.zip"
+  - "mkdir -p ~/.wine/drive_c/Python27/Lib/"
+  - "cp distutils -r ~/.wine/drive_c/Python27/Lib/"
+  - "cp tcl -r ~/.wine/drive_c/Python27/"
+  - "cp Tools -r ~/.wine/drive_c/Python27/"
+  - "wine msiexec /i python-2.7.5.msi"
+  - "unzip -d /opt pyinstaller-2.0.zip"
+  - "git clone https://github.com/Veil-Framework/Veil-Evasion.git"
+install:
+  - "pip install symmetricjsonrpc"
+script:
+  - "cd Veil-Evasion"
+  - "./Veil-Evasion.py"
