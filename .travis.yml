@@ -27,4 +27,4 @@ install:
   - "pip install symmetricjsonrpc"
 script:
   - "cd Veil-Evasion"
-  - "./Veil-Evasion.py"
+  - "sudo ./Veil-Evasion.py"
