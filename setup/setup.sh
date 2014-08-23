@@ -7,7 +7,7 @@ func_title(){
 
   # Echo Title
   echo '========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 01.15.2015'
+  echo ' Veil-Evasion Setup Script | [Updated]: 08.23.2014'
   echo '========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '========================================================================='
@@ -15,14 +15,14 @@ func_title(){
 
 # Validation Checks Function
 func_validate(){
-  # Check User Permissions
-  if [ `whoami` != 'root' ]
-  then
-    echo
-    echo ' [ERROR]: Either Run This Setup Script As Root Or Use Sudo.'
-    echo
-    exit 1
-  fi
+  # # Check User Permissions
+  # if [ `whoami` != 'root' ]
+  # then
+  #   echo
+  #   echo ' [ERROR]: Either Run This Setup Script As Root Or Use Sudo.'
+  #   echo
+  #   exit 1
+  # fi
 
   # install the symmetricjsonrpc pip if it isn't already there
   if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]
@@ -34,8 +34,8 @@ func_validate(){
     echo
     echo ' [*] Installing symmetricjsonrpc pip.'
     echo 
-    apt-get install python-pip
-    pip install symmetricjsonrpc
+    sudo apt-get install python-pip
+    sudo pip install symmetricjsonrpc
     echo
   fi
 
@@ -77,19 +77,19 @@ func_apt_deps(){
   then
     echo
     echo ' [*] Adding i386 Architecture To x86_64 System'
-    dpkg --add-architecture i386
+    sudo dpkg --add-architecture i386
     echo
     echo ' [*] Updating Apt Package Lists'
-    apt-get update
+    sudo apt-get update
     echo
     echo ' [*] Installing Wine i386 Binaries'
-    apt-get install wine-bin:i386
+    sudo apt-get install wine-bin:i386
   fi
 
   # Start Apt Dependency Install
   echo
   echo ' [*] Installing Apt Dependencies'
-  apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto python-pefile
+  sudo apt-get install mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto python-pefile
 }
 
 # Git repo dependencies
@@ -100,17 +100,17 @@ func_git_deps(){
     cd capstone
     git checkout next
     ./make.sh
-    ./make.sh install
+    sudo ./make.sh install
     cd bindings/python
-    make install
+    sudo make install
     cd ../../..
-    rm -rf capstone
+    sudo rm -rf capstone
     uname -a | grep -i kali &> /dev/null 
     if [ $? -eq 0 ]; then
         echo "Adding capstone path for Kali64 in /etc/ls.so.conf.d/capstone.conf"
-        echo "#capstone shared libs" >> /etc/ld.so.conf.d/capstone.conf
-        echo "/usr/lib64" >> /etc/ld.so.conf.d/capstone.conf
-        ldconfig
+        sudo sh -c "echo '#capstone shared libs' >> /etc/ld.so.conf.d/capstone.conf"
+        sudo sh -c  "echo '/usr/lib64' >> /etc/ld.so.conf.d/capstone.conf"
+        sudo ldconfig
     fi
 }
 
@@ -144,12 +144,13 @@ func_python_deps(){
   wine msiexec /i python-2.7.5.msi
   wine pywin32-218.win32-py2.7.exe
   wine pycrypto-2.6.win32-py2.7.exe
-  if [ -d "/usr/share/pyinstaller" ]
+  if [ -d "/opt/pyinstaller-2.0/" ]
   then
     echo
     echo ' [*] PyInstaller Already Installed... Skipping.'
   else
-    unzip -d /opt pyinstaller-2.0.zip
+    sudo unzip -d /opt pyinstaller-2.0.zip
+    sudo chmod 777 -R /opt/pyinstaller-2.0/
   fi
 
   # Clean Up Setup Files

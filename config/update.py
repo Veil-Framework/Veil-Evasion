@@ -50,7 +50,7 @@ def generateConfig(options):
     config += 'METASPLOIT_PATH="' + options['METASPLOIT_PATH'] + '"\n\n'
     print " [*] METASPLOIT_PATH = " + options['METASPLOIT_PATH']
 
-    config += '# The path to pyinstaller, for example: /usr/share/pyinstaller/\n'
+    config += '# The path to pyinstaller, for example: /opt/pyinstaller-2.0/\n'
     config += 'PYINSTALLER_PATH="' + options['PYINSTALLER_PATH'] + '"\n\n'
     print " [*] PYINSTALLER_PATH = " + options['PYINSTALLER_PATH'] + "\n"
 
@@ -129,8 +129,11 @@ def generateConfig(options):
 
     if platform.system() == "Linux":
         # create the output compiled path if it doesn't exist
-        if not os.path.exists("/etc/veil/"): 
-            os.makedirs("/etc/veil/")
+        if not os.path.exists("/etc/veil/"):
+            # os.makedirs("/etc/veil/")
+            os.system("sudo mkdir /etc/veil/")
+            os.system("sudo touch /etc/veil/settings.py")
+            os.system("sudo chmod 777 /etc/veil/settings.py")
             print " [*] Path '/etc/veil/' Created"
         f = open("/etc/veil/settings.py", 'w')
         f.write(config)

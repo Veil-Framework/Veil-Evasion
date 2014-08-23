@@ -84,9 +84,9 @@ def title():
     print '========================================================================='
     print ""
     
-    if settings.OPERATING_SYSTEM != "Kali":
-        print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
-        print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
+    # if settings.OPERATING_SYSTEM != "Kali":
+    #     print helpers.color(' [!] WARNING: Official support for Kali Linux (x86) only at this time!', warning=True)
+    #     print helpers.color(' [!] WARNING: Continue at your own risk!\n', warning=True)
     
     # check to make sure the current OS is supported,
     # print a warning message if it's not and exit
