@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 Front end launcher for the Veil AV-evasion framework.
@@ -331,3 +331,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print helpers.color("\n\n [!] Exiting...\n", warning=True)
 
+    except EOFError:
+        print helpers.color("\n\n [!] Exiting...\n", warning=True)

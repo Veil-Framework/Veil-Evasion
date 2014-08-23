@@ -1,3 +1,7 @@
+[8.23.2014]
+     Released.: 2.11.1
+     Modified.: Now catching EOFError exception when Ctrl+d is pressed.  Thanks to Robin Woods (@digininja) for letting us know about this.
+
 [8.11.2014]
      Released.: 2.11.0
      Added....: powershell/meterpreter/rev_http[s]
