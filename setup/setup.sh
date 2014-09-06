@@ -99,6 +99,9 @@ func_apt_deps(){
   fi
 
   # Start Apt Dependency Install
+  echo ' [*] Installing Microsoft Fonts'
+  # Can't Send This to Log File Due to Dumb Needs to Agree with M$ Crap.
+  sudo apt-get install -y ttf-mscorefonts-installer
   echo ' [*] Installing Apt Dependencies'
   sudo apt-get install -y mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto \
                           python-pefile python-pip unzip >> ${logfile} 2>&1 
