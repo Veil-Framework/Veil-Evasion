@@ -15,7 +15,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 09.06.2014'
+  echo ' Veil-Evasion Setup Script | [Updated]: 09.08.2014'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
@@ -48,7 +48,11 @@ func_check_env(){
   fi
 
   # Check OS Versions (Temporary To Ensure A Smooth Transition)
-  if [ $(uname -a|grep -i ubuntu|wc -l) == '1' ]; then
+  if [ $(uname -a|grep -i kali|wc -l) == '1' ]; then
+    echo
+    echo ' [*] Kali linux detected...'
+    echo
+  elif [ $(uname -a|grep -i ubuntu|wc -l) == '1' ]; then
     if [ $(grep "VERSION_ID" /etc/os-release|cut -d"=" -f2|sed -e 's/"//g' -e 's/\..*//') -lt '14' ]; then
       echo
       echo ' [ERROR]: Veil-Evasion Only Supported On Ubuntu Versions 14+.'
@@ -77,13 +81,17 @@ func_check_env(){
     echo ' [*] Wine Python Already Installed... Skipping.'
     echo ' [*] Initializing Apt Package Installation'
     func_apt_deps
-    func_update_config
+    # func_update_config
   else
     echo ' [*] Initializing Apt Dependencies Installation'
     func_apt_deps
     echo ' [*] Initializing Wine Python Dependencies Installation'
     func_python_deps
   fi
+
+  # finally, update the config
+  func_update_config
+
 }
 
 # Install Architecture Dependent Dependencies
@@ -107,7 +115,7 @@ func_apt_deps(){
                           python-pefile python-pip unzip >> ${logfile} 2>&1 
 }
 
-# Install Git Dependent Dependencies
+# Install Git Dependencies
 func_git_deps(){
     echo ' [*] Installing Git Repo Dependencies'
     cd ${tempdir}
@@ -128,7 +136,7 @@ func_git_deps(){
     fi
 }
 
-# Install Wine Python Dependent Dependencies
+# Install Wine Python Dependencies
 func_python_deps(){
   # Check If symmetricjsonrpc Is Already Installed
   if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]; then
@@ -143,7 +151,7 @@ func_python_deps(){
   # Download required files, doing no check cert because wget is having an issue with our wildcard cert
   # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
   # files and then just comment these next two lines out :)
-  echo ' [*] Downloading Setup Files From http://www.veil-framework.com'
+  echo ' [*] Downloading Python Setup Files From http://www.veil-framework.com'
   wget -q https://www.veil-framework.com/InstallMe/requiredfiles.zip --no-check-certificate
   wget -q https://www.veil-framework.com/InstallMe/pyinstaller-2.0.zip --no-check-certificate
 
@@ -183,9 +191,6 @@ func_python_deps(){
   rm -rf distutils
   rm -rf tcl
   rm -rf Tools
-
-  # Update Veil Config
-  func_update_config
 }
 
 # Update Veil Config
