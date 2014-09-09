@@ -15,7 +15,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 09.06.2014'
+  echo ' Veil-Evasion Setup Script | [Updated]: 09.09.2014'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
