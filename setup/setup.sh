@@ -232,6 +232,7 @@ func_ruby_deps(){
   echo ' [*] Cleaning Up Ruby Setup Files'
   rm rubyinstaller-1.8.7-p371.exe
   rm ruby_required.zip
+  rm ocra-1.3.0.gem
 }
 
 # Update Veil Config
