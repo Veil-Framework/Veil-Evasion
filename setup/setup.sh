@@ -90,7 +90,7 @@ func_check_env(){
   fi
 
   # Check If Wine Ruby Is Already Installed
-  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe]; 
+  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe ]; 
     then
     echo ' [*] Wine Ruby Already Installed... Skipping.'
   else
