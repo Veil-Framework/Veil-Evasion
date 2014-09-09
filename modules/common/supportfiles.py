@@ -123,6 +123,7 @@ def supportingFiles(language, payloadFile, options):
         # Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
         os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + " -lwsock32")
 
+        messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language == "cs":
@@ -130,15 +131,46 @@ def supportingFiles(language, payloadFile, options):
         # extract the payload base name and turn it into an .exe
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        # Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
+        # Compile our CS code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
         os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
+        messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
+    elif language == "ruby":
+
+         # extract the payload base name and turn it into an .exe
+        exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
+
+        os.system('wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
+
+        messages.title()
+        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
 
     else:
         messages.title()
-        print helpers.color("\n [!] ERROR: Only python, c, and c# compilation is currently supported.\n", warning=True)
+        print helpers.color("\n [!] ERROR: Only python, c, c#, and ruby compilation is currently supported.\n", warning=True)
 
+
+def compileToTemp(language, payloadSource):
+    """
+    Compiles payload code to a temporary location and returns the path.
+    """
+    if language == "cs":
+
+        tempExeName = settings.TEMP_DIR + "/temp.exe"
+        tempSourceName = settings.TEMP_DIR + "/temp.cs"
+
+        # write out the payload source to the temporary location
+        f = open(settings.TEMP_DIR + "/temp.cs", 'w')
+        f.write(payloadSource)
+        f.close()
+
+        # Compile our CS code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
+        os.system('mcs -platform:x86 -target:winexe '+tempSourceName+' -out:' + tempExeName)
+
+        return tempExeName
 
 
 #################################################################

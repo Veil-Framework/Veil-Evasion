@@ -15,7 +15,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 09.08.2014'
+  echo ' Veil-Evasion Setup Script | [Updated]: 09.06.2014'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
@@ -50,7 +50,7 @@ func_check_env(){
   # Check OS Versions (Temporary To Ensure A Smooth Transition)
   if [ $(uname -a|grep -i kali|wc -l) == '1' ]; then
     echo
-    echo ' [*] Kali linux detected...'
+    echo ' Kali linux detected...'
     echo
   elif [ $(uname -a|grep -i ubuntu|wc -l) == '1' ]; then
     if [ $(grep "VERSION_ID" /etc/os-release|cut -d"=" -f2|sed -e 's/"//g' -e 's/\..*//') -lt '14' ]; then
@@ -89,9 +89,17 @@ func_check_env(){
     func_python_deps
   fi
 
+  # Check If Wine Ruby Is Already Installed
+  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe]; 
+    then
+    echo ' [*] Wine Ruby Already Installed... Skipping.'
+  else
+    echo ' [*] Initializing Wine Ruby Dependencies Installation'
+    func_ruby_deps
+  fi
+
   # finally, update the config
   func_update_config
-
 }
 
 # Install Architecture Dependent Dependencies
@@ -193,6 +201,39 @@ func_python_deps(){
   rm -rf Tools
 }
 
+
+# Install Wine Ruby Dependencies
+func_ruby_deps(){
+
+  # Install Wine Ruby and Dependencies
+  # Download required files, doing no check cert because wget is having an issue with our wildcard cert
+  # if you're reading this, and actually concerned you might be mitm, use a browser and just download these
+  # files and then just comment these next two lines out :)
+  echo ' [*] Downloading Ruby Setup Files From http://www.veil-framework.com'
+  wget -q https://www.veil-framework.com/InstallMe/rubyinstaller-1.8.7-p371.exe --no-check-certificate
+  wget -q https://www.veil-framework.com/InstallMe/ruby_required.zip --no-check-certificate
+
+  # install Ruby under Wine
+  echo ' [*] Installing Ruby under Wine'
+  wine rubyinstaller-1.8.7-p371.exe /silent
+
+  # fetch the OCRA gem
+  echo ' [*] Fetching and installing Ruby OCRA gem'
+  gem fetch -v 1.3.0 ocra
+
+  # install the OCRA gem under Wine
+  wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/gem install ocra-1.3.0.gem
+
+  # unzip the Ruby dependencies
+  echo ' [*] Uncompressing Ruby Setup Archive'
+  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip >> ${logfile} 2>&1
+
+  # Clean Up Setup Files
+  echo ' [*] Cleaning Up Ruby Setup Files'
+  rm rubyinstaller-1.8.7-p371.exe
+  rm ruby_required.zip
+}
+
 # Update Veil Config
 func_update_config(){
   # ./config/update.py
@@ -214,6 +255,7 @@ case $1 in
     func_apt_deps
     func_git_deps
     func_python_deps
+    func_ruby_deps
     ;;
   # Print Help Menu
   -h|--help)
