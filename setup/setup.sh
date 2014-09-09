@@ -136,12 +136,10 @@ func_git_deps(){
     sudo make install >> ${logfile} 2>&1
     cd ${tempdir}
     sudo rm -rf capstone
-    if [ $(uname -a|grep -i kali|wc -l) == '0' ]; then
-        echo ' [*] Adding Capstone Library Path To /etc/ls.so.conf.d/capstone.conf'
-        sudo sh -c "echo '# Capstone Shared Libs' > /etc/ld.so.conf.d/capstone.conf"
-        sudo sh -c "echo '/usr/lib64' >> /etc/ld.so.conf.d/capstone.conf"
-        sudo ldconfig >> ${logfile} 2>&1
-    fi
+    echo ' [*] Adding Capstone Library Path To /etc/ls.so.conf.d/capstone.conf'
+    sudo sh -c "echo '# Capstone Shared Libs' > /etc/ld.so.conf.d/capstone.conf"
+    sudo sh -c "echo '/usr/lib64' >> /etc/ld.so.conf.d/capstone.conf"
+    sudo ldconfig >> ${logfile} 2>&1
 }
 
 # Install Wine Python Dependencies
