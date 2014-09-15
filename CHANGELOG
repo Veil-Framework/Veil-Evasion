@@ -1,3 +1,15 @@
+[9.6.2014]
+     Released.: 2.12.1
+     Modified.: Workaround for M$ Sillyness to Fix Setup Script.
+
+[8.27.2014]
+     Released.: 2.12.0
+     Modified.: Setup Script Now Supports Ubuntu 14+, Debian 7+, and non-root installations.
+
+[8.23.2014]
+     Released.: 2.11.1
+     Modified.: Now catching EOFError exception when Ctrl+d is pressed.  Thanks to Robin Woods (@digininja) for letting us know about this.
+
 [8.11.2014]
      Released.: 2.11.0
      Added....: powershell/meterpreter/rev_http[s]

