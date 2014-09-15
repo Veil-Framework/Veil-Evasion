@@ -3,10 +3,6 @@
 # Global Variables
 runuser=$(whoami)
 tempdir=$(pwd)
-logfile="$(pwd)/setup.log"
-
-# Create Fresh Installation Log
-date > ${logfile}
 
 # Title Function
 func_title(){
@@ -107,11 +103,11 @@ func_apt_deps(){
   # Check For 64-bit Kernel
   if [ $(uname -m) == 'x86_64' ]; then
     echo ' [*] Adding i386 Architecture To x86_64 System'
-    sudo dpkg --add-architecture i386 >> ${logfile} 2>&1
+    sudo dpkg --add-architecture i386
     echo ' [*] Updating Apt Package Lists'
-    sudo apt-get update >> ${logfile} 2>&1
+    sudo apt-get update
     echo ' [*] Installing Wine i386 Binaries'
-    sudo apt-get install -y wine-bin:i386 >> ${logfile} 2>&1
+    sudo apt-get install -y wine-bin:i386
   fi
 
   # Start Apt Dependency Install
@@ -120,26 +116,26 @@ func_apt_deps(){
   sudo apt-get install -y ttf-mscorefonts-installer
   echo ' [*] Installing Apt Dependencies'
   sudo apt-get install -y mingw-w64 monodoc-browser monodevelop mono-mcs wine python python-crypto \
-                          python-pefile python-pip unzip >> ${logfile} 2>&1 
+                          python-pefile python-pip unzip ruby
 }
 
 # Install Git Dependencies
 func_git_deps(){
     echo ' [*] Installing Git Repo Dependencies'
     cd ${tempdir}
-    git clone https://github.com/aquynh/capstone >> ${logfile} 2>&1
+    git clone https://github.com/aquynh/capstone
     cd capstone
-    git checkout next >> ${logfile} 2>&1
-    ./make.sh >> ${logfile} 2>&1
-    sudo ./make.sh install >> ${logfile} 2>&1
+    git checkout next
+    ./make.sh
+    sudo ./make.sh install
     cd bindings/python
-    sudo make install >> ${logfile} 2>&1
+    sudo make install
     cd ${tempdir}
     sudo rm -rf capstone
     echo ' [*] Adding Capstone Library Path To /etc/ls.so.conf.d/capstone.conf'
     sudo sh -c "echo '# Capstone Shared Libs' > /etc/ld.so.conf.d/capstone.conf"
     sudo sh -c "echo '/usr/lib64' >> /etc/ld.so.conf.d/capstone.conf"
-    sudo ldconfig >> ${logfile} 2>&1
+    sudo ldconfig
 }
 
 # Install Wine Python Dependencies
@@ -149,7 +145,7 @@ func_python_deps(){
     echo ' [*] SymmetricJSONRPC Already Installed... Skipping.'
   else
     echo ' [*] Installing symmetricjsonrpc Dependency'
-    sudo pip install symmetricjsonrpc >> ${logfile} 2>&1
+    sudo pip install symmetricjsonrpc
     echo
   fi
 
@@ -163,7 +159,7 @@ func_python_deps(){
 
   # Unzip Setup Files
   echo ' [*] Uncompressing Setup Archive'
-  unzip requiredfiles.zip >> ${logfile} 2>&1
+  unzip requiredfiles.zip
 
   # Prepare Wine Directories
   echo ' [*] Preparing Wine Directories'
@@ -174,14 +170,14 @@ func_python_deps(){
 
   # Install Setup Files
   echo ' [*] Installing Wine Python Dependencies'
-  wine msiexec /i python-2.7.5.msi >> ${logfile} 2>&1
-  wine pywin32-218.win32-py2.7.exe >> ${logfile} 2>&1
-  wine pycrypto-2.6.win32-py2.7.exe >> ${logfile} 2>&1
+  wine msiexec /i python-2.7.5.msi
+  wine pywin32-218.win32-py2.7.exe
+  wine pycrypto-2.6.win32-py2.7.exe
   if [ -d "/opt/pyinstaller-2.0/" ]; then
     echo ' [*] PyInstaller Already Installed... Skipping.'
   else
-    sudo unzip -d /opt pyinstaller-2.0.zip >> ${logfile} 2>&1
-    sudo chmod 755 -R /opt/pyinstaller-2.0/ >> ${logfile} 2>&1
+    sudo unzip -d /opt pyinstaller-2.0.zip
+    sudo chmod 755 -R /opt/pyinstaller-2.0/
   fi
 
   # Clean Up Setup Files
@@ -224,7 +220,7 @@ func_ruby_deps(){
 
   # unzip the Ruby dependencies
   echo ' [*] Uncompressing Ruby Setup Archive'
-  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip >> ${logfile} 2>&1
+  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
 
   # Clean Up Setup Files
   echo ' [*] Cleaning Up Ruby Setup Files'
@@ -240,9 +236,8 @@ func_update_config(){
   cd ../config
   sudo python update.py
 
-  # Print Installation Log Location
-  echo " [*] Installation Log Written To: ${logfile}"
-  echo
+  # Chown Output Directory
+  sudo chown ${runuser}:${runuser} ~/veil-output
 }
 
 # Menu Case Statement
