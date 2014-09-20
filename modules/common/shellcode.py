@@ -221,31 +221,42 @@ class Shellcode:
         choice = raw_input(" [>] Please enter the number of your choice: ")
 
         if choice == '3':
+            # instantiate our completer object for path completion
+            comp = completers.PathCompleter()
+
+            # we want to treat '/' as part of a word, so override the delimiters
+            readline.set_completer_delims(' \t\n;')
+            readline.parse_and_bind("tab: complete")
+            readline.set_completer(comp.complete)
+
+            # if the shellcode is specicified as a raw file
+            filePath = raw_input(" [>] Please enter the path to your raw shellcode file: ")
+
             try:
-                # instantiate our completer object for path completion
-                comp = completers.PathCompleter()
-
-                # we want to treat '/' as part of a word, so override the delimiters
-                readline.set_completer_delims(' \t\n;')
-                readline.parse_and_bind("tab: complete")
-                readline.set_completer(comp.complete)
-
-                # if the shellcode is specicified as a raw file
-                filePath = raw_input(" [>] Please enter the path to your raw shellcode file: ")
                 shellcodeFile = open(filePath, 'rb')
                 CustShell = shellcodeFile.read()
                 shellcodeFile.close()
-
-                # encode the raw data as a hex string
-                hexString = binascii.hexlify(CustShell)
-                CustShell = "\\x"+"\\x".join([hexString[i:i+2] for i in range(0,len(hexString),2)])
-                return CustShell
             except:
                 print helpers.color(" [!] WARNING: path not found, defaulting to msfvenom!", warning=True)
                 return None
-            finally:
-                # remove the completer
-                readline.set_completer(None)
+
+            if len(CustShell) == 0:
+                print helpers.color(" [!] WARNING: no custom shellcode restrieved, defaulting to msfvenom!", warning=True)
+                return None
+
+            # check if the shellcode was passed in as string-escaped form
+            if CustShell[0:2] == "\\x" and CustShell[4:6] == "\\x":
+                return CustShell
+            else:
+                # otherwise encode the raw data as a hex string
+                hexString = binascii.hexlify(CustShell)
+                CustShell = "\\x"+"\\x".join([hexString[i:i+2] for i in range(0,len(hexString),2)])
+                return CustShell
+
+            # remove the completer
+            readline.set_completer(None)
+
+
         if choice == '2':
             # if the shellcode is specified as a string
             CustomShell = raw_input(" [>] Please enter custom shellcode (one line, no quotes, \\x00.. format): ")
