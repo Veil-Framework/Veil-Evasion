@@ -13,6 +13,7 @@ import sys
 import re
 import readline
 import subprocess
+import binascii
 
 from modules.common import messages
 from modules.common import helpers
@@ -214,13 +215,53 @@ class Shellcode:
 
         print ' [?] Use msfvenom or supply custom shellcode?\n'
         print '     1 - msfvenom (default)'
-        print '     2 - Custom\n'
+        print '     2 - custom shellcode string'
+        print '     3 - file with shellcode (raw)\n'
 
         choice = raw_input(" [>] Please enter the number of your choice: ")
 
-        # Continue to msfvenom parameters.
+        if choice == '3':
+            # instantiate our completer object for path completion
+            comp = completers.PathCompleter()
+
+            # we want to treat '/' as part of a word, so override the delimiters
+            readline.set_completer_delims(' \t\n;')
+            readline.parse_and_bind("tab: complete")
+            readline.set_completer(comp.complete)
+
+            # if the shellcode is specicified as a raw file
+            filePath = raw_input(" [>] Please enter the path to your raw shellcode file: ")
+
+            try:
+                shellcodeFile = open(filePath, 'rb')
+                CustShell = shellcodeFile.read()
+                shellcodeFile.close()
+            except:
+                print helpers.color(" [!] WARNING: path not found, defaulting to msfvenom!", warning=True)
+                return None
+
+            if len(CustShell) == 0:
+                print helpers.color(" [!] WARNING: no custom shellcode restrieved, defaulting to msfvenom!", warning=True)
+                return None
+
+            # check if the shellcode was passed in as string-escaped form
+            if CustShell[0:2] == "\\x" and CustShell[4:6] == "\\x":
+                return CustShell
+            else:
+                # otherwise encode the raw data as a hex string
+                hexString = binascii.hexlify(CustShell)
+                CustShell = "\\x"+"\\x".join([hexString[i:i+2] for i in range(0,len(hexString),2)])
+                return CustShell
+
+            # remove the completer
+            readline.set_completer(None)
+
+
         if choice == '2':
+            # if the shellcode is specified as a string
             CustomShell = raw_input(" [>] Please enter custom shellcode (one line, no quotes, \\x00.. format): ")
+            if len(CustomShell) == 0:
+                print helpers.color(" [!] WARNING: no spellcode specified, defaulting to msfvenom!", warning=True)
             return CustomShell
         elif choice != '1':
             print helpers.color(" [!] WARNING: Invalid option chosen, defaulting to msfvenom!", warning=True)

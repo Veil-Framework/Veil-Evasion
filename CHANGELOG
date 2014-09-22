@@ -1,3 +1,13 @@
+[9.20.2014]
+     Released.: 2.13.1
+     Added....: ability to specify a raw custom shellcode file for injection modules
+
+[9.15.2014]
+     Released.: 2.13.0
+     Added....: ruby/shellcode_inject/flat, ruby/meterpreter/rev_tcp stagers
+     Added....: .NET crypter option for all C# payloads
+     Added....: Ubuntu compatibility
+
 [9.6.2014]
      Released.: 2.12.1
      Modified.: Workaround for M$ Sillyness to Fix Setup Script.
