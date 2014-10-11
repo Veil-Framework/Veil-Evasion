@@ -1,3 +1,7 @@
+[10.10.2014]
+	 Released.: 2.13.2
+	 Modified.: Fixed bug with self contained python payloads
+
 [9.20.2014]
      Released.: 2.13.1
      Added....: ability to specify a raw custom shellcode file for injection modules
