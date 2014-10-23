@@ -1,3 +1,7 @@
+[10.23.2014]
+     Released.: 2.13.3
+     Modified.: Self-Contained payloads now look for 0.0.10 of meterpreter dll (thanks for letting us know @Viss)
+
 [10.10.2014]
 	 Released.: 2.13.2
 	 Modified.: Fixed bug with self contained python payloads
