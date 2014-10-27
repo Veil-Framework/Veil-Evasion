@@ -1,6 +1,6 @@
 [10.24.2014]
      Released.: 2.13.4
-     Modified.: Self-Contained payloads display an error message and exit if not using the latest version of metasploit (other payloads still work).  This is a requirement for the self-contained payloads.
+     Modified.: Self-Contained payloads display an error message and exit if not using the latest version of metasploit (other payloads still work).  This is a requirement for the self-contained payloads!
 
 [10.23.2014]
      Released.: 2.13.3
