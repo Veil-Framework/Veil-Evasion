@@ -1,3 +1,7 @@
+[11.16.2014]
+     Released.: 2.14.0
+     Added....: So.... we missed a month.  Life happens.  But we do have new payloads today!  We've released self-contained ruby payloads.  These contain the meterpreter dll and do not require the stage to be sent over the wire!
+
 [10.24.2014]
      Released.: 2.13.4
      Modified.: Self-Contained payloads display an error message and exit if not using the latest version of metasploit (other payloads still work).  This is a requirement for the self-contained payloads!
