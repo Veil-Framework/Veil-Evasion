@@ -1,3 +1,7 @@
+[11.17.2014]
+     Released.: 2.14.1
+     Modified.: Self-Contained payload modules now don't all contained the same binary patch, it's all in one place (within the helpers file).  Partially in response to some feedback about how we are handling the self-contained payloads.  This will make it easier to only patch one area for the payloads using it.
+
 [11.16.2014]
      Released.: 2.14.0
      Added....: So.... we missed a month.  Life happens.  But we do have new payloads today!  We've released self-contained ruby payloads.  These contain the meterpreter dll and do not require the stage to be sent over the wire!

