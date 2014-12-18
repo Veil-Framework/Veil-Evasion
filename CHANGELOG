@@ -1,3 +1,7 @@
+[12.17.2014]
+     Released.: 2.15.0
+     Added....: We've added in pure ruby http and https stagers!  Get pwning!
+
 [11.17.2014]
      Released.: 2.14.1
      Modified.: Self-Contained payload modules now don't all contained the same binary patch, it's all in one place (within the helpers file).  Partially in response to some feedback about how we are handling the self-contained payloads.  This will make it easier to only patch one area for the payloads using it.
