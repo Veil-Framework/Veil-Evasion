@@ -1,3 +1,7 @@
+[12.20.2014]
+     Released.: 2.15.1
+     Modified.: Self Contained payloads now use latest build of meterpreter (0.0.12)
+
 [12.17.2014]
      Released.: 2.15.0
      Added....: We've added in pure ruby http and https stagers!  Get pwning!
