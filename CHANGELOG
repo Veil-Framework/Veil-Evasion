@@ -1,3 +1,7 @@
+[12.27.2014]
+     Released.: 2.15.2
+     Modified.: Small modification for Backdoor Factory payload module to allow higher port numbers.  Thanks to Josh Pitts (@midnite_runr) for the fix!
+
 [12.20.2014]
      Released.: 2.15.1
      Modified.: Self Contained payloads now use latest build of meterpreter (0.0.12)
