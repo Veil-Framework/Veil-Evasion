@@ -1,27 +1,34 @@
 '''
-    Author Joshua Pitts the.midnite.runr 'at' gmail <d ot > com
 
-    Copyright (C) 2013,2014, Joshua Pitts
+Copyright (c) 2013-2014, Joshua Pitts
+All rights reserved.
 
-    License:   GPLv3
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
 
-    See <http://www.gnu.org/licenses/> for a copy of the GNU General
-    Public License
+    3. Neither the name of the copyright holder nor the names of its contributors
+    may be used to endorse or promote products derived from this software without
+    specific prior written permission.
 
-    Currently supports win32/64 PE and linux32/64 ELF only(intel architecture).
-    This program is to be used for only legal activities by IT security
-    professionals and researchers. Author not responsible for malicious
-    uses.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
 '''
 
 import sys
@@ -281,11 +288,12 @@ class pebin():
                 # SectionFlags
                 sectionValues.append(struct.unpack('<I', self.binary.read(4))[0])
                 self.flItms['Sections'].append(sectionValues)
-                if 'UPX'.lower() in sectionValues[0].lower():
-                    print "UPX files not supported."
-                    return False
+                if 'UPX1'.lower() in sectionValues[0].lower():
+                    print "[*] UPX packed, continuing..."
+                    
                 if ('.text\x00\x00\x00' == sectionValues[0] or
                    'AUTO\x00\x00\x00\x00' == sectionValues[0] or
+                   'UPX1\x00\x00\x00\x00' == sectionValues[0] or
                    'CODE\x00\x00\x00\x00' == sectionValues[0]):
                     self.flItms['textSectionName'] = sectionValues[0]
                     self.flItms['textVirtualAddress'] = sectionValues[2]
@@ -619,6 +627,9 @@ class pebin():
             print "[*] Cave {0} length as int: {1}".format(k + 1, item)
             print "[*] Available caves: "
 
+            if pickACave == {}:
+                print "[!!!!] No caves available! Use 'j' for cave jumping or"
+                print "[!!!!] 'i' for ignore."
             for ref, details in pickACave.iteritems():
                 if details[3] >= item:
                     print str(ref) + ".", ("Section Name: {0}; Section Begin: {4} "
@@ -899,6 +910,8 @@ class pebin():
         """
         print "[*] Looking for and setting selected shellcode"
 
+        avail_shells = []
+
         if self.flItms['Magic'] == int('10B', 16):
             self.flItms['bintype'] = winI32_shellcode
         if self.flItms['Magic'] == int('20B', 16):
@@ -928,7 +941,8 @@ class pebin():
                     continue
                 else:
                     print "   {0}".format(item)
-
+                    avail_shells.append(item)
+            self.flItms['avail_shells'] = avail_shells
             return False
         #else:
         #    shell_cmd = self.SHELL + "()"

