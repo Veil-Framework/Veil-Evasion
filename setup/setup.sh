@@ -125,7 +125,7 @@ func_git_deps(){
     cd ${tempdir}
     git clone https://github.com/aquynh/capstone
     cd capstone
-    git checkout next
+    git checkout master
     ./make.sh
     sudo ./make.sh install
     cd bindings/python

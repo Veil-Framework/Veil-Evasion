@@ -1,3 +1,7 @@
+[12.28.2014]
+     Released.: 2.15.3
+     Modified.: Much larger BDF update, and slight modification in the setup script.
+
 [12.27.2014]
      Released.: 2.15.2
      Modified.: Small modification for Backdoor Factory payload module to allow higher port numbers.  Thanks to Josh Pitts (@midnite_runr) for the fix!
