@@ -1,3 +1,8 @@
+[1.20.2015]
+     Released.: 2.16.0
+     Modified.: Updated meterpreter version compatibility to version 13 (latest/current version at this time).  Fixed small bug in the process
+     Added....: Ruby flat injection payload now includes heap injection technique.
+
 [12.28.2014]
      Released.: 2.15.3
      Modified.: Much larger BDF update, and slight modification in the setup script.
