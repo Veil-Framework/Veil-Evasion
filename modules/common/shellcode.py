@@ -183,7 +183,7 @@ class Shellcode:
         if options:
             for option in options:
                 self.msfvenomCommand += " " + option + " "
-        self.msfvenomCommand += " -b \'\\x00\\x0a\\xff\' -e x86/shikata_ga_nai -f c | tr -d \'\"\' | tr -d \'\n\'"
+        self.msfvenomCommand += " -b \'\\x00\\x0a\\xff\' -e x86/call4_dword_xor -f c | tr -d \'\"\' | tr -d \'\n\'"
 
         # set the internal msfvenompayload to this payload
         self.msfvenompayload = payload
