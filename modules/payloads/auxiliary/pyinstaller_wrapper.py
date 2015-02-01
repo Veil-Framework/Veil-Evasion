@@ -8,25 +8,25 @@ by @harmj0y
 """
 
 from modules.common import helpers
+from modules.common.pythonpayload import PythonPayload
 import settings
 
-class Payload:
+class Payload(PythonPayload):
     
     def __init__(self):
+        PythonPayload.__init__(self)
+
         # required options
         self.description = "Auxiliary pyinstaller wrapper for python source files"
         self.language = "python"
         self.rating = "Normal"
         self.extension = "py"
         
-        self.required_options = {   "python_source"  :  ["", "Python source file to compile with pyinstaller"],
-                                    "compile_to_exe" :  ["Y", "Compile to an executable"],
-                                    "use_pyherion"   :  ["N", "Use the pyherion encrypter"] }
+        self.required_options["python_source"] = ["", "Python source file to compile with pyinstaller"]
 
 
     def generate(self):
-
-        python_source = self.required_options["python_source"][0]
+        python_source     = self.required_options["python_source"][0]
         
         try:
             # read in the python source
