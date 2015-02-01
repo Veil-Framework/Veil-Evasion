@@ -248,7 +248,7 @@ func_ruby_deps(){
 
   # unzip the Ruby dependencies
   echo ' [*] Uncompressing Ruby Setup Archive'
-  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
+  unzip -o -d ~/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
 
   # Clean Up Setup Files
   echo ' [*] Cleaning Up Ruby Setup Files'
