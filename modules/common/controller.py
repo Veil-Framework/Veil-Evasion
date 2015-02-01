@@ -579,14 +579,14 @@ class Controller:
 
                     # check if the --pwnstaller flag was passed
                     if args and args.pwnstaller:
-                        supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pwnstaller'})
+                        supportfiles.supportingFiles(self.payload, OutputFileName, {'method':'pwnstaller'})
                     else:
                         # if interactive, allow the user to choose the method
                         if interactive:
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+                            supportfiles.supportingFiles(self.payload, OutputFileName, {})
                         # otherwise specify the default, pyinstaller
                         else:
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
+                            supportfiles.supportingFiles(self.payload, OutputFileName, {'method':'pyinstaller'})
 
                     # if we're compiling, set the returned file name to the output .exe
                     # so we can return this for external calls to the framework

