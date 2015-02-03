@@ -181,16 +181,16 @@ if __name__ == '__main__':
         # Veil-Evasion specific options
         veil_evasion_path = "/".join(os.getcwd().split("/")[:-1]) + "/"
         options["VEIL_EVASION_PATH"] = veil_evasion_path
-        options["PAYLOAD_SOURCE_PATH"] = "/usr/share/veil-evasion/source/"
-        options["PAYLOAD_COMPILED_PATH"] = "/usr/share/veil-evasion/compiled/"
+        options["PAYLOAD_SOURCE_PATH"] = "/usr/share/veil-output/source/"
+        options["PAYLOAD_COMPILED_PATH"] = "/usr/share/veil-output/compiled/"
         options["GENERATE_HANDLER_SCRIPT"] = "True"
-        options["HANDLER_PATH"] = "/usr/share/veil-evasion/handlers/"
-        options["HASH_LIST"] = "/usr/share/veil-evasion/hashes.txt"
+        options["HANDLER_PATH"] = "/usr/share/veil-output/handlers/"
+        options["HASH_LIST"] = "/usr/share/veil-output/hashes.txt"
 
         # Veil-Catapult specific options
         veil_catapult_path = "/".join(os.getcwd().split("/")[:-2]) + "/Veil-Catapult/"
         options["VEIL_CATAPULT_PATH"] = veil_catapult_path
-        options["CATAPULT_RESOURCE_PATH"] = "/usr/share/veil-evasion/catapult/"
+        options["CATAPULT_RESOURCE_PATH"] = "/usr/share/veil-output/catapult/"
 
     
     # unsupported platform... 

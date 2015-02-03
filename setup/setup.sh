@@ -237,7 +237,10 @@ func_update_config(){
   sudo python update.py
 
   # Chown Output Directory
-  sudo chown ${runuser}:${runuser} ~/veil-output
+  if [ -d /usr/share/veil-output/ ]; then
+    echo ' [*] Ensuring this account owns veil output directory...'
+    sudo chown ${runuser}:${runuser} /usr/share/veil-output
+  fi
 }
 
 # Menu Case Statement
