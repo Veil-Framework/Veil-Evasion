@@ -30,7 +30,7 @@ def supportingFiles(payload, payloadFile, options):
     if hasattr(payload, "architecture"):
         architecture = payload.architecture
     else:
-        architecture = 32
+        architecture = "32"
 
     if language == "python":
 
