@@ -145,8 +145,8 @@ def obfuscateNum(N, mod):
 
 
 def selfcontained_patch():
-    if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.13/meterpreter/metsrv.x86.dll"):
-        metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/1.9.1/gems/meterpreter_bins-0.0.13/meterpreter/metsrv.x86.dll"
+    if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/2.1.0/gems/meterpreter_bins-0.0.14/meterpreter/metsrv.x86.dll"):
+        metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/2.1.0/gems/meterpreter_bins-0.0.14/meterpreter/metsrv.x86.dll"
     else:
         print "[*] Error: You either do not have the latest version of Metasploit or"
         print "[*] Error: do not have your METASPLOIT_PATH set correctly in your settings file."
