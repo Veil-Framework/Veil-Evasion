@@ -16,7 +16,7 @@ import settings
 PWNSTALLER_VERSION = "1.0"
 
 
-def supportingFiles(language, payloadFile, options):
+def supportingFiles(payload, payloadFile, options):
     """
     Takes a specific language and payloadFile name written to and generates
     any necessary support files, and/or compiles the payload to an .exe.
@@ -25,6 +25,13 @@ def supportingFiles(language, payloadFile, options):
 
     options['method'] = "py2exe" or "pyinstaller" currently for python payloads
     """
+
+    language = payload.language
+    if hasattr(payload, "architecture"):
+        architecture = payload.architecture
+    else:
+        architecture = "32"
+
     if language == "python":
 
         # if we aren't passed any options, do the interactive menu
@@ -35,11 +42,15 @@ def supportingFiles(language, payloadFile, options):
             else:
                 # if we have a linux distro, continue...
                 # Determine if the user wants Pyinstaller, Pwnstaller, or Py2Exe.
-                print '\n [?] How would you like to create your payload executable?\n'
-                print '     1 - Pyinstaller (default)'
-                print '     2 - Pwnstaller (obfuscated Pyinstaller loader)'
-                print '     3 - Py2Exe\n'
-
+                if architecture == "32":
+                    print '\n [?] How would you like to create your payload executable?\n'
+                    print '     1 - Pyinstaller (default)'
+                    print '     2 - Pwnstaller (obfuscated Pyinstaller loader)'
+                    print '     3 - Py2Exe\n'
+                else:
+                    print '\n [?] How would you like to create your payload executable?\n'
+                    print '     1 - Pyinstaller (default)'
+                
                 choice = raw_input(" [>] Please enter the number of your choice: ")
                 if choice == "1" or choice == "":
                     options['method'] = "pyinstaller"
@@ -92,28 +103,35 @@ def supportingFiles(language, payloadFile, options):
 
             # Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
             # Thanks to Tim Medin for patching for non-root non-kali users
-            if(os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
-
-                # extract the payload base name and turn it into an .exe
-                exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
-
-                # TODO: os.system() is depreciated, use subprocess or commands instead
-                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
-                os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
-                os.system('rm -rf dist')
-                os.system('rm -rf build')
-                os.system('rm *.spec')
-                os.system('rm logdict*.*')
-
-                messages.title()
-                print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
-
-            else:
+            if (architecture == "32" \
+                and not os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))\
+               ) or ( architecture == "64" \
+                and not os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
                 # Tim Medin's Patch for non-root non-kali users
                 messages.title()
-                print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine/drive_c/Python27/'), warning=True)
+                if architecture == "32":
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine/drive_c/Python27/'), warning=True)
+                else:
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine64/drive_c/Python27/'), warning=True)
                 print helpers.color(" [!] ERROR: Make sure the python.exe binary exists before using PyInstaller.", warning=True)
                 sys.exit()
+
+            # extract the payload base name and turn it into an .exe
+            exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
+
+            # TODO: os.system() is depreciated, use subprocess or commands instead
+            if architecture == "64":
+                os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+            else:
+                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+            os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
+            os.system('rm -rf dist')
+            os.system('rm -rf build')
+            os.system('rm *.spec')
+            os.system('rm logdict*.*')
+
+            messages.title()
+            print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language == "c":
 

