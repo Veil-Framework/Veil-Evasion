@@ -2,7 +2,13 @@
 
 Custom-written pure powershell meterpreter/reverse_http stager.
 
-Module by @harmj0y
+Original Module by @harmj0y
+Added functionality by @pyrohaz4good
+
+Creates IE object to request a user agent from the MSF handler,
+then establishes the meterpreter session. Useful to avoid detection
+by restrictive proxies who blacklist or whitelist user-agent strings.
+With this, you'll look just like internet explorer.
 
 """
 
@@ -13,7 +19,7 @@ class Payload:
     
     def __init__(self):
         # required options
-        self.description = "pure windows/meterpreter/reverse_http stager, no shellcode"
+        self.description = "pure windows/meterpreter/reverse_http stager, no shellcode, IE pre-stage to mimic user agent string"
         self.rating = "Excellent"
         self.language = "powershell"
         self.extension = "bat"
