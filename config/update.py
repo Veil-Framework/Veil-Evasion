@@ -45,10 +45,14 @@ def generateConfig(options):
     config += '# Default options to pass to msfvenom for shellcode creation\n'
     config += 'MSFVENOM_OPTIONS="' + options['MSFVENOM_OPTIONS'] + '"\n\n'
     print " [*] MSFVENOM_OPTIONS = " + options['MSFVENOM_OPTIONS']
-    
+
     config += '# The path to the metasploit framework, for example: /usr/share/metasploit-framework/\n'
     config += 'METASPLOIT_PATH="' + options['METASPLOIT_PATH'] + '"\n\n'
     print " [*] METASPLOIT_PATH = " + options['METASPLOIT_PATH']
+
+    config += '# The path to msfvenom for shellcode generation purposes\n'
+    config += 'MSFVENOM_PATH="' + options["MSFVENOM_PATH"] + '"\n\n'
+    print " [*] MSFVENOM_PATH = " + options["MSFVENOM_PATH"]
 
     config += '# The path to pyinstaller, for example: /opt/pyinstaller-2.0/\n'
     config += 'PYINSTALLER_PATH="' + options['PYINSTALLER_PATH'] + '"\n\n'
@@ -149,14 +153,20 @@ if __name__ == '__main__':
     options = {}
 
     if platform.system() == "Linux":
-        
+
         # check /etc/issue for the exact linux distro
         issue = open("/etc/issue").read()
-        
+
         if issue.startswith("Kali"):
             options["OPERATING_SYSTEM"] = "Kali"
             options["TERMINAL_CLEAR"] = "clear"
             options["METASPLOIT_PATH"] = "/usr/share/metasploit-framework/"
+            if os.path.isfile('/usr/bin/msfvenom'):
+                options["MSFVENOM_PATH"] = "/usr/bin/"
+                print options["MSFVENOM_PATH"]
+            else:
+                msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
+                options["MSFVENOM_PATH"] = msfpath
             if os.path.isdir('/usr/share/pyinstaller'):
                 options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller/"
             else:
@@ -172,11 +182,10 @@ if __name__ == '__main__':
             msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
             options["METASPLOIT_PATH"] = msfpath
             options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
-        
-        
+
         # last of the general options
-        options["TEMP_DIR"]="/tmp/"
-        options["MSFVENOM_OPTIONS"]=""
+        options["TEMP_DIR"] = "/tmp/"
+        options["MSFVENOM_OPTIONS"] = ""
 
         # Veil-Evasion specific options
         veil_evasion_path = "/".join(os.getcwd().split("/")[:-1]) + "/"
