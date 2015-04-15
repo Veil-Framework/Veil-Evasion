@@ -19,23 +19,33 @@ Under a BSD 3 Clause License
 
 See the wiki: https://github.com/secretsquirrel/the-backdoor-factory/wiki
 
-Dependences: 
+Dependences
+---
 
-Capstone, using the 'next' repo until it is the 'master' repo: 
-https://github.com/aquynh/capstone/tree/next
+[Capstone engine](http://www.capstone-engine.org) can be installed from PyPi with:
+
+    sudo pip install capstone
 
 Pefile, most recent:
 https://code.google.com/p/pefile/
 
-INSTALL:
 
-./install.sh
+Kali Install:
 
-This will install Capstone with the 'next' repo and use pip to install pefile.
+      apt-get update
+      apt-get install backdoor-factory
+
+
+Other *NIX/MAC INSTALL:
+
+    ./install.sh
+
+This will install Capstone with 3.01 pip to install pefile.
 
 UPDATE:
 
-./update.sh
+    ./update.sh
+
 
 ---
 
@@ -68,86 +78,20 @@ From DerbyCon:
     Slides: http://www.slideshare.net/midnite_runr/patching-windows-executables-with-the-backdoor-factory
 
 
+Shmoocon 2015:
+    
+    Video: https://archive.org/details/joshpitts_shmoocon2015
+
+    Paper: https://www.dropbox.com/s/te7e35c8xcnyfzb/JoshPitts-UserlandPersistenceOnMacOSX.pdf
+
+
 Recently tested on many binaries.
 ---
 
+./backdoor.py -h 
     Usage: backdoor.py [options]
 
-    Options:
-      -h, --help            show this help message and exit
-      -f FILE, --file=FILE  File to backdoor
-      -s SHELL, --shell=SHELL
-                            Payloads that are available for use. Use 'show' to see
-                            payloads.
-      -H HOST, --hostip=HOST
-                            IP of the C2 for reverse connections.
-      -P PORT, --port=PORT  The port to either connect back to for reverse shells
-                            or to listen on for bind shells
-      -J, --cave_jumping    Select this options if you want to use code cave
-                            jumping to further hide your shellcode in the binary.
-      -a, --add_new_section
-                            Mandating that a new section be added to the exe
-                            (better success) but less av avoidance
-      -U SUPPLIED_SHELLCODE, --user_shellcode=SUPPLIED_SHELLCODE
-                            User supplied shellcode, make sure that it matches the
-                            architecture that you are targeting.
-      -c, --cave            The cave flag will find code caves that can be used
-                            for stashing shellcode. This will print to all the
-                            code caves of a specific size.The -l flag can be use
-                            with this setting.
-      -l SHELL_LEN, --shell_length=SHELL_LEN
-                            For use with -c to help find code caves of different
-                            sizes
-      -o OUTPUT, --output-file=OUTPUT
-                            The backdoor output file
-      -n NSECTION, --section=NSECTION
-                            New section name must be less than seven characters
-      -d DIR, --directory=DIR
-                            This is the location of the files that you want to
-                            backdoor. You can make a directory of file backdooring
-                            faster by forcing the attaching of a codecave to the
-                            exe by using the -a setting.
-      -w, --change_access   This flag changes the section that houses the codecave
-                            to RWE. Sometimes this is necessary. Enabled by
-                            default. If disabled, the backdoor may fail.
-      -i, --injector        This command turns the backdoor factory in a hunt and
-                            shellcode inject type of mechinism. Edit the target
-                            settings in the injector module.
-      -u SUFFIX, --suffix=SUFFIX
-                            For use with injector, places a suffix on the original
-                            file for easy recovery
-      -D, --delete_original
-                            For use with injector module.  This command deletes
-                            the original file.  Not for use in production systems.
-                            *Author not responsible for stupid uses.*
-      -O DISK_OFFSET, --disk_offset=DISK_OFFSET
-                            Starting point on disk offset, in bytes. Some authors
-                            want to obfuscate their on disk offset to avoid
-                            reverse engineering, if you find one of those files
-                            use this flag, after you find the offset.
-      -S, --support_check   To determine if the file is supported by BDF prior to
-                            backdooring the file. For use by itself or with
-                            verbose. This check happens automatically if the
-                            backdooring is attempted.
-      -M, --cave-miner      Future use, to help determine smallest shellcode
-                            possible in a PE file
-      -q, --no_banner       Kills the banner.
-      -v, --verbose         For debug information output.
-      -T IMAGE_TYPE, --image-type=IMAGE_TYPE
-                            ALL, x86, or x64 type binaries only. Default=ALL
-      -Z, --zero_cert       Allows for the overwriting of the pointer to the PE
-                            certificate table effectively removing the certificate
-                            from the binary for all intents and purposes.
-      -R, --runas_admin     Checks the PE binaries for 'requestedExecutionLevel
-                            level="highestAvailable"'. If this string is included
-                            in the binary, it must run as system/admin. Doing this
-                            slows patching speed significantly.
-      -L, --patch_dll       Use this setting if you DON'T want to patch DLLs.
-                            Patches by default.
-      -F FAT_PRIORITY, --FAT_PRIORITY=FAT_PRIORITY
-                            For MACH-O format. If fat file, focus on which arch to
-                            patch. Default is x64. To force x86 use -F x86, to
-                            force both archs use -F ALL.
+    
 ---
 
 ##Features:
@@ -164,6 +108,8 @@ Recently tested on many binaries.
       -Append (a), for creating a code cave
       -Ignore (i), nevermind, ignore this binary
     Can ignore DLLs.
+    Import Table Patching
+    AutoPatching
 
 ###ELF Files
 
@@ -268,6 +214,41 @@ Sample Usage:
 
 ###Changelog
 
+####4/14/2014
+
+So many updates:
+  * Automatic patching for PE files (use -m automatic with a *_threaded payload)
+  
+  * New IAT payloads for x86/x64 PE files
+
+  * Just watch: https://www.youtube.com/watch?v=kkLI_ur6BxY
+
+####2/14/2014
+I <3 you guys
+
+* Added Import Address Table patching for PEs to support iat_reverse_tcp payloads that 
+use the import table for winAPI calls. If the binary you are patching does not
+have LoadLibraryA and GetProcAddress, for example, BDF will patch it in to a 
+new Import Table in a new section. Supports x64/x86 PEs.
+
+* Added iat_reverse_tcp for x64 PEs.
+
+* Bug fixes and improvements
+
+####1/1/2015
+
+Happy New Year!
+
+Two new OS X payloads! The delay: delay_reverse_shell_tcp
+
+-B 30 --> delay the payload for 30 seconds, main code runs right away.
+
+Setting of firm capstone commit for building into BDF, capstone 'Next' repo
+breaks BDF.
+
+Fixes to support cython capstone implementation null byte truncation issue
+
+
 ####12/27/2014
 
 Added payloadtests.py
@@ -276,11 +257,9 @@ This script will output patched files in backdoored that will allow for the user
 test the payloads as they wish. Each payload type increments the port used
 by one.
 
-```
-Usage: payloadtest.py binary HOST PORT
 
-```
-
+    Usage: payloadtest.py binary HOST PORT
+  
 
 ####12/17/2014
 
