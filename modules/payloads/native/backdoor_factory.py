@@ -36,7 +36,7 @@ class Payload:
                                  "payload"     : ["reverse_tcp_stager_threaded", "PE or ELF: meter_tcp, rev_shell, custom | PE only meter_https"],
                                  "LHOST"       : ["127.0.0.1", "IP of the metasploit handler"],
                                  "LPORT"       : ["4444", "Port of the metasploit handler"],
-                                 "PATCH_METHOD": ["Manual", "Either Manual or Automatic. For use with \
+                                 "PATCH_METHOD": ["Automatic", "Either Manual or Automatic. For use with \
                                  payloads that have *_threaded in the name"]
                                  }
 
