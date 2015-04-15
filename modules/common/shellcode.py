@@ -449,7 +449,7 @@ class Shellcode:
                 # Stript out extra characters, new lines, etc., just leave the shellcode.
                 # Tim Medin's patch for non-root non-kali users
 
-                FuncShellcode = subprocess.check_output(settings.METASPLOIT_PATH + self.msfvenomCommand, shell=True)
+                FuncShellcode = subprocess.check_output(settings.MSFVENOM_PATH + self.msfvenomCommand, shell=True)
 
                 # try to get the current MSF build version do we can determine how to
                 # parse the shellcode
