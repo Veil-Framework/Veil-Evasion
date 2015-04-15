@@ -6,17 +6,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 #install capstone
-git clone https://github.com/aquynh/capstone/
-
-cd capstone
-
-git checkout next
-
-./make.sh
-
-./make.sh install
-
-cd bindings/python
+pip install capstone
 
 uname -a | grep BSD &> /dev/null
 if [ $? -eq 0 ]; then
@@ -30,10 +20,8 @@ fi
 #check if kali
 uname -a | grep -i kali &> /dev/null 
 if [ $? -eq 0 ]; then
-	echo "Adding capstone path for Kali64 in /etc/ls.so.conf.d/capstone.conf"
-	echo "#capstone shared libs" >> /etc/ld.so.conf.d/capstone.conf
-	echo "/usr/lib64" >> /etc/ld.so.conf.d/capstone.conf
-	ldconfig
+	apt-get update
+	apt-get install python-capstone
 fi
 
 #install pefile

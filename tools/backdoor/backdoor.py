@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-BackdoorFactory (BDF) v2 - Tertium Quid
+BackdoorFactory (BDF) v3 - FOUNTAINPATCH
 
 Many thanks to Ryan O'Neill --ryan 'at' codeslum <d ot> org--
 Without him, I would still be trying to do stupid things
@@ -12,7 +12,7 @@ techniques are based on.
 
 Special thanks to Travis Morrow for poking holes in my ideas.
 
-Copyright (c) 2013-2014, Joshua Pitts
+Copyright (c) 2013-2015, Joshua Pitts
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -62,13 +62,14 @@ def signal_handler(signal, frame):
 class bdfMain():
 
     version = """\
-         2.3.5
+         Version:   3.0.1
          """
 
     author = """\
          Author:    Joshua Pitts
-         Email:     the.midnite.runr[a t]gmail<d o t>com
+         Email:     the.midnite.runr[-at ]gmail<d o-t>com
          Twitter:   @midnite_runr
+         IRC:       freenode.net #BDFactory
          """
 
     #ASCII ART
@@ -128,7 +129,20 @@ class bdfMain():
             " \___  /  (____  /\___  >_"
             "_|  \____/|__|   / ____|        \n"
             "     \/        \/     \/  "
-            "                 \/             \n"]
+            "                 \/             \n",
+
+            "    ____  ____  ______  "
+            "         __      \n"
+            "   / __ )/ __ \/ ____/___ "
+            "______/ /_____  _______  __\n"
+            "  / __  / / / / /_  / __ `/"
+            " ___/ __/ __ \/ ___/ / / /\n"
+            " / /_/ / /_/ / __/ / /_/ /"
+            " /__/ /_/ /_/ / /  / /_/ /\n"
+            "/_____/_____/_/    \__,_/"
+            "\___/\__/\____/_/   \__, /\n"
+            "                         "
+            "                   /____/\n"]
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -196,7 +210,7 @@ class bdfMain():
     parser.add_option("-i", "--injector", default=False, dest="INJECTOR",
                       action="store_true",
                       help="This command turns the backdoor factory in a "
-                      "hunt and shellcode inject type of mechinism. Edit "
+                      "hunt and shellcode inject type of mechanism. Edit "
                       "the target settings in the injector module.")
     parser.add_option("-u", "--suffix", default=".old", dest="SUFFIX",
                       action="store", type="string",
@@ -252,6 +266,8 @@ class bdfMain():
     parser.add_option("-B", "--beacon", dest="BEACON", default=15, action="store", type="int",
                       help="For payloads that have the ability to beacon out, set the time in secs"
                       )
+    parser.add_option("-m", "--patch-method", dest="PATCH_METHOD", default="manual", action="store",
+                      type="string", help="Patching methods for PE files, 'manual' and 'automatic'")
 
     (options, args) = parser.parse_args()
 
@@ -278,6 +294,10 @@ class bdfMain():
         print author
         print version
         time.sleep(1)
+    else:
+        print "\t Backdoor Factory"
+        print author
+        print version
 
     if options.DIR:
         for root, subFolders, files in os.walk(options.DIR):
@@ -310,7 +330,8 @@ class bdfMain():
                                            options.IMAGE_TYPE,
                                            options.ZERO_CERT,
                                            options.CHECK_ADMIN,
-                                           options.PATCH_DLL
+                                           options.PATCH_DLL,
+                                           options.PATCH_METHOD
                                            )
                 elif is_supported is "ELF":
                     supported_file = elfbin(options.FILE,
@@ -400,7 +421,8 @@ class bdfMain():
                                                options.IMAGE_TYPE,
                                                options.ZERO_CERT,
                                                options.CHECK_ADMIN,
-                                               options.PATCH_DLL
+                                               options.PATCH_DLL,
+                                               options.PATCH_METHOD
                                                )
                         supported_file.OUTPUT = None
                         supported_file.output_options()
@@ -472,7 +494,8 @@ class bdfMain():
                                options.IMAGE_TYPE,
                                options.ZERO_CERT,
                                options.CHECK_ADMIN,
-                               options.PATCH_DLL
+                               options.PATCH_DLL,
+                               options.PATCH_METHOD
                                )
         supported_file.injector()
         sys.exit()
@@ -506,7 +529,8 @@ class bdfMain():
                                options.IMAGE_TYPE,
                                options.ZERO_CERT,
                                options.CHECK_ADMIN,
-                               options.PATCH_DLL
+                               options.PATCH_DLL,
+                               options.PATCH_METHOD
                                )
     elif is_supported is "ELF":
         supported_file = elfbin(options.FILE,
@@ -538,7 +562,7 @@ class bdfMain():
         sys.exit()
     result = supported_file.run_this()
     if result is True and options.SUPPORT_CHECK is False:
-        print "File {0} is in the 'backdoored' directory".format(supported_file.FILE)
+        print "File {0} is in the 'backdoored' directory".format(os.path.basename(supported_file.OUTPUT))
 
 
     #END BDF MAIN
