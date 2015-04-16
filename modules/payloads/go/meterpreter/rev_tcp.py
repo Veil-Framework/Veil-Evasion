@@ -36,7 +36,7 @@ class Payload:
         wsadata = helpers.randomString()
         socket = helpers.randomString()
         socketAddr = helpers.randomString()
-	ip = self.required_options["LHOST"][0].split('.')
+        ip = self.required_options["LHOST"][0].split('.')
         buf = helpers.randomString()
         dataBuf = helpers.randomString()
         flags = helpers.randomString()
