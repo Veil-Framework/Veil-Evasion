@@ -246,8 +246,10 @@ func_go_deps(){
     ./make.bash
     env GOOS=windows GOARCH=386 ./make.bash --no-clean
     env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
-    ln -s /usr/share/Go/bin/go /usr/bin/go
-    export GOROOT=/usr/share/Go
+    ln -s /usr/share/go/bin/go /usr/bin/go
+    export GOROOT=/usr/share/go
+    cd $mydir
+    rm go1.4.2.src.tar.gz
 }
 
 
