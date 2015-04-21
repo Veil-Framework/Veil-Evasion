@@ -163,7 +163,6 @@ if __name__ == '__main__':
             options["METASPLOIT_PATH"] = "/usr/share/metasploit-framework/"
             if os.path.isfile('/usr/bin/msfvenom'):
                 options["MSFVENOM_PATH"] = "/usr/bin/"
-                print options["MSFVENOM_PATH"]
             else:
                 msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
                 options["MSFVENOM_PATH"] = msfpath
@@ -175,12 +174,20 @@ if __name__ == '__main__':
             options["OPERATING_SYSTEM"] = "BackTrack"
             options["TERMINAL_CLEAR"] = "clear"
             options["METASPLOIT_PATH"] = "/opt/metasploit/msf3/"
+            if os.path.isfile('/usr/bin/msfvenom'):
+                options["MSFVENOM_PATH"] = "/usr/bin/"
+            else:
+                options["MSFVENOM_PATH"] = "/opt/metasploit/msf3/"
             options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
         else:
             options["OPERATING_SYSTEM"] = "Linux"
             options["TERMINAL_CLEAR"] = "clear"
             msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
             options["METASPLOIT_PATH"] = msfpath
+            if os.path.isfile('/usr/bin/msfvenom'):
+                options["MSFVENOM_PATH"] = "/usr/bin/"
+            else:
+                options["MSFVENOM_PATH"] = msfpath
             options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
 
         # last of the general options
