@@ -80,16 +80,16 @@ def encryptAES(s):
     # return a tuple of (encodedText, randomKey)
     return (encrypted, key)
 
-def encryptAES_http_request(s, target_server):
+def encryptAES_http_request(s, http_key):
     """
     Generates a AES 16 Byte key from a http request of html page, builds an AES cipher,
     encrypts passed 's' and returns (encrypted, http_key)
     """
     # Generate a HTTP GET REQUEST
-    http_key = str(urllib2.urlopen(target_server).read())
     m = md5.new()
     m.update(http_key)
-    http_key = str(m.hexdigest())
+    http_key = m.hexdigest()
+    http_key = str(http_key)
 
     # Create Cipher Object with Generated Secret Key
     cipher = AES.new(http_key)
