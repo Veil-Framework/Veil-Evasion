@@ -400,9 +400,13 @@ class Shellcode:
                 while True:
                     # clear out the tab completion
                     readline.set_completer(completers.none().complete)
-                    selection = raw_input(' [>] Enter extra msfvenom options in OPTION=value syntax: ')
+                    selection = raw_input(' [>] Enter extra msfvenom options in -OPTION=value or syntax: ')
                     if selection != "":
-                        extraValues.append(selection)
+                        num_extra_options = selection.split(' ')
+                        for xtra_opt in num_extra_options:
+                            if xtra_opt is not '':
+                                final_opt = xtra_opt.split('=')[0] + " " + xtra_opt.split('=')[1]
+                                extraValues.append(final_opt)
                     else: break
 
                 # grab any specified msfvenom options in the /etc/veil/settings.py file
