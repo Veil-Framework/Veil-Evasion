@@ -7,6 +7,8 @@ Contains any encryption-related methods that may be reused.
 import string
 import random
 import base64
+import urllib2
+import md5
 from Crypto.Cipher import DES
 from Crypto.Cipher import AES
 from Crypto.Cipher import ARC4
@@ -84,12 +86,10 @@ def encryptAES_http_request(s, target_server):
     encrypts passed 's' and returns (encrypted, http_key)
     """
     # Generate a HTTP GET REQUEST
-    http_key = urllib2.urlopen(target_server).read()
-    http_key = str(http_key)
+    http_key = str(urllib2.urlopen(target_server).read())
     m = md5.new()
     m.update(http_key)
-    http_key = m.hexdigest()
-    http_key = str(http_key)
+    http_key = str(m.hexdigest())
 
     # Create Cipher Object with Generated Secret Key
     cipher = AES.new(http_key)
