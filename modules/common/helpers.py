@@ -158,7 +158,7 @@ def checksum8(s):
 
 
 # generate a metasploit http handler compatible checksum for the URL
-def genHTTPChecksum(value="INIT_CONN"):
+def genHTTPChecksum(value="CONN"):
     checkValue = 0
     if value == "INITW": checkValue = 92 # normal initiation
     elif value == "INIT_CONN": checkValue = 95 # stageless session
