@@ -32,7 +32,7 @@ def supportingFiles(payload, payloadFile, options):
     else:
         architecture = "32"
 
-    if language == "python":
+    if language.lower() == "python":
 
         # if we aren't passed any options, do the interactive menu
         if len(options) == 0:
@@ -50,7 +50,7 @@ def supportingFiles(payload, payloadFile, options):
                 else:
                     print '\n [?] How would you like to create your payload executable?\n'
                     print '     1 - Pyinstaller (default)'
-                
+
                 choice = raw_input(" [>] Please enter the number of your choice: ")
                 if choice == "1" or choice == "":
                     options['method'] = "pyinstaller"
@@ -123,7 +123,7 @@ def supportingFiles(payload, payloadFile, options):
             if architecture == "64":
                 os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
             else:
-                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile)
             os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
             os.system('rm -rf dist')
             os.system('rm -rf build')
@@ -131,9 +131,9 @@ def supportingFiles(payload, payloadFile, options):
             os.system('rm logdict*.*')
 
             messages.title()
-            print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
-    elif language == "c":
+    elif language.lower() == "c":
 
         # extract the payload base name and turn it into an .exe
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
@@ -144,7 +144,7 @@ def supportingFiles(payload, payloadFile, options):
         messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
-    elif language == "cs":
+    elif language.lower() == "cs":
 
         # extract the payload base name and turn it into an .exe
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
@@ -155,9 +155,9 @@ def supportingFiles(payload, payloadFile, options):
         messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
-    elif language == "ruby":
+    elif language.lower() == "ruby":
 
-         # extract the payload base name and turn it into an .exe
+        # extract the payload base name and turn it into an .exe
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
         os.system('wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
@@ -165,6 +165,13 @@ def supportingFiles(payload, payloadFile, options):
         messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
+    elif language.lower() == "go":
+        exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
+
+        os.system('env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+
+        messages.title()
+        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     else:
         messages.title()

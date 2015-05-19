@@ -11,7 +11,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 09.09.2014'
+  echo ' Veil-Evasion Setup Script | [Updated]: 04.16.2015'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
@@ -92,6 +92,15 @@ func_check_env(){
   else
     echo ' [*] Initializing Wine Ruby Dependencies Installation'
     func_ruby_deps
+  fi
+
+  # Check if go is installed
+  if [ -f /usr/share/Go/bin/go.exe ];
+    then
+    echo ' [*] Go is already installed... Skipping...'
+  else
+    echo ' [*] Starting Go install'
+    func_go_deps
   fi
 
   # finally, update the config
@@ -223,6 +232,26 @@ func_python_deps(){
   rm -rf Tools
 }
 
+# Install Go Dependencies
+func_go_deps(){
+    # Download Go from source, cd into it, build it, and prep it for making windows payloads
+    # help for this setup came from:
+    # http://www.limitlessfx.com/cross-compile-golang-app-for-windows-from-linux.html
+    echo ' [*] Downloading Go and configuring it for use by the Veil-Framework'
+    mydir="`pwd`"
+    wget https://storage.googleapis.com/golang/go1.4.2.src.tar.gz --no-check-certificate
+    tar -xvzf go1.4.2.src.tar.gz
+    mv go /usr/share/go
+    cd /usr/share/go/src
+    ./make.bash
+    env GOOS=windows GOARCH=386 ./make.bash --no-clean
+    env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
+    ln -s /usr/share/go/bin/go /usr/bin/go
+    export GOROOT=/usr/share/go
+    cd $mydir
+    rm go1.4.2.src.tar.gz
+}
+
 
 # Install Wine Ruby Dependencies
 func_ruby_deps(){
@@ -281,6 +310,7 @@ case $1 in
     func_git_deps
     func_python_deps
     func_ruby_deps
+    func_go_deps
     ;;
   # Print Help Menu
   -h|--help)
