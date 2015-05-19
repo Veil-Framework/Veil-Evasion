@@ -1,3 +1,7 @@
+[5.19.2015]
+     Released.: 2.20
+     Added....: This release includes Go payloads being added into the framework!  Veil-Evasion can now compile any go payloads provided to it!  Thanks to @b00stfr3ak for submitting them to us!
+
 [4.27.2015]
      Released.: 2.19.2
      Fixed....: Fixed bug identified in Github Issue #138.  Msfvenom options are now being properly added into the command each time.

@@ -19,7 +19,7 @@ class Payload:
         self.extension = "go"
         self.rating = "Normal"
         self.description = "Go VirtualAlloc method for inline shellcode injection"
-        self.required_options = {"compile_to_exe" : ["N", "Compile to an executable"]}
+        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"]}
 
         self.shellcode = shellcode.Shellcode()
 

