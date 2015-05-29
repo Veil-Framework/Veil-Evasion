@@ -1,3 +1,7 @@
+[5.29.2015]
+     Released.: 2.20.1
+     Modified.: Python payloads now include McAfee bypass... oh antivirus.... avlol :)
+
 [5.19.2015]
      Released.: 2.20
      Added....: This release includes Go payloads being added into the framework!  Veil-Evasion can now compile any go payloads provided to it!  Thanks to @b00stfr3ak for submitting them to us!
