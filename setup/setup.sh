@@ -170,7 +170,7 @@ func_python_deps(){
 
   # Unzip Setup Files
   echo ' [*] Uncompressing Setup Archive'
-  unzip requiredfiles.zip
+  unzip -o requiredfiles.zip
 
   # Prepare Wine Directories
   echo ' [*] Preparing Wine Directories'
@@ -192,10 +192,6 @@ func_python_deps(){
   fi
 
   if [ $(uname -m) == 'x86_64' ]; then
-    echo ' [*] Downloading Python Setup Files From http://www.veil-framework.com'
-    wget -q https://www.veil-framework.com/InstallMe/requiredfiles_x64.zip --no-check-certificate
-    echo ' [*] Uncompressing Setup Archive'
-    unzip requiredfiles.zip
 
     # Prepare Wine Directories
     echo ' [*] Preparing Wine64 Directories'
