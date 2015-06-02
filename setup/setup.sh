@@ -47,6 +47,7 @@ func_check_env(){
   if [ $(uname -a|grep -i kali|wc -l) == '1' ]; then
     echo
     echo ' Kali linux detected...'
+    sudo apt-get remove veil-evasion
     echo
   elif [ $(uname -a|grep -i ubuntu|wc -l) == '1' ]; then
     if [ $(grep "VERSION_ID" /etc/os-release|cut -d"=" -f2|sed -e 's/"//g' -e 's/\..*//') -lt '14' ]; then
