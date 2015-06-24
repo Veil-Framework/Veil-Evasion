@@ -1,7 +1,13 @@
 #include <iostream>
 #include <fstream>
+
 #include "fileaccess.h"
+#include "ostreamlog.h"
+
 using namespace std;
+using namespace hyperion;
+
+extern OstreamLog ostreamlog;
 
 namespace hyperion{
 
@@ -10,11 +16,11 @@ namespace hyperion{
     */
     FileInMemory::FileInMemory(const char* file_name){
         //open input file
-        cout << "Opening " << file_name << endl;
+        ostreamlog << "Opening " << file_name << endl;
         ifstream file_stream;
         file_stream.open (file_name, ios::in | ios::binary | ios::ate);
         if(!file_stream.is_open()){
-            cerr << "Error: Could not open file, aborting"<<endl;
+            cerr << "Error: Could not open " << file_name <<endl;
             open=false;
             return;
         }
@@ -30,7 +36,7 @@ namespace hyperion{
         }
         file_stream.read(file, file_size);
         file_stream.close();
-        cout << "Copied file to memory: 0x" << hex << (unsigned int) file << dec << endl;
+        ostreamlog << "Copied file to memory location: 0x" << hex << (unsigned int) file << dec << endl;
 
         //file opened successfully
         adress = file;

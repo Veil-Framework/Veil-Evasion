@@ -1,43 +1,33 @@
-;Loads the exe which is stored in the data section
+;Loads the exe which is stored in input_image
 ;into memory and starts its execution
 proc loadExecutable stdcall APITable:DWORD,\
-image_base:DWORD, section_header:DWORD
+input_image:DWORD
 
-local str1[256]:BYTE, ret_val:DWORD, section_address:DWORD,\
-section_size:DWORD, image_file_header:DWORD, loaded_file:DWORD
+local str1[256]:BYTE, ret_val:DWORD, image_file_header:DWORD,\
+loaded_file:DWORD
 
 	pushad
-	;get section adress and size
-	mov eax,[image_base]
-	mov ebx,[section_header]
-	mov edx,[ebx+IMAGE_SECTION_HEADER.VirtualSize]
-	mov [section_size],edx
-	mov edx,[ebx+IMAGE_SECTION_HEADER.VirtualAddress]
-	add eax,edx
-	mov [section_address],eax
-
 	;verify checksum of packed executable
 	writeWithNewLine createStringVerifyChecksum, str1, le_exit_error
-	stdcall verifyChecksum, [section_address], [section_size]
+	stdcall verifyChecksum, [input_image], INFILE_SIZE
 	test eax,eax
 	jz le_exit_error
-	mov [image_file_header],eax
 
 	;verify whether the content of the data section is pe
 	writeWithNewLine createStringVerifyPE, str1, le_exit_error
-	mov eax,[section_address]
+	mov eax,[input_image]
 	add eax,4
-	stdcall verifyPE, eax, [section_size]
+	stdcall verifyPE, eax, INFILE_SIZE
 	test eax,eax
 	mov [image_file_header],eax
 	jz le_exit_error
 
 	;copy pe header and sections into memory
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	writeWithNewLine createStringMappingFileInMemory, str1, le_exit_error
-	mov eax,[section_address]
+	mov eax,[input_image]
 	add eax,4
-	mov ebx,[section_size]
+	mov ebx,INFILE_SIZE
 	sub ebx,4
 	stdcall loadFile, [APITable], [image_file_header], eax, ebx
 	test eax,eax
@@ -45,18 +35,18 @@ section_size:DWORD, image_file_header:DWORD, loaded_file:DWORD
 	jz le_exit_error
 
 	;loading import table
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	writeWithNewLine createStringLoadingFilesAPIs, str1, le_exit_error
 	stdcall loadImportTable, [APITable], [loaded_file]
 	test eax,eax
 	jz le_exit_error
 
 	;set the correct permissions for each section
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	writeWithNewLine createStringSettingPermissions, str1, le_exit_error
-	mov eax,[section_address]
+	mov eax,[input_image]
 	add eax,4
-	mov ebx,[section_size]
+	mov ebx,INFILE_SIZE
 	sub ebx,4
 	stdcall setPermissions, [APITable], [image_file_header], eax, ebx
 	test eax,eax
@@ -96,7 +86,7 @@ local str1[256]:BYTE, import_table:DWORD, null_directory_entry[sizeof.IMAGE_IMPO
 	;pointer to import table now in eax
 	mov [import_table],eax
 	writeWithNewLine createStringFoundImportTable, str1, le_exit_error
-	stdcall writeRegisterToLog, [APITable], [import_table]
+	writeRegisterToLog APITable, [import_table]
 	test eax,eax
 	jz pit_exit_error
 
@@ -144,7 +134,7 @@ local str1[256]:BYTE, lookup_table:DWORD, import_address_table:DWORD, dll_image_
 
 	pushad
 	;write info about data directory table to logfile
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	test eax,eax
 	jz lidt_exit_error
 	writeWithNewLine createStringProcessImportDirectory, str1, lidt_exit_error
@@ -153,10 +143,10 @@ local str1[256]:BYTE, lookup_table:DWORD, import_address_table:DWORD, dll_image_
 	add eax,[image_base]
 	mov ebx,eax
 	;pointer to dll name in ebx
-	stdcall writeLog, [APITable], eax
+	writeLog APITable, eax
 	test eax,eax
 	jz lidt_exit_error
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	test eax,eax
 	jz lidt_exit_error
 
@@ -190,16 +180,16 @@ lidt_next_lookup_entry:
 lidt_byname:
 	createStringName str1
 	lea eax,[str1]
-	stdcall writeLog, [APITable], eax
+	writeLog APITable, eax
 	test eax,eax
 	jz lidt_exit_error
 	add ebx,[image_base]
 	lea ebx,[ebx+IMAGE_IMPORT_BY_NAME.Name_]
 	mov eax,ebx
-	stdcall writeLog, [APITable], eax
+	writeLog APITable, eax
 	test eax,eax
 	jz lidt_exit_error
-	stdcall writeNewLineToLog, [APITable]
+	writeNewLineToLog APITable
 	test eax,eax
 	jz lidt_exit_error
 	;API name pointer in ebx
@@ -218,13 +208,13 @@ lidt_byname:
 lidt_byordinal:
 	createStringOrdinal str1
 	lea eax,[str1]
-	stdcall writeLog, [APITable], eax
+	writeLog APITable, eax
 	test eax,eax
 	jz lidt_exit_error
 	;remove the ordinal flag
 	xor ebx,IMAGE_ORDINAL_FLAG32
 	mov eax,ebx
-	stdcall writeRegisterToLog, [APITable], eax
+	writeRegisterToLog APITable, eax
 	test eax,eax
 	jz pit_exit_error
 	;API ordinal in ebx
@@ -293,7 +283,7 @@ pe_header_size:DWORD, str1[256]:BYTE, vprotect_ret:DWORD
 	jz sp_exit_error
 
 	;some output for the user
-	stdcall writeRegisterToLog, [APITable], [image_base]
+	writeRegisterToLog APITable, [image_base]
 	test eax,eax
 	jz sp_exit_error
 
@@ -347,7 +337,7 @@ str1[256]:BYTE, vprotect_ret:DWORD, section_headers:DWORD, pe_header_size:DWORD
 
 	;some output for the user
 	writeWithNewLine createStringLoadedPEHeader, str1, lf_exit_error
-	stdcall writeRegisterToLog, [APITable], [image_base]
+	writeRegisterToLog APITable, [image_base]
 	test eax,eax
 	jz lf_exit_error
 
@@ -419,7 +409,7 @@ local str1[256]:BYTE
 	;print some infos to the log file
 	createStringLoaded str1
 	lea eax,[str1]
-	stdcall writeLog, [APITable], eax
+	writeLog APITable, eax
 	test eax,eax
 	jz ls_exit_error
 	lea edi,[str1]
@@ -430,12 +420,12 @@ local str1[256]:BYTE
 	push edi
 	rep movsb
 	pop edi
-	stdcall writeLog, [APITable], edi
-	stdcall writeNewLineToLog, [APITable]
+	writeLog APITable, edi
+	writeNewLineToLog APITable
 	mov edx,[section_header]
 	mov eax,[edx+IMAGE_SECTION_HEADER.VirtualAddress]
 	add eax,[image_base]
-	stdcall writeRegisterToLog, [APITable], eax
+	writeRegisterToLog APITable, eax
 
 ls_exit_success:
 	popad
@@ -512,7 +502,7 @@ ssn_set_memory:
 	mov edx,[section_header]
 	mov eax,[edx+IMAGE_SECTION_HEADER.VirtualAddress]
 	add eax,[image_base]
-	stdcall writeRegisterToLog, [APITable], eax
+	writeRegisterToLog APITable, eax
 
 ssn_exit_success:
 	popad

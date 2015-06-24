@@ -1,21 +1,22 @@
-macro createStringDecrypting location
+macro createStringBruteforcing location
 {
-	 mov [location+0],'D'
-	 mov [location+1],'e'
-	 mov [location+2],'c'
-	 mov [location+3],'r'
-	 mov [location+4],'y'
-	 mov [location+5],'p'
-	 mov [location+6],'t'
-	 mov [location+7],'i'
-	 mov [location+8],'n'
-	 mov [location+9],'g'
-	 mov [location+10],' '
-	 mov [location+11],'F'
-	 mov [location+12],'i'
-	 mov [location+13],'l'
+	 mov [location+0],'B'
+	 mov [location+1],'r'
+	 mov [location+2],'u'
+	 mov [location+3],'t'
+	 mov [location+4],'e'
+	 mov [location+5],'f'
+	 mov [location+6],'o'
+	 mov [location+7],'r'
+	 mov [location+8],'c'
+	 mov [location+9],'i'
+	 mov [location+10],'n'
+	 mov [location+11],'g'
+	 mov [location+12],' '
+	 mov [location+13],'K'
 	 mov [location+14],'e'
-	 mov [location+15],0
+	 mov [location+15],'y'
+	 mov [location+16],0
 }
 
 macro createStringSettingPermissions location
@@ -246,103 +247,6 @@ macro createStringVerifyChecksum location
 	 mov [location+16],'u'
 	 mov [location+17],'m'
 	 mov [location+18],0
-}
-
-macro createStringFoundDataSection location
-{
-	 mov [location+0],'F'
-	 mov [location+1],'o'
-	 mov [location+2],'u'
-	 mov [location+3],'n'
-	 mov [location+4],'d'
-	 mov [location+5],' '
-	 mov [location+6],'.'
-	 mov [location+7],'d'
-	 mov [location+8],'a'
-	 mov [location+9],'t'
-	 mov [location+10],'a'
-	 mov [location+11],' '
-	 mov [location+12],'s'
-	 mov [location+13],'e'
-	 mov [location+14],'c'
-	 mov [location+15],'t'
-	 mov [location+16],'i'
-	 mov [location+17],'o'
-	 mov [location+18],'n'
-	 mov [location+19],0
-}
-
-macro createStringDataSection location
-{
-	 mov [location+0],'.'
-	 mov [location+1],'d'
-	 mov [location+2],'a'
-	 mov [location+3],'t'
-	 mov [location+4],'a'
-	 mov [location+10],0
-}
-
-macro createStringFoundPE32 location
-{
-	 mov [location+0],'I'
-	 mov [location+1],'s'
-	 mov [location+2],' '
-	 mov [location+3],'P'
-	 mov [location+4],'E'
-	 mov [location+5],'3'
-	 mov [location+6],'2'
-	 mov [location+7],0
-}
-
-macro createStringCharacteristicsOK location
-{
-	 mov [location+0],'C'
-	 mov [location+1],'h'
-	 mov [location+2],'a'
-	 mov [location+3],'r'
-	 mov [location+4],'a'
-	 mov [location+5],'c'
-	 mov [location+6],'t'
-	 mov [location+7],'e'
-	 mov [location+8],'r'
-	 mov [location+9],'i'
-	 mov [location+10],'s'
-	 mov [location+11],'t'
-	 mov [location+12],'i'
-	 mov [location+13],'c'
-	 mov [location+14],'s'
-	 mov [location+15],' '
-	 mov [location+16],'O'
-	 mov [location+17],'K'
-	 mov [location+18],0
-}
-
-macro createStringFoundPE location
-{
-	 mov [location+0],'F'
-	 mov [location+1],'o'
-	 mov [location+2],'u'
-	 mov [location+3],'n'
-	 mov [location+4],'d'
-	 mov [location+5],' '
-	 mov [location+6],'P'
-	 mov [location+7],'E'
-	 mov [location+8],0
-}
-
-macro createStringImageBase location
-{
-	 mov [location+0],'I'
-	 mov [location+1],'m'
-	 mov [location+2],'a'
-	 mov [location+3],'g'
-	 mov [location+4],'e'
-	 mov [location+5],'B'
-	 mov [location+6],'a'
-	 mov [location+7],'s'
-	 mov [location+8],'e'
-	 mov [location+9],':'
-	 mov [location+10],0
 }
 
 macro createStringDone location

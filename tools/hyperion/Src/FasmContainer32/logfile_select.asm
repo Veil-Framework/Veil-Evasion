@@ -1,0 +1,1 @@
+include 'logfile_enable.asm'

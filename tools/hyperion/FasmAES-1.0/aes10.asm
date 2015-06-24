@@ -54,5 +54,5 @@ section '.edata' export data readable
 	 encAES,'aesEncrypt',\
 	 decAES,'aesDecrypt'
 
-section '.reloc' fixups data discardable
+section '.reloc' fixups data readable discardable
 
