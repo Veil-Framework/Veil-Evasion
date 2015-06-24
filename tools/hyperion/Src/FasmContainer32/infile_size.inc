@@ -1,0 +1,1 @@
+INFILE_SIZE equ 0xa10

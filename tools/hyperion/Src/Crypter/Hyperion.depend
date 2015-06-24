@@ -261,3 +261,193 @@
 	<time.h>
 	"createoutput.h"
 
+1333289160 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1311892080 c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\fileaccess.h
+	"stdint.h"
+
+1398035481 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\main.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"pe.h"
+	"hyperion.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1331055300 c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1331055360 c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\peanalysis.h
+	"pe.h"
+	<vector>
+
+1398035359 c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1304981760 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1331055660 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\peanalysis.cpp
+	<iostream>
+	<string.h>
+	<windows.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1398035443 c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\hyperion.h
+
+1398035351 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	<string.h>
+	<windows.h>
+	<time.h>
+	"hyperion.h"
+	"createoutput.h"
+
+1398035805 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.0\src\crypter\hyperion.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"pe.h"
+	"hyperion.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1398199681 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+
+1311892080 c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\fileaccess.h
+	"stdint.h"
+
+1398199814 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\pe.cpp
+	"pe.h"
+	<iostream>
+	<string.h>
+
+1331055300 c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1398199530 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\peanalysis.cpp
+	<iostream>
+	<string.h>
+	<windows.h>
+	"peanalysis.h"
+	"fileaccess.h"
+
+1331055360 c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\peanalysis.h
+	"pe.h"
+	<vector>
+
+1398199114 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	<string.h>
+	<windows.h>
+	<time.h>
+	"hyperion.h"
+	"createoutput.h"
+
+1398035443 c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\hyperion.h
+
+1398187336 c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1398198609 source:c:\dokumente und einstellungen\christian\desktop\hyperion-1.1\src\crypter\hyperion.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"pe.h"
+	"hyperion.h"
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+
+1398714768 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\fileaccess.cpp
+	<iostream>
+	<fstream>
+	"fileaccess.h"
+	"ostreamlog.h"
+
+1311892080 c:\users\belial\desktop\hyperion-1.1\src\crypter\fileaccess.h
+	"stdint.h"
+
+1398715396 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\pe.cpp
+	<iostream>
+	<string.h>
+	"pe.h"
+	"ostreamlog.h"
+
+1331055300 c:\users\belial\desktop\hyperion-1.1\src\crypter\pe.h
+	"fileaccess.h"
+	"stdint.h"
+
+1398715479 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\peanalysis.cpp
+	<iostream>
+	<string.h>
+	<windows.h>
+	"peanalysis.h"
+	"fileaccess.h"
+	"ostreamlog.h"
+
+1331055360 c:\users\belial\desktop\hyperion-1.1\src\crypter\peanalysis.h
+	"pe.h"
+	<vector>
+
+1399578000 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\createoutput.cpp
+	<string>
+	<iostream>
+	<fstream>
+	<sstream>
+	<string.h>
+	<windows.h>
+	<time.h>
+	"hyperion.h"
+	"createoutput.h"
+
+1399577979 c:\users\belial\desktop\hyperion-1.1\src\crypter\hyperion.h
+	"fileaccess.h"
+	"peanalysis.h"
+	"createoutput.h"
+	"pe.h"
+	"ostreamlog.h"
+
+1399578190 c:\users\belial\desktop\hyperion-1.1\src\crypter\createoutput.h
+	"fileaccess.h"
+	"peanalysis.h"
+
+1398712059 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\hyperion.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<windows.h>
+	"hyperion.h"
+
+1398715238 source:c:\users\belial\desktop\hyperion-1.1\src\crypter\ostreamlog.cpp
+	"ostreamlog.h"
+	<iostream>
+
+1398715303 c:\users\belial\desktop\hyperion-1.1\src\crypter\ostreamlog.h
+	<iostream>
+

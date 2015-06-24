@@ -1,21 +1,12 @@
-;Decrypt the exe which is stored in the data section
-proc decryptExecutable stdcall APITable:DWORD, image_base:DWORD, section_header:DWORD
+;Decrypt the exe which is stored in input_image
+proc decryptExecutable stdcall APITable:DWORD, input_image:DWORD
 
-local str1[256]:BYTE, ret_val:DWORD, section_address:DWORD,\
-section_size:DWORD, key[KEY_SIZE]:BYTE, encrypted_backup:DWORD
+local str1[256]:BYTE, ret_val:DWORD,\
+key[KEY_SIZE]:BYTE, encrypted_backup:DWORD
 
 	pushad
-	;get section adress and size
-	stdcall writeNewLineToLog, [APITable]
-	writeWithNewLine createStringDecrypting, str1, dec_exit_error
-	mov eax,[image_base]
-	mov ebx,[section_header]
-	mov edx,[ebx+IMAGE_SECTION_HEADER.VirtualSize]
-	mov [section_size],edx
-	mov edx,[ebx+IMAGE_SECTION_HEADER.VirtualAddress]
-	add eax,edx
-	mov [section_address],eax
-
+	writeWithNewLine createStringBruteforcing, str1, dec_exit_success
+	
 	;init key
 	lea edi,[key]
 	mov ecx, KEY_SIZE
@@ -29,29 +20,29 @@ dec_init_key:
 	;create a copy of the encrypted file
 	;which is used to brute force the key
 	mov eax,[APITable]
-	stdcall dword [eax+VirtualAlloc], 0, [section_size], MEM_COMMIT+MEM_RESERVE, PAGE_READWRITE
+	stdcall dword [eax+VirtualAlloc], 0, INFILE_SIZE, MEM_COMMIT+MEM_RESERVE, PAGE_READWRITE
 	test eax, eax
 	jz dec_exit_error
 	mov [encrypted_backup],eax
 	;now copy the file into the buffer
 	mov edi,eax
-	mov esi,[section_address]
-	mov ecx,[section_size]
+	mov esi,[input_image]
+	mov ecx,INFILE_SIZE
 	;we can mov dwords because buffer is a multiple of 16
 	shr ecx,2
 	repz movsd
 
 keyspace_loop:
 	lea eax,[key]
-	stdcall decAES, [section_size],  [section_address],  [section_address], eax
-	stdcall verifyChecksum, [section_address], [section_size]
+	stdcall decAES, INFILE_SIZE, [input_image], [input_image], eax
+	stdcall verifyChecksum, [input_image], INFILE_SIZE
 	test eax,eax
 	jnz dec_decrypted_success
 
 	;restore the encrypted version to try the next key
 	mov esi,[encrypted_backup]
-	mov edi,[section_address]
-	mov ecx,[section_size]
+	mov edi,[input_image]
+	mov ecx,INFILE_SIZE
 	shr ecx,2
 	repz movsd
 	;lea eax,[key]

@@ -1,0 +1,1 @@
+IMAGE_SIZE equ 0x8000

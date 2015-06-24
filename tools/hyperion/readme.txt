@@ -10,10 +10,10 @@
 # Hyperion: A runtime PE-Crypter                                              #
 #                                                                             #
 # VERSION                                                                     #
-# 1.0                                                                         #
+# 1.1                                                                         #
 #                                                                             #
 # DATE                                                                        #
-# 25/05/2012                                                                  #
+# 08/05/2014                                                                  #
 #                                                                             #
 # AUTHOR                                                                      #
 # belial - http://www.nullsecurity.net/                                       #
@@ -30,18 +30,29 @@
 # makefile (tested with Mingw and Visual Studio). Afterwards it is started    #
 # via the command line and encrypts an input executable with AES-128. The     #
 # encrypted file decrypts itself on startup (bruteforcing the AES key which   #
-# may take a few seconds) and generates a log file for debug purpose. The key #
-# space size can be changed in the crypter source code to speed up the brute  #
-# force key search algorithm.                                                 #
+# may take a few seconds) and generates a log file for debug purpose.         #
 #                                                                             #
 # TODO                                                                        #
-# - Late Binding of DLLs/APIs                                                 #
-# - AV evasion                                                                #
+# - Support late Binding of DLLs/APIs                                         #
+# - AV evasion (obfuscate sbox, strings, reduce entropy, etc.)                #
 # - Polymorphic generation of the container                                   #
 # - Add .NET Support                                                          #
-# - Change key space size via the command line                                #
+# - Add native 64-Bit Support                                                 #
+# - Preserve Icon and GUI/Console Flag                                        #
+# - Check for correct DLL Version Numbers before Loading                      #
 #                                                                             #
 # CHANGELOG:                                                                  #
+#                                                                             #
+# v1.2:                                                                       #
+# - added windows 8 and 8.1 support (thx to CoolOppo)                         #
+#                                                                             #
+# v1.1:                                                                       #
+# - code cleanup and refactoring (more leightweighted and increased           #
+#   maintainability)                                                          #
+# - change key space size via the command line                                #
+# - change key length via the command line                                    #
+# - disable logfile generation of the container via commandline               #
+# - display verbose informations while running                                #
 #                                                                             #
 # v1.0:                                                                       #
 # - initial release                                                           #

@@ -1,7 +1,13 @@
-#include "pe.h"
 #include <iostream>
 #include <string.h>
+
+#include "pe.h"
+#include "ostreamlog.h"
+
 using namespace std;
+using namespace hyperion;
+
+extern OstreamLog ostreamlog;
 
 namespace hyperion{
 
@@ -12,37 +18,37 @@ namespace hyperion{
      */
     CoffHeader* getCoffHeader(FileInMemory* f){
         if(sizeof(MZHeader)>f->size){
-            cerr << "Error: Not a valid executable, aborting" << endl;
+            cerr << "Error: No valid executable" << endl;
             return 0;
         }
 
         //check MZ signature
         MZHeader* mz = (MZHeader*) f->adress;
         if(memcmp(mz->signature, MZ_SIGNATURE, MZ_SIGNATURE_SIZE != 0)){
-            cerr << "Error: Not a valid MZ Signature, aborting" << endl;
+            cerr << "Error: No valid MZ Signature" << endl;
             return 0;
         }
-        cout << "Found valid MZ signature" << endl;
+        ostreamlog << "Found valid MZ signature" << endl;
 
         //get PE header
-        cout << "Found pointer to PE Header: 0x" << hex << mz->ptrPE << dec << endl;
+        ostreamlog << "Found pointer to PE Header: 0x" << hex << mz->ptrPE << dec << endl;
         //ptrPe out of bounds?
         if(f->adress + mz->ptrPE >= f->adress + f->size){
-            cout << "Error: pointer to PE in MZ header points to nowhere, aborting" << endl;
+            cerr << "Error: Pointer to PE in MZ header points to nowhere" << endl;
             return 0;
         }
         //no ptrPE?
         if (mz->ptrPE == 0){
-            cout << "Error: pointer to PE in MZ header is a null pointer, aborting" << endl;
+            cerr << "Error: Pointer to PE in MZ header is a null pointer" << endl;
             return 0;
         }
 
         uint8_t* pe_sig = mz->ptrPE + (uint8_t*) f->adress;
         if(memcmp(pe_sig, PE_SIGNATURE, PE_SIGNATURE_SIZE) != 0){
-            cout << "Error: no valid PE signature found, aborting" << endl;
+            cerr << "Error: No valid PE signature found" << endl;
             return 0;
         }
-        cout << "Found valid PE signature" << endl;
+        ostreamlog << "Found valid PE signature" << endl;
 
         return (CoffHeader*) (f->adress + mz->ptrPE + PE_SIGNATURE_SIZE);
     }

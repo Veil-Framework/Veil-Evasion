@@ -4,8 +4,12 @@
 
 #include "peanalysis.h"
 #include "fileaccess.h"
+#include "ostreamlog.h"
 
 using namespace std;
+using namespace hyperion;
+
+extern OstreamLog ostreamlog;
 
 namespace hyperion{
 
@@ -26,12 +30,12 @@ namespace hyperion{
             return;
         }
         if (!(coff_header->Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE)){
-            cout << "Error: File is not an executable image, aborting..." << endl;
+            cerr << "Error: File is not an executable image, aborting..." << endl;
             error = true;
             return;
         }
         if (coff_header->Characteristics & IMAGE_FILE_DLL){
-            cout << "Error: File is a dll, aborting..." << endl;
+            cerr << "Error: File is a dll, aborting..." << endl;
             error = true;
             return;
         }
@@ -40,20 +44,20 @@ namespace hyperion{
         OptionalStandardHeader* os_ptr = getOptionalStandardHeader(coff_header);
         //is it 64-Bit?
         if(!os_ptr){
-            cout << "Error: File is PE64, aborting..." << endl;
+            cerr << "Error: File is PE64, aborting..." << endl;
             error = true;
             return;
         }
 
         //collect data from the different headers and get first section header of pe32
-        cout << "Found a PE32 file" << endl;
+        ostreamlog << "Found a PE32 file" << endl;
         OptionalWindowsHeader* ow_ptr = getOptionalWindowsHeader(os_ptr);
         file_alignment = &ow_ptr->FileAlignment;
         section_alignment = &ow_ptr->SectionAlignment;
         size_of_image = &ow_ptr->SizeOfImage;
         image_base = &ow_ptr->ImageBase;
-        cout << "Number of Data Directories: " << ow_ptr->NumberOfRvaAndSizes << endl;
-        cout << "Image Base: 0x" << hex << *image_base << dec << endl;
+        ostreamlog << "Number of Data Directories: " << ow_ptr->NumberOfRvaAndSizes << endl;
+        ostreamlog << "Image Base: 0x" << hex << *image_base << dec << endl;
         ImageDataDirectory* first_entry = getFirstImageEntry(ow_ptr);
         SectionHeader* section_header = getFirstSectionHeader(first_entry, ow_ptr->NumberOfRvaAndSizes);
 
@@ -61,16 +65,16 @@ namespace hyperion{
         char name_zero[9];
         name_zero[8] = 0;
         memcpy(name_zero, section_header->Name, SECTION_NAME_SIZE);
-        cout << endl << "Found Section: " << name_zero << endl;
-        cout << "VSize: 0x" << hex << section_header->VirtualSize << ", VAddress: 0x" << section_header->VirtualAddress
+        ostreamlog << endl << "Found Section: " << name_zero << endl;
+        ostreamlog << "VSize: 0x" << hex << section_header->VirtualSize << ", VAddress: 0x" << section_header->VirtualAddress
         << ", RawSize: 0x" << section_header->SizeOfRawData << ", RawAddress: 0x" << section_header->PointerToRawData
         << dec << endl;
         sections.push_back(section_header);
         for(int i=1;i<coff_header->NumberOfSections;i++){
             section_header = getNextSectionHeader(section_header);
             memcpy(name_zero, section_header->Name, SECTION_NAME_SIZE);
-            cout << endl << "Found Section: " << name_zero << endl;
-            cout << "VSize: 0x" << hex << section_header->VirtualSize << ", VAddress: 0x" << section_header->VirtualAddress
+            ostreamlog << endl << "Found Section: " << name_zero << endl;
+            ostreamlog << "VSize: 0x" << hex << section_header->VirtualSize << ", VAddress: 0x" << section_header->VirtualAddress
             << ", RawSize: 0x" << section_header->SizeOfRawData << ", RawAddress: 0x" << section_header->PointerToRawData
             << dec << endl;
             sections.push_back(section_header);

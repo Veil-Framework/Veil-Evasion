@@ -1,6 +1,50 @@
+;-------------------------------------------
+;the content of this file is excluded,      |
+;when the user disables logging features    |
+;in hyperion command line. pls keep in mind |
+;and dont rely on its existence.            |
+;-------------------------------------------  
+
+;--- Begin Macro Section ---
+
+;writes a string and a newline to the logfile
+macro writeWithNewLine char_sequence, char_buffer, error_exit
+{
+	char_sequence char_buffer
+	lea eax,[str1]
+	stdcall writeLog_,[APITable],eax
+	test eax,eax
+	jz error_exit
+	stdcall writeNewLineToLog_,[APITable]
+	test eax,eax
+	jz error_exit
+}
+
+;write a string to the logfile
+macro writeLog apitable, content{
+	stdcall writeLog_,[apitable], content
+}
+
+;delete old log file and create a new one
+macro initLogFile apitable{
+	 stdcall initLogFile_, [apitable]
+}
+
+;write a newline into logfile
+macro writeNewLineToLog apitable{
+	stdcall writeNewLineToLog_, [apitable]
+}
+
+;write a register value into logile
+macro writeRegisterToLog apitable, value{
+	stdcall writeRegisterToLog_, [apitable], value
+}
+
+;--- End Macro Section ---
+
 ;write <content> into log.txt
 ;returns false if an eerror occurs
-proc writeLog stdcall APITable:DWORD, content:DWORD
+proc writeLog_ stdcall APITable:DWORD, content:DWORD
 
 local str1[256]:BYTE, oldlogsize:DWORD, newlogsize:DWORD, contentsize:DWORD,\
       filehandle:DWORD, filemappingobject:DWORD, mapaddress:DWORD, retval:DWORD
@@ -23,7 +67,7 @@ local str1[256]:BYTE, oldlogsize:DWORD, newlogsize:DWORD, contentsize:DWORD,\
 	 mov [oldlogsize],eax
 
 	 ;get size of string for logfile for concatenation
-	 stdcall strlen, dword [content]
+	 stdcall strlen_, dword [content]
 	 mov [contentsize], eax
 	 add eax,dword [oldlogsize]
 	 mov [newlogsize], eax
@@ -74,7 +118,7 @@ endp
 
 ;adds a <newline> to the logfile
 ;returns false if an error occurs
-proc writeNewLineToLog APITable:DWORD
+proc writeNewLineToLog_ APITable:DWORD
 
 local str1[3]:BYTE
 
@@ -82,39 +126,25 @@ local str1[3]:BYTE
 	 mov byte [eax+0],13
 	 mov byte [eax+1],10
 	 mov byte [eax+2],0
-	 stdcall writeLog, [APITable], eax
-	 ret
-
-endp
-
-;adds a <space> to the logfile
-;returns false if an eerror occurs
-proc writeSpaceToLog APITable:DWORD
-
-local str1[2]:BYTE
-
-	 lea eax,[str1]
-	 mov byte [eax+0],' '
-	 mov byte [eax+1],0
-	 stdcall writeLog, [APITable], eax
+	 stdcall writeLog_, [APITable], eax
 	 ret
 
 endp
 
 ;adds "<hexadecimal value>" to the logfile
 ;returns false if an error occurs
-proc writeRegisterToLog stdcall APITable:DWORD, Value:DWORD
+proc writeRegisterToLog_ stdcall APITable:DWORD, Value:DWORD
 
 local str1[10]:BYTE, retval:DWORD
 
 	 pushad
 	 lea eax,[str1]
-	 stdcall binToString, eax, [Value]
-	 stdcall writeLog,[APITable],eax
+	 stdcall binToString_, eax, [Value]
+	 stdcall writeLog_,[APITable],eax
 	 mov [retval],eax
 	 test eax,eax
 	 jz wrtl_exit
-	 stdcall writeNewLineToLog,[APITable]
+	 stdcall writeNewLineToLog_,[APITable]
 	 mov [retval],eax
 	 test eax,eax
 	 jz wrtl_exit
@@ -127,7 +157,7 @@ wrtl_exit:
 endp
 
 ;converts <bin> into an 8 byte string and stores it <buffer>
-proc binToString stdcall buffer:DWORD, bin:DWORD
+proc binToString_ stdcall buffer:DWORD, bin:DWORD
 
 	 pushad
 	 mov ebx,[bin]
@@ -160,7 +190,7 @@ bts_finished_conversion:
 endp
 
 ;get the length of a string
-proc strlen stdcall string_ptr:DWORD
+proc strlen_ stdcall string_ptr:DWORD
 
 	 push edi
 	 push ecx
@@ -179,15 +209,43 @@ proc strlen stdcall string_ptr:DWORD
 
 endp
 
-;writes a string and a newline to the logfile
-macro writeWithNewLine char_sequence, char_buffer, error_exit
-{
-	char_sequence char_buffer
+;Write initial message into logfile
+proc initLogFile_ stdcall APITable:DWORD
+
+local str1[256]:BYTE
+
+	pushad
+	createStringLogTxt str1
+	mov eax,[APITable]
+	lea ebx,[str1]
+	stdcall dword [eax+DeleteFile],ebx
+	createStringStartingHyperionLines str1
 	lea eax,[str1]
-	stdcall writeLog,[APITable],eax
+	stdcall writeLog_,[APITable],eax
 	test eax,eax
-	jz error_exit
-	stdcall writeNewLineToLog,[APITable]
+	jz ilf_exit_error
+	createStringStartingHyperion str1
+	lea eax,[str1]
+	stdcall writeLog_,[APITable],eax
 	test eax,eax
-	jz error_exit
-}
+	jz ilf_exit_error
+	createStringStartingHyperionLines str1
+	lea eax,[str1]
+	stdcall writeLog_,[APITable],eax
+	test eax,eax
+	jz ilf_exit_error
+	stdcall writeNewLineToLog_,[APITable]
+	test eax,eax
+	jz ilf_exit_error
+
+ilf_exit_success:
+	popad
+	mov eax,1
+	ret
+
+ilf_exit_error:
+	popad
+	sub eax,eax
+	ret
+
+endp

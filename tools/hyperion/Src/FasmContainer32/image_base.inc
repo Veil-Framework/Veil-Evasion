@@ -1,0 +1,1 @@
+IMAGE_BASE equ 0x1000000
