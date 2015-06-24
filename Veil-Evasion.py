@@ -131,6 +131,8 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                             t,payloadName = param.split("=")
                                         elif param.startswith("outputbase="):
                                             t,outputbase = param.split("=")
+                                        elif param.startswith("pwnstaller="):
+                                            t,pwnstaller = param.split("=")
                                         elif param.startswith("overwrite="):
                                             t,choice = param.split("=")
                                             if choice.lower() == "true":
@@ -150,7 +152,7 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                 for param in params:
 
                                     # don't include these metaoptions
-                                    if param.startswith("payload=") or param.startswith("outputbase=") or param.startswith("overwrite="):
+                                    if param.startswith("payload=") or param.startswith("outputbase=") or param.startswith("overwrite=") or param.startswith("pwnstaller="):
                                         continue 
 
                                     # extract the name/value from this parameter
@@ -190,6 +192,7 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                 args = Args()
                                 args.overwrite=overwrite
                                 args.o = outputbase
+                                args.pwnstaller = pwnstaller
 
                                 # write out the payload code to the proper output file
                                 outName = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
