@@ -3,6 +3,17 @@
 # Global Variables
 runuser=$(whoami)
 tempdir=$(pwd)
+silent=false
+
+# Command line arguments
+for x in $( tr '[:upper:]' '[:lower:]' <<< "$@" ); do
+  if [ "${x}" == "--silent" ]; then
+    silent=true
+  else
+    echo -e '[!] Unknown option: '${x} 1>&2
+    exit 1
+  fi
+done
 
 # Title Function
 func_title(){
@@ -11,7 +22,7 @@ func_title(){
 
   # Echo Title
   echo '=========================================================================='
-  echo ' Veil-Evasion Setup Script | [Updated]: 04.16.2015'
+  echo ' Veil-Evasion Setup Script | [Updated]: 2015.06.22'
   echo '=========================================================================='
   echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
   echo '=========================================================================='
@@ -34,8 +45,13 @@ func_check_env(){
     echo ' [WARNING]: Setup No Longer Requires Constant Root Privileges.'
     echo '            Continuing Will Install Veil Only For The Root User.'
     echo
-    read -p ' Continue With Installation? (y/n): ' rootonly
-    if [ ${rootonly} != 'y' ]; then
+    if [[ "$silent" == "true" ]]; then
+      echo ' Continue With Installation? (y/N): y'
+      rootonly='y'
+    else
+      read -p ' Continue With Installation? (y/N): ' rootonly
+    fi
+    if [[ "${rootonly}" != 'y' ]]; then
       echo
       echo ' [ERROR]: Installation Aborted By User.'
       echo
@@ -87,7 +103,7 @@ func_check_env(){
   fi
 
   # Check If Wine Ruby Is Already Installed
-  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe ]; 
+  if [ -f ~/.wine/drive_c/Ruby187/bin/ruby.exe ];
     then
     echo ' [*] Wine Ruby Already Installed... Skipping.'
   else
@@ -104,7 +120,7 @@ func_check_env(){
     func_go_deps
   fi
 
-  # finally, update the config
+  # Finally, update the config
   func_update_config
 }
 
@@ -174,59 +190,80 @@ func_python_deps(){
   unzip -o requiredfiles.zip
 
   # Prepare Wine Directories
-  echo ' [*] Preparing Wine Directories'
-  mkdir -p ~/.wine/drive_c/Python27/Lib/
+  echo ' [*] Preparing Wine Directories (#1)'
+  mkdir -p ~/.wine/drive_c/Python27/Lib/site-packages/
   cp distutils -r ~/.wine/drive_c/Python27/Lib/
   cp tcl -r ~/.wine/drive_c/Python27/
   cp Tools -r ~/.wine/drive_c/Python27/
 
   # Install Setup Files
-  echo ' [*] Installing Wine Python Dependencies'
-  wine msiexec /i python-2.7.5.msi
-  wine pywin32-218.win32-py2.7.exe
-  wine pycrypto-2.6.win32-py2.7.exe
+  echo ' [*] Installing Wine Python Dependencies (#1)'
+  arg=""
+  [[ "$silent" ]] && arg="/q"
+  wine msiexec /i python-2.7.5.msi $arg
+  for FILE in pywin32-218.win32-py2.7.exe pycrypto-2.6.win32-py2.7.exe; do
+    if [[ "$silent" ]]; then
+      unzip -q -o $FILE
+      cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
+      rm -rf "PLATLIB/"
+    else
+      wine $FILE
+    fi
+  done
   if [ -d "/opt/pyinstaller-2.0/" ]; then
     echo ' [*] PyInstaller Already Installed... Skipping.'
   else
     sudo unzip -d /opt pyinstaller-2.0.zip
-    sudo chmod 755 -R /opt/pyinstaller-2.0/
+    sudo chmod 0755 -R /opt/pyinstaller-2.0/
   fi
 
   if [ $(uname -m) == 'x86_64' ]; then
 
     # Prepare Wine Directories
-    echo ' [*] Preparing Wine64 Directories'
-    mkdir -p ~/.wine64/drive_c/Python27/Lib/
+    echo ' [*] Preparing Wine64 Directories (#2)'
+    mkdir -p ~/.wine64/drive_c/Python27/Lib/site-packages/
     cp distutils -r ~/.wine64/drive_c/Python27/Lib/
     cp tcl -r ~/.wine64/drive_c/Python27/
     cp Tools -r ~/.wine64/drive_c/Python27/
 
     # Install Setup Files
-    echo ' [*] Installing Wine Python Dependencies'
-    WINEPREFIX=~/.wine64 wine64 msiexec /i python-2.7.9.amd64.msi
-    WINEPREFIX=~/.wine64 wine64 pywin32-219.win-amd64-py2.7.exe
+    echo ' [*] Installing Wine Python Dependencies (#2)'
+    which wine64 >/dev/null
+    if [[ "$?" -eq 0 ]]; then
+      [[ "$silent" ]] && arg="/q"
+      WINEPREFIX=~/.wine64 wine64 msiexec /i python-2.7.9.amd64.msi $arg
+      if [[ "$silent" ]]; then
+        unzip -q -o $FILE
+        cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
+        rm -rf "PLATLIB/"
+      else
+        WINEPREFIX=~/.wine64 wine64 pywin32-219.win-amd64-py2.7.exe
+      fi
+    else
+      echo ' [*] Wine64 Is Not Installed... Skipping.'
+    fi
     if [ -d "/opt/pyinstaller-2.0/" ]; then
       echo ' [*] PyInstaller Already Installed... Skipping.'
     else
       sudo unzip -d /opt pyinstaller-2.0.zip
-      sudo chmod 755 -R /opt/pyinstaller-2.0/
+      sudo chmod 0755 -R /opt/pyinstaller-2.0/
     fi
   fi
 
   # Clean Up Setup Files
   echo ' [*] Cleaning Up Setup Files'
-  rm python-2.7.5.msi
-  rm python-2.7.9.amd64.msi
-  rm pywin32-219.win-amd64-py2.7.exe 
-  rm pycrypto-2.6.win32-py2.7.exe
-  rm pyinstaller-2.0.zip
-  rm requiredfiles.zip
+  rm -f python-2.7.5.msi
+  rm -f python-2.7.9.amd64.msi
+  rm -f pywin32-219.win-amd64-py2.7.exe
+  rm -f pycrypto-2.6.win32-py2.7.exe
+  rm -f pyinstaller-2.0.zip
+  rm -f requiredfiles.zip
 
   # Remove Temp Directories
   echo ' [*] Removing Temporary Directories'
-  rm -rf distutils
-  rm -rf tcl
-  rm -rf Tools
+  rm -rf "distutils/"
+  rm -rf "tcl/"
+  rm -rf "Tools/"
 }
 
 # Install Go Dependencies
