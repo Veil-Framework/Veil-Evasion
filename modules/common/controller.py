@@ -778,7 +778,7 @@ class Controller:
                                     cmd = ""
 
                     # generate the payload
-                    if cmd == "generate" or cmd == "gen" or cmd == "run" or cmd == "go" or cmd == "exploit":
+                    if cmd == "generate" or cmd == "gen" or cmd == "run" or cmd == "go" or cmd == "do" or cmd == "make":
 
                         # make sure all required options are filled in first
                         if self.ValidatePayload(payload):
