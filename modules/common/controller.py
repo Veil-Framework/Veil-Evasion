@@ -112,19 +112,19 @@ class Controller:
 
         self.outputFileName = ""
 
-        self.commands = [   ("use","use a specific payload"),
-                            ("info","information on a specific payload"),
-                            ("list","list available payloads"),
-                            ("update","update Veil to the latest version"),
-                            ("clean","clean out payload folders"),
-                            ("checkvt","check payload hashes vs. VirusTotal"),
-                            ("exit","exit Veil")]
+        self.commands = [   ("use","Use a specific payload"),
+                            ("info","Information on a specific payload"),
+                            ("list","List available payloads"),
+                            ("update","Update Veil-Evasion to the latest version"),
+                            ("clean","Clean out payload folders"),
+                            ("checkvt","Check payload hashes vs. VirusTotal"),
+                            ("exit","Exit Veil-Evasion")]
 
-        self.payloadCommands = [    ("set","set a specific option value"),
-                                    ("info","show information about the payload"),
-                                    ("generate","generate payload"),
-                                    ("back","go to the main menu"),
-                                    ("exit","exit Veil")]
+        self.payloadCommands = [    ("set","Set a specific option value"),
+                                    ("info","Show information about the payload"),
+                                    ("generate","Generate payload"),
+                                    ("back","Go to the main menu"),
+                                    ("exit","exit Veil-Evasion")]
 
         self.LoadPayloads()
 
@@ -631,7 +631,7 @@ class Controller:
         messages.endmsg()
 
         if interactive:
-            raw_input(" [>] press any key to return to the main menu: ")
+            raw_input(" [>] Press any key to return to the main menu: ")
             #self.MainMenu(showMessage=True)
 
         return OutputFileName
