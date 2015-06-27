@@ -112,19 +112,19 @@ class Controller:
 
         self.outputFileName = ""
 
-        self.commands = [   ("use","use a specific payload"),
-                            ("info","information on a specific payload"),
-                            ("list","list available payloads"),
-                            ("update","update Veil to the latest version"),
-                            ("clean","clean out payload folders"),
-                            ("checkvt","check payload hashes vs. VirusTotal"),
-                            ("exit","exit Veil")]
+        self.commands = [   ("use","Use a specific payload"),
+                            ("info","Information on a specific payload"),
+                            ("list","List available payloads"),
+                            ("update","Update Veil-Evasion to the latest version"),
+                            ("clean","Clean out payload folders"),
+                            ("checkvt","Check payload hashes vs. VirusTotal"),
+                            ("exit","Exit Veil-Evasion")]
 
-        self.payloadCommands = [    ("set","set a specific option value"),
-                                    ("info","show information about the payload"),
-                                    ("generate","generate payload"),
-                                    ("back","go to the main menu"),
-                                    ("exit","exit Veil")]
+        self.payloadCommands = [    ("set","Set a specific option value"),
+                                    ("info","Show information about the payload"),
+                                    ("generate","Generate payload"),
+                                    ("back","Go to the main menu"),
+                                    ("exit","exit Veil-Evasion")]
 
         self.LoadPayloads()
 
@@ -133,9 +133,9 @@ class Controller:
         """
         Crawl the module path and load up everything found into self.payloads.
         """
-            
+
         # crawl up to 5 levels down the module path
-        for x in xrange(1,5):    
+        for x in xrange(1,5):
             # make the folder structure the key for the module
 
             d = dict( (path[path.find("payloads")+9:-3], imp.load_source( "/".join(path.split("/")[3:])[:-3],path )  ) for path in glob.glob(join(settings.VEIL_EVASION_PATH+"/modules/payloads/" + "*/" * x,'[!_]*.py')) )
@@ -169,7 +169,7 @@ class Controller:
 
     def UpdateVeil(self, interactive=True):
         """
-        Updates Veil by invoking git pull on the OS 
+        Updates Veil by invoking git pull on the OS
 
         """
         print "\n Updating Veil via git...\n"
@@ -218,7 +218,7 @@ class Controller:
         """
         Cleans out the payload source/compiled/handler folders.
         """
-        
+
         # prompt for confirmation if we're in the interactive menu
         if interactive:
             choice = raw_input("\n [>] Are you sure you want to clean payload folders? [y/N] ")
@@ -241,7 +241,7 @@ class Controller:
                 os.system('rm ./tools/vt-notify/results.log 2>/dev/null')
 
                 choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
-        
+
         else:
             print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
             os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
@@ -450,7 +450,7 @@ class Controller:
         payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
         message = "\n Language:\t\t"+helpers.color(payload.language)+"\n Payload:\t\t"+payloadname
         handler = ""
-        
+
         if hasattr(payload, 'shellcode'):
             # check if msfvenom was used or something custom, print appropriately
             if payload.shellcode.customshellcode != "":
@@ -470,7 +470,7 @@ class Controller:
                 else:
                     # try to extract this local IP
                     handler += "set LHOST " + helpers.LHOST() + "\n"
-                
+
                 # extract LPORT if it's there
                 p = re.compile('LPORT=(.*?) ')
                 parts = p.findall(payload.shellcode.msfvenomCommand)
@@ -574,7 +574,7 @@ class Controller:
                     message += " Handler File:\t\t"+handlerFileName + "\n"
         except:
             # is that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-            print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
+            print helpers.color("\n [!] Internal error #1. Please run ./config/update.py !", warning=True)
 
         # print out notes if set
         if hasattr(payload, 'notes'):
@@ -605,10 +605,6 @@ class Controller:
                     # if we're compiling, set the returned file name to the output .exe
                     # so we can return this for external calls to the framework
                     OutputFileName = settings.PAYLOAD_COMPILED_PATH + FinalBaseChoice + ".exe"
- 
-
-        # print the full message containing generation notes
-        print message
 
         # This block of code is going to be used to SHA1 hash our compiled payloads to potentially submit the
         # hash with VTNotify to detect if it's been flagged
@@ -622,16 +618,18 @@ class Controller:
             OutputFile.close()
             HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
             HashFile.close()
+
+            # print the full message containing generation notes
+            print message
+
+            # print the end message
+            messages.endmsg()
         except:
             # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-            print helpers.color("\n [!] Please run ./config/update.py !", warning=True)
-
-
-        # print the end message
-        messages.endmsg()
+            print helpers.color("\n [!] Internal error #2. Please run ./config/update.py !", warning=True)
 
         if interactive:
-            raw_input(" [>] press any key to return to the main menu: ")
+            raw_input(" [>] Press any key to return to the main menu: ")
             #self.MainMenu(showMessage=True)
 
         return OutputFileName
@@ -676,27 +674,27 @@ class Controller:
                 if choice != "":
 
                     parts = choice.strip().split()
+                    cmd = parts[0].lower()
+
                     # display help menu for the payload
-                    if parts[0] == "info":
+                    if cmd == "info":
                         self.PayloadInfo(payload)
                         choice = ""
-                    if parts[0] == "help":
+                    if cmd == "help":
                         messages.helpmsg(self.payloadCommands)
                         choice = ""
                     # head back to the main menu
-                    if parts[0] == "main" or parts[0] == "back":
+                    if cmd == "main" or cmd == "back" or cmd == "home":
                         #finished = True
                         return ""
                         #self.MainMenu()
-                    if parts[0] == "exit":
+                    if cmd == "exit" or cmd == "end" or cmd == "quit":
                         raise KeyboardInterrupt
-
                     # Update Veil via git
-                    if parts[0] == "update":
+                    if cmd == "update":
                         self.UpdateVeil()
-
                     # set specific options
-                    if parts[0] == "set":
+                    if cmd == "set":
 
                         # catch the case of no value being supplied
                         if len(parts) == 1:
@@ -704,7 +702,7 @@ class Controller:
 
                         else:
 
-                            option = parts[1]
+                            option = parts[1].upper()
                             value = "".join(parts[2:])
 
                             #### VALIDATION ####
@@ -724,6 +722,7 @@ class Controller:
                                             else:
                                                 try:
                                                     payload.required_options[option][0] = value
+                                                    print " [i] %s => %s" % (option, value)
                                                 except KeyError:
                                                     print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
                                                 except AttributeError:
@@ -733,6 +732,7 @@ class Controller:
                                         else:
                                             if helpers.isValidHostname(value):
                                                 payload.required_options[option][0] = value
+                                                print " [i] %s => %s" % (option, value)
                                             else:
                                                 print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
@@ -743,6 +743,7 @@ class Controller:
                                     try:
                                         socket.inet_pton(socket.AF_INET6, value)
                                         payload.required_options[option][0] = value
+                                        print " [i] %s => %s" % (option, value)
                                     except socket.error:
                                         print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                         value = ""
@@ -759,6 +760,7 @@ class Controller:
                                     else:
                                         try:
                                             payload.required_options[option][0] = value
+                                            print " [i] %s => %s" % (option, value)
                                         except KeyError:
                                             print helpers.color("\n [!] ERROR: Specify LPORT value in the following screen.\n", warning=True)
                                         except AttributeError:
@@ -770,12 +772,13 @@ class Controller:
                             else:
                                 try:
                                     payload.required_options[option][0] = value
+                                    print " [i] %s => %s" % (option, value)
                                 except:
                                     print helpers.color(" [!] ERROR: Invalid value specified.\n", warning=True)
                                     cmd = ""
 
                     # generate the payload
-                    if parts[0] == "generate":
+                    if cmd == "generate" or cmd == "gen" or cmd == "run" or cmd == "go" or cmd == "do" or cmd == "make":
 
                         # make sure all required options are filled in first
                         if self.ValidatePayload(payload):
@@ -859,7 +862,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
-                                    self.outputFileName = self.PayloadMenu(self.payload, args=args)                                        
+                                    self.outputFileName = self.PayloadMenu(self.payload, args=args)
 
                         cmd = ""
                         showMessage=True
@@ -912,7 +915,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
-                                    self.PayloadInfo(self.payload) 
+                                    self.PayloadInfo(self.payload)
 
                         cmd = ""
                         showMessage=False
@@ -922,11 +925,11 @@ class Controller:
                         cmd = ""
                         showMessage=False
 
-                elif cmd.startswith("list"):
+                elif cmd.startswith("list") or cmd.startswith("ls"):
 
                     if len(cmd.split()) == 1:
                         messages.title()
-                        self.ListPayloads()     
+                        self.ListPayloads()
 
                     cmd = ""
                     showMessage=False
@@ -955,7 +958,7 @@ class Controller:
                 # if nothing is entered
                 else:
                     cmd = ""
-                    showMessage=True
+                    showMessage=False
 
                 # if we're looping forever on the main menu (Veil.py behavior)
                 # reset the output filname to nothing so we don't break the while
