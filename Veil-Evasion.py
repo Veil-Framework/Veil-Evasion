@@ -45,7 +45,7 @@ The RPC requests are as follows:
         params=["payload=X",    -   generate the specified payload with the given options
                 "outputbase=Y"
                 "overwrite=Z",
-                "msfpayload=...",
+                "msfvenom=...",
                 "LHOST=blah]
 
 The return value will be the path to the generated executable.
@@ -258,7 +258,7 @@ if __name__ == '__main__':
         parser.add_argument('-p', metavar="PAYLOAD", nargs='?', const="list", help='Payload to generate. Lists payloads if none specified.')
         parser.add_argument('-c', metavar='OPTION=value', nargs='*', help='Custom payload module options.')
         parser.add_argument('-o', metavar="OUTPUTBASE", default="payload", help='Output file base for source and compiled .exes.')
-        parser.add_argument('--msfpayload', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit shellcode to generate.')
+        parser.add_argument('--msfvenom', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit shellcode to generate.')
         parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
         parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
         parser.add_argument('--pwnstaller', action='store_true', help='Use the Pwnstaller obfuscated loader.')
@@ -315,11 +315,11 @@ if __name__ == '__main__':
                 options['required_options'][name] = [value, ""]
 
         # pull out any msfvenom shellcode specification and msfvenom options
-        if args.msfpayload:
+        if args.msfvenom:
             if args.msfoptions:
-                options['msfvenom'] = [args.msfpayload, args.msfoptions]
+                options['msfvenom'] = [args.msfvenom, args.msfoptions]
             else:
-                options['msfvenom'] = [args.msfpayload, None]
+                options['msfvenom'] = [args.msfvenom, None]
 
         # manually set the payload in the controller object
         controller.SetPayload(args.p, options)
