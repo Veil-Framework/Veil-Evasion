@@ -925,7 +925,7 @@ class Controller:
                         cmd = ""
                         showMessage=False
 
-                elif cmd.startswith("list"):
+                elif cmd.startswith("list") or cmd.startswith("ls"):
 
                     if len(cmd.split()) == 1:
                         messages.title()
@@ -958,7 +958,7 @@ class Controller:
                 # if nothing is entered
                 else:
                     cmd = ""
-                    showMessage=True
+                    showMessage=False
 
                 # if we're looping forever on the main menu (Veil.py behavior)
                 # reset the output filname to nothing so we don't break the while
