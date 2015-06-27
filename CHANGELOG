@@ -1,3 +1,7 @@
+[6.27.2015]
+     Released.: 2.21.2
+     Modified.: Removed references to msfpayload throughout veil-evasion
+
 [6.24.2015]
      Released.: 2.21.1
      Modified.: RPC server now accepts the pwnstaller and doesn't crash (thanks to PR #171)

