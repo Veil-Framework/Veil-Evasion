@@ -702,13 +702,13 @@ class Controller:
 
                         else:
 
-                            option = parts[1].upper()
+                            option = parts[1]
                             value = "".join(parts[2:])
 
                             #### VALIDATION ####
 
                             # validate LHOST
-                            if option == "LHOST":
+                            if option.upper() == "LHOST":
                                 if '.' in value:
                                     hostParts = value.split(".")
 
@@ -753,7 +753,7 @@ class Controller:
                                     value = ""
 
                             # validate LPORT
-                            elif option  == "LPORT":
+                            elif option.upper()  == "LPORT":
                                 try:
                                     if int(value) <= 0 or int(value) >= 65535:
                                         print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
@@ -772,7 +772,7 @@ class Controller:
                             else:
                                 try:
                                     payload.required_options[option][0] = value
-                                    print " [i] %s => %s" % (option, value)
+                                    print " [*] %s => %s" % (option, value)
                                 except:
                                     print helpers.color(" [!] ERROR: Invalid value specified.\n", warning=True)
                                     cmd = ""
