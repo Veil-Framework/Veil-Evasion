@@ -15,17 +15,10 @@ try:
     import symmetricjsonrpc
 except ImportError:
     print '========================================================================='
-    print ' Necessary install component missing'
-    print ' Re-running ./setup/setup.sh'
+    print ' Necessary component missing'
+    print ' Please run: bash %s -s' % os.path.abspath("setup/setup.sh")
     print '========================================================================='
-    time.sleep(3)
-    os.system('cd setup && ./setup.sh')
-    try:
-        import symmetricjsonrpc
-    except ImportError:
-        print '\n [!] Error importing pip'
-        print " [!] Please run 'pip install symmetricjsonrpc' manually\n"
-        sys.exit()
+    sys.exit()
 
 from modules.common import controller
 from modules.common import messages
@@ -116,7 +109,7 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
 
                         # handle a request to generate a payload
                         elif method == "generate":
-                            
+
                             if len(params) > 0:
                                 payloadName,outputbase = "", ""
                                 overwrite = False
@@ -153,7 +146,7 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
 
                                     # don't include these metaoptions
                                     if param.startswith("payload=") or param.startswith("outputbase=") or param.startswith("overwrite=") or param.startswith("pwnstaller="):
-                                        continue 
+                                        continue
 
                                     # extract the name/value from this parameter
                                     name,value = param.split("=")
@@ -187,7 +180,7 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
 
                                 # generate the payload code
                                 code = con.GeneratePayload()
-                                
+
                                 class Args(object): pass
                                 args = Args()
                                 args.overwrite=overwrite
@@ -304,7 +297,7 @@ if __name__ == '__main__':
         elif args.p == "list":
             controller.ListPayloads()
             sys.exit()
-        
+
         # pull out any required options from the command line and
         # build the proper dictionary so we can set the payload manually
         options = {}

