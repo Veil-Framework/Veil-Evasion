@@ -107,7 +107,7 @@ func_apt_deps(){
   # Update repo check
   sudo apt-get -q update
 
-  [[ "$silent" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+  [[ "${silent}" ]] && arg="DEBIAN_FRONTEND=noninteractive"
 
   # Check For 64-bit Kernel
   if [ $(uname -m) == 'x86_64' ]; then
@@ -140,10 +140,10 @@ func_capstone_deps(){
   else
     which pip >/dev/null 2>&-
     if [ "$?" -eq 0 ]; then
-      echo -e ' [*] Installing via PIP'
+      echo -e ' [*] Installing Capstone via PIP'
       sudo pip install capstone
     else    # In theory, we should never end up here
-      echo -e ' [*] Installing from source'
+      echo -e ' [*] Installing Capstone from source'
       git clone https://github.com/aquynh/capstone "${rootdir}/setup/capstone/"
       cd "${rootdir}/setup/capstone/"
       git checkout b53a59af53ffbd5dbe8dbcefba41a00cf4fc7469
@@ -170,29 +170,30 @@ func_python_deps(){
   if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]; then
     echo -e '\n\n [*] SymmetricJSONRPC Already Installed... Skipping.'
   else
-    echo -e '\n\n [*] Installing SymmetricJSONRPC Dependency'
+    echo -e '\n\n [*] Installing SymmetricJSONRPC Dependency...'
     sudo pip install symmetricjsonrpc
     echo ''
     [ "$?" -ne "0" ] && echo -e " [ERROR] Failed To Install SymmetricJSONRPC... Exit Code: $?.\n" && exit 1
   fi
 
-  # Prepare (Wine) Directories
-  echo -e '\n\n [*] Preparing (Wine) Directories '
+  # Prepare (Wine) Directories - Required before Python
+  echo -e '\n\n [*] Preparing (Wine) Directories...'
   mkdir -p ~/.wine/drive_c/Python27/Lib/site-packages/
   unzip -q -o -d ~/.wine/drive_c/Python27/Lib/ "${rootdir}/setup/distutils.zip"
   unzip -q -o -d ~/.wine/drive_c/Python27/ "${rootdir}/setup/tcl.zip"
-  unzip -q -o -d ~/.wine/drive_c/Python27/ "${rootdir}/setup/tcl.zip"
+  unzip -q -o -d ~/.wine/drive_c/Python27/ "${rootdir}/setup/Tools.zip"
+
 
   # Install Setup Files
-  echo -e '\n\n [*] Installing (Wine) Python & Dependencies'
-
-  [[ "$silent" ]] && arg="/q"
+  echo -e '\n\n [*] Installing (Wine) Python...'
+  [[ "${silent}" ]] && arg="/q"
   wine msiexec /i "${rootdir}/setup/python-2.7.5.msi" $arg
   [ "$?" -ne "0" ] && echo -e " [ERROR] Failed To Install (Wine) Python 2.7.5... Exit Code: $?.\n" && exit 1
 
+  echo -e '\n\n [*] Installing (Wine) Python Dependencies...'
   pushd "${rootdir}/setup/" >/dev/null
   for FILE in pywin32-218.win32-py2.7.exe pycrypto-2.6.win32-py2.7.exe; do
-    if [[ "$silent" ]]; then
+    if [[ "${silent}" ]]; then
       unzip -q -o "${FILE}"
       cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
       rm -rf "PLATLIB/" "SCRIPTS/"
@@ -204,13 +205,13 @@ func_python_deps(){
   popd >/dev/null
 
   if [ "${os}" == "kali" ]; then
-    echo -e ' [*] Installing PyInstaller via repos'
+    echo -e '\n\n [*] Installing PyInstaller via repos...'
     sudo apt-get -y -q install pyinstaller
   else
     if [ -d "/opt/pyinstaller-2.0/" ]; then
       echo -e '\n\n [*] PyInstaller Already Installed... Skipping.'
     else
-      echo -e ' [*] Installing PyInstaller via ZIP'
+      echo -e '\n\n [*] Installing PyInstaller via ZIP...'
       sudo unzip -q -o -d /opt "${rootdir}/setup/pyinstaller-2.0.zip"
       sudo chmod -R 0755 /opt/pyinstaller-2.0/
     fi
