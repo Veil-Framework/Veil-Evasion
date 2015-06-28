@@ -329,6 +329,7 @@ class Controller:
                     # if the entered number matches the payload #, use that payload
                     if int(payloadname) == x:
                         self.payload = pay
+                        break
                     x += 1
 
         # if a payload isn't found, then list available payloads and exit
@@ -344,6 +345,11 @@ class Controller:
             # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
             if 'msfvenom' in options:
                 self.payload.shellcode.SetPayload(options['msfvenom'])
+
+            if not self.ValidatePayload(self.payload):
+                print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
+                # TODO: Display payload name & required options (current values & missing values)
+                sys.exit()
 
         else:
 
@@ -871,6 +877,7 @@ class Controller:
                                 if int(p) == x:
                                     self.payload = pay
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
+                                    break
                                 x += 1
 
                         # else choosing the payload by name
@@ -924,6 +931,7 @@ class Controller:
                                 if int(p) == x:
                                     self.payload = pay
                                     self.PayloadInfo(self.payload)
+                                    break
                                 x += 1
 
                         # else choosing the payload by name
@@ -968,6 +976,7 @@ class Controller:
                         if int(cmd) == x:
                             self.payload = pay
                             self.outputFileName = self.PayloadMenu(self.payload, args=args)
+                            break
                         x += 1
                     cmd = ""
                     if settings.TERMINAL_CLEAR != "false": showMessage=True
