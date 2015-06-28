@@ -10,7 +10,7 @@
 
 $PROGRAM_NAME = 'VirusTotalNotifier'
 
-# require 'rubygems' # uncomment this for use w/ ruby 1.8.7
+# Require 'rubygems' # Uncomment this for use w/ ruby 1.8.7
 require 'json'
 require 'net/http'
 require 'digest/sha1'
@@ -18,7 +18,7 @@ require 'optparse'
 require 'net/smtp'
 
 def send_email(to,opts={})
-    #  http://fuelyourcoding.com/emailify-your-app-with-gmail-and-ruby/
+    # http://fuelyourcoding.com/emailify-your-app-with-gmail-and-ruby/
     Gmail.new($gmailusername, $gmailpassword) do |gmail|
         gmail.deliver do
           to "#{to}"
@@ -69,7 +69,7 @@ def parse_results(result, hashNameList)
                     begin
                         require 'gmail'
                     rescue LoadError
-                        puts "Interactive use requires the gmail gem."  
+                        puts "Interactive use requires the gmail gem."
                         puts "Please install it with \"sudo gem install gmail\""
                         exit 1
                     end
@@ -204,7 +204,7 @@ loop {
         next
     end
 
-    #Remove already detected
+    # Remove already detected
     $found.each do |removeme|
         hashlist.delete(removeme)
     end
@@ -214,10 +214,10 @@ loop {
     $notfound = 0
     hashgroup = breakuplist(hashlist)
 
-    # delete any empty groups as a result of the list being divisible by 25
+    # Delete any empty groups as a result of the list being divisible by 25
     hashgroup.delete([])
 
-    #puts hashgroup.inspect
+    # Puts hashgroup.inspect
     apiminutelimit = 1
     hashgroup.each do |group|
         response = ping_vt(group.join(','))
@@ -246,7 +246,7 @@ loop {
         end
     end
 
-    system("clear")
+    #system("clear")
     puts ""
     puts " ======================================"
     puts "          VT-Notify    RESULTS         "

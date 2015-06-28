@@ -28,8 +28,8 @@ if os.path.exists("/etc/veil/settings.py"):
         try:
             settings.VEIL_EVASION_PATH
         except AttributeError:
-            os.system('clear')
-            print '========================================================================='
+            #os.system('clear')
+            print '\n========================================================================='
             print ' New major Veil-Evasion version installed'
             print ' Re-running ./setup/setup.sh'
             print '========================================================================='
@@ -51,8 +51,8 @@ elif os.path.exists("./config/settings.py"):
         sys.exit()
 else:
     # if the file isn't found, try to run the update script
-    os.system('clear')
-    print '========================================================================='
+    #os.system('clear')
+    print '\n========================================================================='
     print ' Veil First Run Detected... Initializing Script Setup...'
     print '========================================================================='
     # run the config if it hasn't been run
@@ -154,7 +154,7 @@ class Controller:
         Prints out available payloads in a nicely formatted way.
         """
 
-        print helpers.color(" [*] Available payloads:\n")
+        print helpers.color("\n [*] Available Payloads:\n")
         lastBase = None
         x = 1
         for (name, payload) in self.payloads:
@@ -269,7 +269,7 @@ class Controller:
 
         """
         if showTitle:
-            messages.title()
+            if settings.TERMINAL_CLEAR != "false": messages.title()
 
         if showInfo:
             # extract the payload class name from the instantiated object, then chop off the load folder prefix
@@ -289,7 +289,7 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(self.payload, 'required_options'):
-            print helpers.color("\n Required Options:\n")
+            print helpers.color("\n [*] Required Options:\n")
 
             print " Name\t\t\tCurrent Value\tDescription"
             print " ----\t\t\t-------------\t-----------"
@@ -397,11 +397,10 @@ class Controller:
         # only show get input if we're doing the interactive menu
         if interactive:
             if showTitle:
-                messages.title()
+                if settings.TERMINAL_CLEAR != "false": messages.title()
 
             # Get the base install name for the payloads (i.e. OutputBaseChoice.py/OutputBaseChoice.exe)
-            print " [*] Press [enter] for 'payload'"
-            OutputBaseChoice = raw_input(" [>] Please enter the base name for output files: ")
+            OutputBaseChoice = raw_input("\n [>] Please enter the base name for output files (default is 'payload'): ")
 
             # ensure we get a base name and not a full path
             while OutputBaseChoice != "" and "/" in OutputBaseChoice:
@@ -581,8 +580,6 @@ class Controller:
             #message += " Notes:\t\t\t" + payload.notes
             message += helpers.formatLong("Notes:", payload.notes, frontTab=False, spacing=24)
 
-        message += "\n"
-
         # check if compile_to_exe is in the required options, if so,
         # call supportfiles.supportingFiles() to compile appropriately
         if hasattr(self.payload, 'required_options'):
@@ -652,14 +649,14 @@ class Controller:
 
         # show the title if specified
         if showTitle:
-            messages.title()
+            if settings.TERMINAL_CLEAR != "false": messages.title()
 
         # extract the payload class name from the instantiated object
         # YES, I know this is a giant hack :(
         # basically need to find "payloads" in the path name, then build
         # everything as appropriate
         payloadname = "/".join(str(str(payload.__class__)[str(payload.__class__).find("payloads"):]).split(".")[0].split("/")[1:])
-        print " Payload: " + helpers.color(payloadname) + " loaded\n"
+        print "\n Payload: " + helpers.color(payloadname) + " loaded\n"
 
         self.PayloadInfo(payload, showTitle=False, showInfo=False)
         messages.helpmsg(self.payloadCommands, showTitle=False)
@@ -820,23 +817,24 @@ class Controller:
 
                 if showMessage:
                     # print the title, where we are, and number of payloads loaded
-                    messages.title()
+                    if settings.TERMINAL_CLEAR != "false": messages.title()
                     print " Main Menu\n"
                     print "\t" + helpers.color(str(len(self.payloads))) + " payloads loaded\n"
                     messages.helpmsg(self.commands, showTitle=False)
+                    showTitle=False
 
                 cmd = raw_input(' [>] Please enter a command: ').strip()
 
                 # handle our tab completed commands
                 if cmd.startswith("help"):
-                    messages.title()
+                    if settings.TERMINAL_CLEAR != "false": messages.title()
                     cmd = ""
                     showMessage=False
 
                 elif cmd.startswith("use"):
 
                     if len(cmd.split()) == 1:
-                        messages.title()
+                        if settings.TERMINAL_CLEAR != "false": messages.title()
                         self.ListPayloads()
                         showMessage=False
                         cmd = ""
@@ -865,7 +863,7 @@ class Controller:
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
 
                         cmd = ""
-                        showMessage=True
+                        if settings.TERMINAL_CLEAR != "false": showMessage=True
 
                     # error catchings if not of form [use BLAH]
                     else:
@@ -874,24 +872,24 @@ class Controller:
 
                 elif cmd.startswith("update"):
                     self.UpdateVeil()
-                    showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage=True
                     cmd = ""
 
                 elif cmd.startswith("checkvt"):
                     self.CheckVT()
-                    showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage=True
                     cmd = ""
 
                 # clean payload folders
                 if cmd.startswith("clean"):
                     self.CleanPayloads()
-                    showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage=True
                     cmd = ""
 
                 elif cmd.startswith("info"):
 
                     if len(cmd.split()) == 1:
-                        showMessage=True
+                        if settings.TERMINAL_CLEAR != "false": showMessage=True
                         cmd = ""
 
                     elif len(cmd.split()) == 2:
@@ -928,7 +926,7 @@ class Controller:
                 elif cmd.startswith("list") or cmd.startswith("ls"):
 
                     if len(cmd.split()) == 1:
-                        messages.title()
+                        if settings.TERMINAL_CLEAR != "false": messages.title()
                         self.ListPayloads()
 
                     cmd = ""
@@ -953,7 +951,7 @@ class Controller:
                             self.outputFileName = self.PayloadMenu(self.payload, args=args)
                         x += 1
                     cmd = ""
-                    showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage=True
 
                 # if nothing is entered
                 else:
