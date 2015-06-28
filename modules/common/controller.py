@@ -122,6 +122,7 @@ class Controller:
 
         self.payloadCommands = [    ("set","Set a specific option value"),
                                     ("info","Show information about the payload"),
+                                    ("options","Show payload's options"),
                                     ("generate","Generate payload"),
                                     ("back","Go to the main menu"),
                                     ("exit","exit Veil-Evasion")]
@@ -258,6 +259,17 @@ class Controller:
 
             print "\n [*] Folders cleaned\n"
 
+    def PayloadOptions(self, payload):
+        print helpers.color("\n Required Options:\n")
+
+        print " Name\t\t\tCurrent Value\tDescription"
+        print " ----\t\t\t-------------\t-----------"
+
+        # sort the dictionary by key before we output, so it looks nice
+        for key in sorted(self.payload.required_options.iterkeys()):
+            print " %s\t%s\t%s" % ('{0: <16}'.format(key), '{0: <8}'.format(payload.required_options[key][0]), payload.required_options[key][1])
+
+        print ""
 
     def PayloadInfo(self, payload, showTitle=True, showInfo=True):
         """
@@ -289,17 +301,7 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(self.payload, 'required_options'):
-            print helpers.color("\n [*] Required Options:\n")
-
-            print " Name\t\t\tCurrent Value\tDescription"
-            print " ----\t\t\t-------------\t-----------"
-
-            # sort the dictionary by key before we output, so it looks nice
-            for key in sorted(self.payload.required_options.iterkeys()):
-                print " %s\t%s\t%s" % ('{0: <16}'.format(key), '{0: <8}'.format(payload.required_options[key][0]), payload.required_options[key][1])
-
-            print ""
-
+            self.PayloadOptions(self.payload)
 
     def SetPayload(self, payloadname, options):
         """
@@ -719,18 +721,18 @@ class Controller:
                                                 print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
                                             else:
                                                 try:
-                                                    payload.required_options[option][0] = value
-                                                    print " [i] %s => %s" % (option, value)
+                                                    payload.required_options[option.upper()][0] = value
+                                                    print " [i] %s => %s" % (option.upper(), value)
                                                 except KeyError:
-                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                                    print helpers.color("\n [!] ERROR #1: Specify LHOST value in the following screen.\n", warning=True)
                                                 except AttributeError:
-                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                                    print helpers.color("\n [!] ERROR #2: Specify LHOST value in the following screen.\n", warning=True)
 
                                         # assume we've been passed a domain name
                                         else:
                                             if helpers.isValidHostname(value):
-                                                payload.required_options[option][0] = value
-                                                print " [i] %s => %s" % (option, value)
+                                                payload.required_options[option.upper()][0] = value
+                                                print " [i] %s => %s" % (option.upper(), value)
                                             else:
                                                 print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
@@ -740,8 +742,8 @@ class Controller:
                                 elif ':' in value:
                                     try:
                                         socket.inet_pton(socket.AF_INET6, value)
-                                        payload.required_options[option][0] = value
-                                        print " [i] %s => %s" % (option, value)
+                                        payload.required_options[option.upper()][0] = value
+                                        print " [i] %s => %s" % (option.upper(), value)
                                     except socket.error:
                                         print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                         value = ""
@@ -757,8 +759,8 @@ class Controller:
                                         print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
                                     else:
                                         try:
-                                            payload.required_options[option][0] = value
-                                            print " [i] %s => %s" % (option, value)
+                                            payload.required_options[option.upper()][0] = value
+                                            print " [i] %s => %s" % (option.upper(), value)
                                         except KeyError:
                                             print helpers.color("\n [!] ERROR: Specify LPORT value in the following screen.\n", warning=True)
                                         except AttributeError:
@@ -769,8 +771,8 @@ class Controller:
                             # set the specific option value if not validation done
                             else:
                                 try:
-                                    payload.required_options[option][0] = value
-                                    print " [*] %s => %s" % (option, value)
+                                    payload.required_options[option.upper()][0] = value
+                                    print " [*] %s => %s" % (option.upper(), value)
                                 except:
                                     print helpers.color(" [!] ERROR: Invalid value specified.\n", warning=True)
                                     cmd = ""
@@ -792,6 +794,10 @@ class Controller:
 
                         else:
                             print helpers.color("\n [!] WARNING: not all required options filled\n", warning=True)
+                    if cmd == "options":
+                        # if required options were specified, output them
+                        if hasattr(self.payload, 'required_options'):
+                            self.PayloadOptions(self.payload)
 
 
     def MainMenu(self, showMessage=True, args=None):
