@@ -322,19 +322,31 @@ class Controller:
                 # set the internal payload variable
                 self.payload = payload
 
-                # options['customShellcode'] = "\x00..."
-                if 'customShellcode' in options:
-                    self.payload.shellcode.setCustomShellcode(options['customShellcode'])
-                # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
-                if 'required_options' in options:
-                    for k,v in options['required_options'].items():
-                        self.payload.required_options[k] = v
-                # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
-                if 'msfvenom' in options:
-                    self.payload.shellcode.SetPayload(options['msfvenom'])
+            # did they enter a number rather than the full payload?
+            elif payloadname.isdigit() and 0 < int(payloadname) <= len(self.payloads):
+                x = 1
+                for (name, pay) in self.payloads:
+                    # if the entered number matches the payload #, use that payload
+                    if int(payloadname) == x:
+                        self.payload = pay
+                    x += 1
 
         # if a payload isn't found, then list available payloads and exit
-        if not self.payload:
+        if self.payload:
+
+            # options['customShellcode'] = "\x00..."
+            if 'customShellcode' in options:
+                self.payload.shellcode.setCustomShellcode(options['customShellcode'])
+            # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
+            if 'required_options' in options:
+                for k,v in options['required_options'].items():
+                    self.payload.required_options[k] = v
+            # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
+            if 'msfvenom' in options:
+                self.payload.shellcode.SetPayload(options['msfvenom'])
+
+        else:
+
             print helpers.color(" [!] Invalid payload selected\n\n", warning=True)
             self.ListPayloads()
             sys.exit()
