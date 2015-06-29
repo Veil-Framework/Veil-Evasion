@@ -627,7 +627,8 @@ class Controller:
 
         if interactive:
             raw_input(" [>] Press any key to return to the main menu: ")
-            #self.MainMenu(showMessage=True)
+            print ""
+            self.MainMenu(showMessage=True)
 
         return OutputFileName
 

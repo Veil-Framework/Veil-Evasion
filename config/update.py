@@ -34,7 +34,7 @@ def generateConfig(options):
     config += 'OPERATING_SYSTEM="' + options['OPERATING_SYSTEM'] + '"\n\n'
     print "\n [*] OPERATING_SYSTEM = " + options['OPERATING_SYSTEM']
 
-    config += '# Terminal clearing method to use ("false" to disable it)\n'
+    config += '# Terminal clearing method to use (use "false" to disable it)\n'
     config += 'TERMINAL_CLEAR="' + options['TERMINAL_CLEAR'] + '"\n\n'
     print " [*] TERMINAL_CLEAR = " + options['TERMINAL_CLEAR']
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
         if issue.startswith("Kali"):
             options["OPERATING_SYSTEM"] = "Kali"
-            options["TERMINAL_CLEAR"] = "disabled"
+            options["TERMINAL_CLEAR"] = "clear"
             options["METASPLOIT_PATH"] = "/usr/share/metasploit-framework/"
             if os.path.isfile('/usr/bin/msfvenom'):
                 options["MSFVENOM_PATH"] = "/usr/bin/"
