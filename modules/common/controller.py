@@ -669,7 +669,7 @@ class Controller:
 
             while True:
 
-                choice = raw_input(" [>] Please enter a command: ").strip()
+                choice = raw_input(" [%s>>]: " % payloadname).strip()
 
                 if choice != "":
 
@@ -702,13 +702,13 @@ class Controller:
 
                         else:
 
-                            option = parts[1]
+                            option = parts[1].upper()
                             value = "".join(parts[2:])
 
                             #### VALIDATION ####
 
                             # validate LHOST
-                            if option.upper() == "LHOST":
+                            if option == "LHOST":
                                 if '.' in value:
                                     hostParts = value.split(".")
 
@@ -721,8 +721,8 @@ class Controller:
                                                 print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
                                             else:
                                                 try:
-                                                    payload.required_options[option.upper()][0] = value
-                                                    print " [i] %s => %s" % (option.upper(), value)
+                                                    payload.required_options[option][0] = value
+                                                    print " [i] %s => %s" % (option, value)
                                                 except KeyError:
                                                     print helpers.color("\n [!] ERROR #1: Specify LHOST value in the following screen.\n", warning=True)
                                                 except AttributeError:
@@ -731,8 +731,8 @@ class Controller:
                                         # assume we've been passed a domain name
                                         else:
                                             if helpers.isValidHostname(value):
-                                                payload.required_options[option.upper()][0] = value
-                                                print " [i] %s => %s" % (option.upper(), value)
+                                                payload.required_options[option][0] = value
+                                                print " [i] %s => %s" % (option, value)
                                             else:
                                                 print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
 
@@ -742,8 +742,8 @@ class Controller:
                                 elif ':' in value:
                                     try:
                                         socket.inet_pton(socket.AF_INET6, value)
-                                        payload.required_options[option.upper()][0] = value
-                                        print " [i] %s => %s" % (option.upper(), value)
+                                        payload.required_options[option][0] = value
+                                        print " [i] %s => %s" % (option, value)
                                     except socket.error:
                                         print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                         value = ""
@@ -753,14 +753,14 @@ class Controller:
                                     value = ""
 
                             # validate LPORT
-                            elif option.upper()  == "LPORT":
+                            elif option  == "LPORT":
                                 try:
                                     if int(value) <= 0 or int(value) >= 65535:
                                         print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
                                     else:
                                         try:
-                                            payload.required_options[option.upper()][0] = value
-                                            print " [i] %s => %s" % (option.upper(), value)
+                                            payload.required_options[option][0] = value
+                                            print " [i] %s => %s" % (option, value)
                                         except KeyError:
                                             print helpers.color("\n [!] ERROR: Specify LPORT value in the following screen.\n", warning=True)
                                         except AttributeError:
@@ -771,8 +771,8 @@ class Controller:
                             # set the specific option value if not validation done
                             else:
                                 try:
-                                    payload.required_options[option.upper()][0] = value
-                                    print " [*] %s => %s" % (option.upper(), value)
+                                    payload.required_options[option][0] = value
+                                    print " [*] %s => %s" % (option, value)
                                 except:
                                     print helpers.color(" [!] ERROR: Invalid value specified.\n", warning=True)
                                     cmd = ""
@@ -830,7 +830,7 @@ class Controller:
                     messages.helpmsg(self.commands, showTitle=False)
                     showTitle=False
 
-                cmd = raw_input(' [>] Please enter a command: ').strip()
+                cmd = raw_input(' [menu>>]: ').strip()
 
                 # handle our tab completed commands
                 if cmd.startswith("help"):

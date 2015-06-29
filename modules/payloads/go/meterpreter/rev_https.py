@@ -22,9 +22,11 @@ class Payload:
         self.rating = "Normal"
 
         # options we require user ineraction for- format is {Option : [Value, Description]]}
-        self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
-                                    "LPORT" : ["", "Port of the metasploit handler"],
-                                    "compile_to_exe" : ["Y", "Compile to an executable"]}
+        self.required_options = {
+                                    "LHOST"          : ["", "IP of the Metasploit handler"],
+                                    "LPORT"          : ["8443", "Port of the Metasploit handler"],
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"]
+                                }
     def generate(self):
         memCommit = helpers.randomString()
         memReserve = helpers.randomString()
