@@ -17,7 +17,7 @@ func_title(){
   echo '=========================================================================='
   echo ' Veil-Evasion Setup Script | [Updated]: 2015-06-27'
   echo '=========================================================================='
-  echo ' [Web]: https://www.veil-framework.com | [Twitter]: @VeilFramework'
+  echo ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
   echo '=========================================================================='
 }
 

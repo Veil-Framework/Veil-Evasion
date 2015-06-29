@@ -108,7 +108,7 @@ def supportingFiles(payload, payloadFile, options):
                ) or ( architecture == "64" \
                 and not os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
                 # Tim Medin's Patch for non-root non-kali users
-                messages.title()
+                if settings.TERMINAL_CLEAR != "false": messages.title()
                 if architecture == "32":
                     print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine/drive_c/Python27/'), warning=True)
                 else:
@@ -130,7 +130,7 @@ def supportingFiles(payload, payloadFile, options):
             os.system('rm *.spec')
             os.system('rm logdict*.*')
 
-            messages.title()
+            if settings.TERMINAL_CLEAR != "false": messages.title()
             print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language.lower() == "c":
@@ -141,7 +141,7 @@ def supportingFiles(payload, payloadFile, options):
         # Compile our C code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
         os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + " -lwsock32")
 
-        messages.title()
+        if settings.TERMINAL_CLEAR != "false": messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language.lower() == "cs":
@@ -152,7 +152,7 @@ def supportingFiles(payload, payloadFile, options):
         # Compile our CS code into an executable and pass a compiler flag to prevent it from opening a command prompt when run
         os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
-        messages.title()
+        if settings.TERMINAL_CLEAR != "false": messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language.lower() == "ruby":
@@ -162,7 +162,7 @@ def supportingFiles(payload, payloadFile, options):
 
         os.system('wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
 
-        messages.title()
+        if settings.TERMINAL_CLEAR != "false": messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language.lower() == "go":
@@ -170,11 +170,11 @@ def supportingFiles(payload, payloadFile, options):
 
         os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
 
-        messages.title()
+        if settings.TERMINAL_CLEAR != "false": messages.title()
         print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     else:
-        messages.title()
+        if settings.TERMINAL_CLEAR != "false": messages.title()
         print helpers.color("\n [!] ERROR: Only python, c, c#, and ruby compilation is currently supported.\n", warning=True)
 
 
@@ -1412,9 +1412,8 @@ def generatePwnstaller():
     up, and move the loader to the appropriate Pyinstaller location.
     """
 
-    os.system('clear')
-
-    print "========================================================================="
+    #os.system('clear')
+    print "\n========================================================================="
     print " Pwnstaller | [Version]: %s" %(PWNSTALLER_VERSION)
     print "========================================================================="
     print " [Web]: http://harmj0y.net/ | [Twitter]: @harmj0y"
