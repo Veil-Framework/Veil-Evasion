@@ -122,6 +122,7 @@ class Controller:
 
         self.payloadCommands = [    ("set","Set a specific option value"),
                                     ("info","Show information about the payload"),
+                                    ("options","Show payload's options"),
                                     ("generate","Generate payload"),
                                     ("back","Go to the main menu"),
                                     ("exit","exit Veil-Evasion")]
@@ -258,6 +259,17 @@ class Controller:
 
             print "\n [*] Folders cleaned\n"
 
+    def PayloadOptions(self, payload):
+        print helpers.color("\n Required Options:\n")
+
+        print " Name\t\t\tCurrent Value\tDescription"
+        print " ----\t\t\t-------------\t-----------"
+
+        # sort the dictionary by key before we output, so it looks nice
+        for key in sorted(self.payload.required_options.iterkeys()):
+            print " %s\t%s\t%s" % ('{0: <16}'.format(key), '{0: <8}'.format(payload.required_options[key][0]), payload.required_options[key][1])
+
+        print ""
 
     def PayloadInfo(self, payload, showTitle=True, showInfo=True):
         """
@@ -289,17 +301,7 @@ class Controller:
 
         # if required options were specified, output them
         if hasattr(self.payload, 'required_options'):
-            print helpers.color("\n [*] Required Options:\n")
-
-            print " Name\t\t\tCurrent Value\tDescription"
-            print " ----\t\t\t-------------\t-----------"
-
-            # sort the dictionary by key before we output, so it looks nice
-            for key in sorted(self.payload.required_options.iterkeys()):
-                print " %s\t%s\t%s" % ('{0: <16}'.format(key), '{0: <8}'.format(payload.required_options[key][0]), payload.required_options[key][1])
-
-            print ""
-
+            self.PayloadOptions(self.payload)
 
     def SetPayload(self, payloadname, options):
         """
@@ -667,7 +669,7 @@ class Controller:
 
             while True:
 
-                choice = raw_input(" [>] Please enter a command: ").strip()
+                choice = raw_input(" [%s>>]: " % payloadname).strip()
 
                 if choice != "":
 
@@ -700,13 +702,13 @@ class Controller:
 
                         else:
 
-                            option = parts[1]
+                            option = parts[1].upper()
                             value = "".join(parts[2:])
 
                             #### VALIDATION ####
 
                             # validate LHOST
-                            if option.upper() == "LHOST":
+                            if option == "LHOST":
                                 if '.' in value:
                                     hostParts = value.split(".")
 
@@ -722,9 +724,9 @@ class Controller:
                                                     payload.required_options[option][0] = value
                                                     print " [i] %s => %s" % (option, value)
                                                 except KeyError:
-                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                                    print helpers.color("\n [!] ERROR #1: Specify LHOST value in the following screen.\n", warning=True)
                                                 except AttributeError:
-                                                    print helpers.color("\n [!] ERROR: Specify LHOST value in the following screen.\n", warning=True)
+                                                    print helpers.color("\n [!] ERROR #2: Specify LHOST value in the following screen.\n", warning=True)
 
                                         # assume we've been passed a domain name
                                         else:
@@ -751,7 +753,7 @@ class Controller:
                                     value = ""
 
                             # validate LPORT
-                            elif option.upper()  == "LPORT":
+                            elif option  == "LPORT":
                                 try:
                                     if int(value) <= 0 or int(value) >= 65535:
                                         print helpers.color("\n [!] ERROR: Bad port number specified.\n", warning=True)
@@ -792,6 +794,10 @@ class Controller:
 
                         else:
                             print helpers.color("\n [!] WARNING: not all required options filled\n", warning=True)
+                    if cmd == "options":
+                        # if required options were specified, output them
+                        if hasattr(self.payload, 'required_options'):
+                            self.PayloadOptions(self.payload)
 
 
     def MainMenu(self, showMessage=True, args=None):
@@ -824,7 +830,7 @@ class Controller:
                     messages.helpmsg(self.commands, showTitle=False)
                     showTitle=False
 
-                cmd = raw_input(' [>] Please enter a command: ').strip()
+                cmd = raw_input(' [menu>>]: ').strip()
 
                 # handle our tab completed commands
                 if cmd.startswith("help"):
