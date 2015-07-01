@@ -101,6 +101,7 @@ class Controller:
         self.payloads = list()
         # a specific payload, so we can set it manually
         self.payload = None
+        self.payloadname = None
         # restrict loaded modules to specific languages
         self.langs = langs
 
@@ -321,20 +322,40 @@ class Controller:
 
                 # set the internal payload variable
                 self.payload = payload
+                self.payloadname = name
 
-                # options['customShellcode'] = "\x00..."
-                if 'customShellcode' in options:
-                    self.payload.shellcode.setCustomShellcode(options['customShellcode'])
-                # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
-                if 'required_options' in options:
-                    for k,v in options['required_options'].items():
-                        self.payload.required_options[k] = v
-                # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
-                if 'msfvenom' in options:
-                    self.payload.shellcode.SetPayload(options['msfvenom'])
+            # did they enter a number rather than the full payload?
+            elif payloadname.isdigit() and 0 < int(payloadname) <= len(self.payloads):
+                x = 1
+                for (name, pay) in self.payloads:
+                    # if the entered number matches the payload #, use that payload
+                    if int(payloadname) == x:
+                        self.payload = pay
+                        self.payloadname = name
+                    x += 1
 
         # if a payload isn't found, then list available payloads and exit
-        if not self.payload:
+        if self.payload:
+
+            # options['customShellcode'] = "\x00..."
+            if 'customShellcode' in options:
+                self.payload.shellcode.setCustomShellcode(options['customShellcode'])
+            # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
+            if 'required_options' in options:
+                for k,v in options['required_options'].items():
+                    self.payload.required_options[k] = v
+            # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
+            if 'msfvenom' in options:
+                self.payload.shellcode.SetPayload(options['msfvenom'])
+
+            if not self.ValidatePayload(self.payload):
+                print " Payload: %s\n" % self.payloadname
+                print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
+                self.PayloadOptions(self.payload)
+                sys.exit()
+
+        else:
+
             print helpers.color(" [!] Invalid payload selected\n\n", warning=True)
             self.ListPayloads()
             sys.exit()
@@ -858,6 +879,7 @@ class Controller:
                                 # if the entered number matches the payload #, use that payload
                                 if int(p) == x:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
                                 x += 1
 
@@ -867,6 +889,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
 
                         cmd = ""
@@ -911,6 +934,7 @@ class Controller:
                                 # if the entered number matches the payload #, use that payload
                                 if int(p) == x:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.PayloadInfo(self.payload)
                                 x += 1
 
@@ -920,6 +944,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.PayloadInfo(self.payload)
 
                         cmd = ""
@@ -955,6 +980,7 @@ class Controller:
                         # if the entered number matches the payload #, use that payload
                         if int(cmd) == x:
                             self.payload = pay
+                            self.payloadname = name
                             self.outputFileName = self.PayloadMenu(self.payload, args=args)
                         x += 1
                     cmd = ""
