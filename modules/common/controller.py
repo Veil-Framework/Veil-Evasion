@@ -31,52 +31,28 @@ if os.path.exists("/etc/veil/settings.py"):
             #os.system('clear')
             print '\n========================================================================='
             print ' New major Veil-Evasion version installed'
-            print ' Re-running ./setup/setup.sh'
             print '========================================================================='
-            time.sleep(3)
-            os.system('cd setup && ./setup.sh')
-
-            # reload the settings import to refresh the values
-            reload(settings)
+            print '\n [*] Manually run: bash %s -s' % os.path.abspath("setup/setup.sh")
+            sys.exit()
 
     except ImportError:
-        print "\n [!] ERROR: run ./config/update.py manually\n"
+        print "\n [!] ERROR #1: run %s manually\n" % (os.path.abspath("./config/update.py"))
         sys.exit()
 elif os.path.exists("./config/settings.py"):
     try:
         sys.path.append("./config")
         import settings
     except ImportError:
-        print "\n [!] ERROR: run ./config/update.py manually\n"
+        print "\n [!] ERROR #2: run %s manually\n" % (os.path.abspath("./config/update.py"))
         sys.exit()
 else:
     # if the file isn't found, try to run the update script
     #os.system('clear')
     print '\n========================================================================='
-    print ' Veil First Run Detected... Initializing Script Setup...'
+    print ' Veil First Run Detected...'
     print '========================================================================='
-    # run the config if it hasn't been run
-    print '\n [*] Executing ./setup/setup.sh'
-    os.system('cd setup && ./setup.sh')
-
-    # check for the config again and error out if it can't be found.
-    if os.path.exists("/etc/veil/settings.py"):
-        try:
-            sys.path.append("/etc/veil/")
-            import settings
-        except ImportError:
-            print "\n [!] ERROR: run ./config/update.py manually\n"
-            sys.exit()
-    elif os.path.exists("./config/settings.py"):
-        try:
-            sys.path.append("./config")
-            import settings
-        except ImportError:
-            print "\n [!] ERROR: run ./config/update.py manually\n"
-            sys.exit()
-    else:
-        print "\n [!] ERROR: run ./config/update.py manually\n"
-        sys.exit()
+    print '\n [*] Manually run: bash %s -s' % os.path.abspath("setup/setup.sh")
+    sys.exit()
 
 
 from os.path import join, basename, splitext
@@ -596,7 +572,7 @@ class Controller:
                     message += " Handler File:\t\t"+handlerFileName + "\n"
         except:
             # is that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-            print helpers.color("\n [!] Internal error #1. Please run ./config/update.py !", warning=True)
+            print helpers.color("\n [!] Internal error #1. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
 
         # print out notes if set
         if hasattr(payload, 'notes'):
@@ -646,7 +622,7 @@ class Controller:
             messages.endmsg()
         except:
             # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-            print helpers.color("\n [!] Internal error #2. Please run ./config/update.py !", warning=True)
+            print helpers.color("\n [!] Internal error #2. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
 
         if interactive:
             raw_input(" [>] Press any key to return to the main menu: ")
