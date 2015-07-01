@@ -101,6 +101,7 @@ class Controller:
         self.payloads = list()
         # a specific payload, so we can set it manually
         self.payload = None
+        self.payloadname = None
         # restrict loaded modules to specific languages
         self.langs = langs
 
@@ -321,6 +322,7 @@ class Controller:
 
                 # set the internal payload variable
                 self.payload = payload
+                self.payloadname = name
 
             # did they enter a number rather than the full payload?
             elif payloadname.isdigit() and 0 < int(payloadname) <= len(self.payloads):
@@ -329,7 +331,7 @@ class Controller:
                     # if the entered number matches the payload #, use that payload
                     if int(payloadname) == x:
                         self.payload = pay
-                        break
+                        self.payloadname = name
                     x += 1
 
         # if a payload isn't found, then list available payloads and exit
@@ -347,8 +349,9 @@ class Controller:
                 self.payload.shellcode.SetPayload(options['msfvenom'])
 
             if not self.ValidatePayload(self.payload):
+                print " Payload: %s\n" % self.payloadname
                 print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
-                # TODO: Display payload name & required options (current values & missing values)
+                self.PayloadOptions(self.payload)
                 sys.exit()
 
         else:
@@ -876,8 +879,8 @@ class Controller:
                                 # if the entered number matches the payload #, use that payload
                                 if int(p) == x:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
-                                    break
                                 x += 1
 
                         # else choosing the payload by name
@@ -886,6 +889,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
 
                         cmd = ""
@@ -930,8 +934,8 @@ class Controller:
                                 # if the entered number matches the payload #, use that payload
                                 if int(p) == x:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.PayloadInfo(self.payload)
-                                    break
                                 x += 1
 
                         # else choosing the payload by name
@@ -940,6 +944,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
+                                    self.payloadname = name
                                     self.PayloadInfo(self.payload)
 
                         cmd = ""
@@ -975,8 +980,8 @@ class Controller:
                         # if the entered number matches the payload #, use that payload
                         if int(cmd) == x:
                             self.payload = pay
+                            self.payloadname = name
                             self.outputFileName = self.PayloadMenu(self.payload, args=args)
-                            break
                         x += 1
                     cmd = ""
                     if settings.TERMINAL_CLEAR != "false": showMessage=True
