@@ -585,8 +585,8 @@ class Controller:
         # check if compile_to_exe is in the required options, if so,
         # call supportfiles.supportingFiles() to compile appropriately
         if hasattr(self.payload, 'required_options'):
-            if "compile_to_exe" in self.payload.required_options:
-                value = self.payload.required_options['compile_to_exe'][0].lower()[0]
+            if "COMPILE_TO_EXE" in self.payload.required_options:
+                value = self.payload.required_options['COMPILE_TO_EXE'][0].lower()[0]
 
                 if value == "y" or value==True:
 
