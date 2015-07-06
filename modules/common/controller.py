@@ -320,11 +320,17 @@ class Controller:
                 self.payload.shellcode.setCustomShellcode(options['customShellcode'])
             # options['required_options'] = {"compile_to_exe" : ["Y", "Compile to an executable"], ...}
             if 'required_options' in options:
-                for k,v in options['required_options'].items():
-                    self.payload.required_options[k] = v
+                try:
+                    for k,v in options['required_options'].items():
+                        self.payload.required_options[k] = v
+                except:
+                    print helpers.color("\n [!] Internal error #4.", warning=True)
             # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
             if 'msfvenom' in options:
-                self.payload.shellcode.SetPayload(options['msfvenom'])
+                if hasattr(options, 'msfvenom'):
+                    self.payload.shellcode.SetPayload(options['msfvenom'])
+                else:
+                    print helpers.color("\n [!] Internal error #3.", warning=True)
 
             if not self.ValidatePayload(self.payload):
                 print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
@@ -625,12 +631,12 @@ class Controller:
             messages.endmsg()
         except:
             # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-            print helpers.color("\n [!] Internal error #2. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
+            print helpers.color("\n [!] Internal error #2. Unable to generate output. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
 
         if interactive:
             raw_input(" [>] Press any key to return to the main menu: ")
             print ""
-            self.MainMenu(showMessage=True)
+            self.MainMenu(showMessage = True)
 
         return OutputFileName
 
@@ -800,7 +806,7 @@ class Controller:
                             self.PayloadOptions(self.payload)
 
 
-    def MainMenu(self, showMessage=True, args=None):
+    def MainMenu(self, showMessage = True, args=None):
         """
         Main interactive menu for payload generation.
 
@@ -868,11 +874,11 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
-                                    self.payloadname = name
+                                    self.payloadname = payloadName
                                     self.outputFileName = self.PayloadMenu(self.payload, args=args)
 
                         cmd = ""
-                        if settings.TERMINAL_CLEAR != "false": showMessage=True
+                        if settings.TERMINAL_CLEAR != "false": showMessage = True
 
                     # error catchings if not of form [use BLAH]
                     else:
@@ -881,24 +887,24 @@ class Controller:
 
                 elif cmd.startswith("update"):
                     self.UpdateVeil()
-                    if settings.TERMINAL_CLEAR != "false": showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage = True
                     cmd = ""
 
                 elif cmd.startswith("checkvt"):
                     self.CheckVT()
-                    if settings.TERMINAL_CLEAR != "false": showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage = True
                     cmd = ""
 
                 # clean payload folders
                 if cmd.startswith("clean"):
                     self.CleanPayloads()
-                    if settings.TERMINAL_CLEAR != "false": showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage = True
                     cmd = ""
 
                 elif cmd.startswith("info"):
 
                     if len(cmd.split()) == 1:
-                        if settings.TERMINAL_CLEAR != "false": showMessage=True
+                        if settings.TERMINAL_CLEAR != "false": showMessage = True
                         cmd = ""
 
                     elif len(cmd.split()) == 2:
@@ -923,7 +929,7 @@ class Controller:
                                 # if we find the payload specified, kick off the payload menu
                                 if payloadName == p:
                                     self.payload = pay
-                                    self.payloadname = name
+                                    self.payloadname = payloadName
                                     self.PayloadInfo(self.payload)
 
                         cmd = ""
@@ -963,7 +969,7 @@ class Controller:
                             self.outputFileName = self.PayloadMenu(self.payload, args=args)
                         x += 1
                     cmd = ""
-                    if settings.TERMINAL_CLEAR != "false": showMessage=True
+                    if settings.TERMINAL_CLEAR != "false": showMessage = True
 
                 # if nothing is entered
                 else:
