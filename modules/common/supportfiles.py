@@ -127,8 +127,8 @@ def supportingFiles(payload, payloadFile, options):
             os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
             os.system('rm -rf dist')
             os.system('rm -rf build')
-            os.system('rm *.spec')
-            os.system('rm logdict*.*')
+            os.system('rm -f *.spec')
+            os.system('rm -f logdict*.*')
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
             print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)

@@ -203,35 +203,35 @@ class Controller:
 
             if choice.lower() == "y":
                 print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
-                os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
+                os.system('rm -f %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
 
                 print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
-                os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+                os.system('rm -f %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
 
                 print " [*] Cleaning %s" %(settings.HANDLER_PATH)
-                os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
+                os.system('rm -f %s/*.rc' %(settings.HANDLER_PATH))
 
                 print " [*] cleaning %s" %(settings.HASH_LIST)
-                os.system('rm %s 2>/dev/null' %(settings.HASH_LIST))
+                os.system('rm -f %s' %(settings.HASH_LIST))
                 os.system('touch ' + settings.HASH_LIST)
 
                 print " [*] cleaning ./tools/vt-notify/results.log"
-                os.system('rm ./tools/vt-notify/results.log 2>/dev/null')
+                os.system('rm -f ./tools/vt-notify/results.log')
 
                 choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
 
         else:
             print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
-            os.system('rm %s/*.* 2>/dev/null' %(settings.PAYLOAD_SOURCE_PATH))
+            os.system('rm -f %s/*.*' %(settings.PAYLOAD_SOURCE_PATH))
 
             print " [*] Cleaning %s" %(settings.PAYLOAD_COMPILED_PATH)
-            os.system('rm %s/*.exe 2>/dev/null' %(settings.PAYLOAD_COMPILED_PATH))
+            os.system('rm -f %s/*.exe' %(settings.PAYLOAD_COMPILED_PATH))
 
             print " [*] Cleaning %s" %(settings.HANDLER_PATH)
-            os.system('rm %s/*.rc 2>/dev/null' %(settings.HANDLER_PATH))
+            os.system('rm -f %s/*.rc' %(settings.HANDLER_PATH))
 
             print " [*] cleaning %s" %(settings.HASH_LIST)
-            os.system('rm %s 2>/dev/null' %(settings.HASH_LIST))
+            os.system('rm -f %s' %(settings.HASH_LIST))
             os.system('touch ' + settings.HASH_LIST)
 
             print "\n [*] Folders cleaned\n"
