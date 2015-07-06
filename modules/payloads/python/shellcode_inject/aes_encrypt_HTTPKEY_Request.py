@@ -72,7 +72,7 @@ class Payload:
 
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
@@ -200,7 +200,7 @@ class Payload:
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
@@ -332,7 +332,7 @@ class Payload:
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()

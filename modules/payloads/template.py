@@ -48,7 +48,7 @@ class Payload:
     def generate(self):
 
         # Generate Shellcode Using msfvenom
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
 
         # build our your payload sourcecode
         PayloadCode = "..."

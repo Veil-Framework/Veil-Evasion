@@ -68,7 +68,7 @@ class Payload:
 
         if self.required_options['PAYLOAD'][0] == "custom":
 
-            Shellcode = self.shellcode.generate()
+            Shellcode = self.shellcode.generate(self.required_options)
 
             raw = Shellcode.decode("string_escape")
             with open(settings.TEMP_DIR + "shellcode.raw", 'wb') as f:

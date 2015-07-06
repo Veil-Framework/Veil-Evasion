@@ -32,7 +32,7 @@ class Payload:
     def generate(self):
 
         # Generate Shellcode Using msfvenom
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
 
         # Generate Random Variable Names
         RandShellcode = helpers.randomString()

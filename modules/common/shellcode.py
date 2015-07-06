@@ -39,6 +39,8 @@ class Shellcode:
         self.msfvenompayload= ""
         # misc options
         self.options = list()
+        # required options
+        self.required_options = list()
 
         # load up all the metasploit modules available
         self.LoadModules()
@@ -218,7 +220,11 @@ class Shellcode:
         print '     %s - custom shellcode string' % (helpers.color('2'))
         print '     %s - file with shellcode (raw)\n' % (helpers.color('3'))
 
-        choice = raw_input(" [>] Please %s the number of your choice: " % (helpers.color('enter'))).strip()
+        try:
+            choice = self.required_options['SHELLCODE'][0].lower().strip()
+            print(" [>] Please %s the number of your choice: %s" % (helpers.color('enter'), choice))
+        except:
+            choice = raw_input(" [>] Please %s the number of your choice: " % (helpers.color('enter'))).strip()
 
         if choice == '3':
             # instantiate our completer object for path completion
@@ -257,16 +263,18 @@ class Shellcode:
             readline.set_completer(None)
 
 
-        if choice == '2':
+        elif choice == '2' or choice == 'string':
             # if the shellcode is specified as a string
             CustomShell = raw_input(" [>] Please enter custom shellcode (one line, no quotes, \\x00.. format): ")
             if len(CustomShell) == 0:
                 print helpers.color(" [!] WARNING: no shellcode specified, defaulting to msfvenom!", warning=True)
             return CustomShell
-        elif choice != '1':
-            print helpers.color(" [!] WARNING: Invalid option chosen, defaulting to msfvenom!", warning=True)
+
+        elif choice == '' or choice == '1' or choice == 'msf' or choice == 'metasploit' or choice == 'msfvenom':
             return None
+
         else:
+            print helpers.color(" [!] WARNING: Invalid option chosen, defaulting to msfvenom!", warning=True)
             return None
 
 
@@ -279,11 +287,17 @@ class Shellcode:
 
         payloadSelected = None
         options = None
+        showMessage = False
+        if settings.TERMINAL_CLEAR != "false": showMessage = True
 
         # if no generation method has been selected yet
         if self.msfvenomCommand == "" and self.customshellcode == "":
-            # prompt for custom shellcode
-            customShellcode = self.custShellcodeMenu()
+
+            # show banner?
+            if settings.TERMINAL_CLEAR != "false": showMessage = True
+
+            # prompt for custom shellcode or msfvenom
+            customShellcode = self.custShellcodeMenu(showMessage)
 
             # if custom shellcode is specified, set it
             if customShellcode:
@@ -305,7 +319,13 @@ class Shellcode:
 
                     print '\n [*] Press %s for windows/meterpreter/reverse_tcp' % helpers.color('[enter]', yellow=True)
                     print ' [*] Press %s to list available payloads' % helpers.color('[tab]', yellow=True)
-                    payloadSelected = raw_input(' [>] Please %s metasploit payload: ' % (helpers.color('enter'))).strip()
+
+                    try:
+                        payloadSelected = self.required_options['MSF_PAYLOAD'][0]
+                        print ' [>] Please %s metasploit payload: %s' % (helpers.color('enter'), payloadSelected)
+                    except:
+                        payloadSelected = raw_input(' [>] Please enter metasploit payload: ').strip()
+
                     if payloadSelected == "":
                         # default to reverse_tcp for the payload
                         payloadSelected = "windows/meterpreter/reverse_tcp"
@@ -318,6 +338,7 @@ class Shellcode:
 
                     except KeyError:
                         # make sure user entered a valid payload
+                        if 'PAYLOAD' in self.required_options: del self.required_options['PAYLOAD']
                         print helpers.color(" [!] ERROR: Invalid payload specified!\n", warning=True)
                         payloadSelected = None
 
@@ -338,8 +359,12 @@ class Shellcode:
                         if option == "LHOST":
 
                             # set the completer to fill in the local IP
-                            readline.set_completer(completers.IPCompleter().complete)
-+                           value = raw_input(' [>] %s value for \'LHOST\', %s for local IP: ' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True)))
+                            try:
+                                value = self.required_options['LHOST'][0]
+                                print ' [>] %s value for \'LHOST\', %s for local IP: %s' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True), value)
+                            except:
+                                # set the completer to fill in the local IP
+                                readline.set_completer(completers.IPCompleter().complete)
 
                             if '.' in value:
 
@@ -351,17 +376,20 @@ class Shellcode:
 
                                         # do a regex IP validation
                                         if not re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",value):
+                                            if 'LHOST' in self.required_options: del self.required_options['LHOST']
                                             print helpers.color("\n [!] ERROR: Bad IP address specified.\n", warning=True)
                                             value = ""
 
                                     # otherwise assume we've been passed a domain name
                                     else:
                                         if not helpers.isValidHostname(value):
+                                            if 'LHOST' in self.required_options: del self.required_options['LHOST']
                                             print helpers.color("\n [!] ERROR: Bad hostname specified.\n", warning=True)
                                             value = ""
 
                                 # if we don't have at least one period in the hostname/IP
                                 else:
+                                    if 'LHOST' in self.required_options: del self.required_options['LHOST']
                                     print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                     value = ""
 
@@ -369,28 +397,36 @@ class Shellcode:
                                 try:
                                     socket.inet_pton(socket.AF_INET6, value)
                                 except socket.error:
+                                    if 'LHOST' in self.required_options: del self.required_options['LHOST']
                                     print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                     value = ""
 
                             else:
+                                if 'LHOST' in self.required_options: del self.required_options['LHOST']
                                 print helpers.color("\n [!] ERROR: Bad IP address or hostname specified.\n", warning=True)
                                 value = ""
 
-                        # LPORT validation
-                        else:
+                        elif option == "LPORT":
+                            try:
+                                value = self.required_options['LPORT'][0]
+                                print ' [>] %s value for \'LPORT\': %s' % (helpers.color('Enter'), value)
+                            except:
+                                # set the completer to fill in the default MSF port (4444)
+                                readline.set_completer(completers.MSFPortCompleter().complete)
+                                value = raw_input(' [>] %s value for \'LPORT\': ' % (helpers.color('Enter')))
 
-                            # set the completer to fill in the default MSF port (4444)
-                            readline.set_completer(completers.MSFPortCompleter().complete)
-                            value = raw_input(' [>] %s value for \'' + option + '\': ' % (helpers.color('Enter')))
-
-                            if option == "LPORT":
-                                try:
-                                    if int(value) <= 0 or int(value) >= 65535:
-                                        print helpers.color(" [!] ERROR: Bad port number specified.\n", warning=True)
-                                        value = ""
-                                except ValueError:
+                            try:
+                                if int(value) <= 0 or int(value) >= 65535:
                                     print helpers.color(" [!] ERROR: Bad port number specified.\n", warning=True)
+                                    if 'LPORT' in self.required_options: del self.required_options['LPORT']
                                     value = ""
+                            except ValueError:
+                                print helpers.color(" [!] ERROR: Bad port number specified.\n", warning=True)
+                                if 'LPORT' in self.required_options: del self.required_options['LPORT']
+                                value = ""
+
+                        else:
+                            value = raw_input(' [>] %s value for \'' + option + '\': ' % (helpers.color('Enter')))
 
                     # append all the msfvenom options
                     self.msfvenomOptions.append(option + "=" + value)
@@ -407,7 +443,8 @@ class Shellcode:
                             if xtra_opt is not '':
                                 final_opt = xtra_opt.split('=')[0] + " " + xtra_opt.split('=')[1]
                                 extraValues.append(final_opt)
-                    else: break
+                    else:
+                        break
 
                 # grab any specified msfvenom options in the /etc/veil/settings.py file
                 msfvenomOptions = ""
@@ -425,7 +462,7 @@ class Shellcode:
                 self.msfvenomCommand += " -b \'\\x00\\x0a\\xff\' -f c | tr -d \'\"\' | tr -d \'\n\'"
 
 
-    def generate(self):
+    def generate(self, required_options=None):
         """
         Based on the options set by menu(), setCustomShellcode() or SetPayload()
         either returns the custom shellcode string or calls msfvenom
@@ -433,6 +470,8 @@ class Shellcode:
 
         Returns the shellcode string for this object.
         """
+
+        self.required_options = required_options
 
         # if the msfvenom command nor shellcode are set, revert to the
         # interactive menu to set any options

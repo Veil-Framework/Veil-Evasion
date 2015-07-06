@@ -50,7 +50,7 @@ class Payload:
         decode_with_this = random.choice(non_hex_letters)
 
         # Generate Shellcode Using msfvenom
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
 
         # Generate Random Variable Names
         subbed_shellcode_variable_name = helpers.randomString()

@@ -33,7 +33,7 @@ class Payload:
 
     def generate(self):
 
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
 
         # randomly generate out variable names
         payloadName = helpers.randomString()

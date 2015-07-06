@@ -26,7 +26,7 @@ class Payload:
         self.shellcode = shellcode.Shellcode()
 
     def generate(self):
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
         # randomly generate out variable names
         memCommit = helpers.randomString()
         memReserve = helpers.randomString()
