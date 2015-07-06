@@ -7,6 +7,8 @@ Based on the PoC from @midnite_runr https://github.com/secretsquirrel/shellcode_
 
 Module by @byt3bl33d3r
 """
+
+from modules.common import encryption
 from modules.common import helpers
 
 
