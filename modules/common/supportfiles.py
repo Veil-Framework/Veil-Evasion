@@ -7,7 +7,6 @@ import os
 import sys
 import random
 import string
-from modules.common import shellcode
 from modules.common import messages
 from modules.common import helpers
 
@@ -21,7 +20,7 @@ def supportingFiles(payload, payloadFile, options):
     Takes a specific language and payloadFile name written to and generates
     any necessary support files, and/or compiles the payload to an .exe.
 
-    Currently only handles python and c
+    Currently only handles python, c, c#, ruby and go
 
     options['method'] = "py2exe" or "pyinstaller" currently for python payloads
     """
@@ -124,14 +123,19 @@ def supportingFiles(payload, payloadFile, options):
                 os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
             else:
                 os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile)
-            os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
+
+            if settings.TERMINAL_CLEAR != "false": messages.title()
+
+            if os.path.isfile('dist/'+exeName):
+                os.system('mv dist/'+exeName+' ' + settings.PAYLOAD_COMPILED_PATH)
+                print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+            else:
+                print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
+
             os.system('rm -rf dist')
             os.system('rm -rf build')
             os.system('rm -f *.spec')
             os.system('rm -f logdict*.*')
-
-            if settings.TERMINAL_CLEAR != "false": messages.title()
-            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
 
     elif language.lower() == "c":
 
@@ -142,7 +146,11 @@ def supportingFiles(payload, payloadFile, options):
         os.system('i686-w64-mingw32-gcc -Wl,-subsystem,windows '+payloadFile+' -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + " -lwsock32")
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
-        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
+        if os.path.isfile(settings.PAYLOAD_COMPILED_PATH + exeName):
+            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+        else:
+            print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
 
     elif language.lower() == "cs":
 
@@ -153,7 +161,11 @@ def supportingFiles(payload, payloadFile, options):
         os.system('mcs -platform:x86 -target:winexe '+payloadFile+' -out:' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
-        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
+        if os.path.isfile(settings.PAYLOAD_COMPILED_PATH + exeName):
+            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+        else:
+            print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
 
     elif language.lower() == "ruby":
 
@@ -163,7 +175,11 @@ def supportingFiles(payload, payloadFile, options):
         os.system('wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
-        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
+        if os.path.isfile(settings.PAYLOAD_COMPILED_PATH + exeName):
+            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+        else:
+            print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
 
     elif language.lower() == "go":
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
@@ -171,11 +187,15 @@ def supportingFiles(payload, payloadFile, options):
         os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
-        print "\n [*] Executable written to: " +  helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+
+        if os.path.isfile(settings.PAYLOAD_COMPILED_PATH + exeName):
+            print "\n [*] Executable written to: " + helpers.color(settings.PAYLOAD_COMPILED_PATH + exeName)
+        else:
+            print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
 
     else:
         if settings.TERMINAL_CLEAR != "false": messages.title()
-        print helpers.color("\n [!] ERROR: Only python, c, c#, and ruby compilation is currently supported.\n", warning=True)
+        print helpers.color("\n [!] ERROR: Only python, c, c#, ruby and go compilation is currently supported (not "+language.lower()+").\n", warning=True)
 
 
 def compileToTemp(language, payloadSource):
