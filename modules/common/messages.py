@@ -118,4 +118,4 @@ def endmsg():
     Print the exit message.
     """
     print " [*] Your payload files have been generated, don't get caught!"
-    print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", warning=True)
+    print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", yellow=True)

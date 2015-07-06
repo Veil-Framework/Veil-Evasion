@@ -214,11 +214,11 @@ class Shellcode:
             messages.title()
 
         print ' [?] Use msfvenom or supply custom shellcode?\n'
-        print '     1 - msfvenom (default)'
-        print '     2 - custom shellcode string'
-        print '     3 - file with shellcode (raw)\n'
+        print '     %s - msfvenom (default)' % (helpers.color('1'))
+        print '     %s - custom shellcode string' % (helpers.color('2'))
+        print '     %s - file with shellcode (raw)\n' % (helpers.color('3'))
 
-        choice = raw_input(" [>] Please enter the number of your choice: ")
+        choice = raw_input(" [>] Please %s the number of your choice: " % (helpers.color('enter'))).strip()
 
         if choice == '3':
             # instantiate our completer object for path completion
@@ -261,7 +261,7 @@ class Shellcode:
             # if the shellcode is specified as a string
             CustomShell = raw_input(" [>] Please enter custom shellcode (one line, no quotes, \\x00.. format): ")
             if len(CustomShell) == 0:
-                print helpers.color(" [!] WARNING: no spellcode specified, defaulting to msfvenom!", warning=True)
+                print helpers.color(" [!] WARNING: no shellcode specified, defaulting to msfvenom!", warning=True)
             return CustomShell
         elif choice != '1':
             print helpers.color(" [!] WARNING: Invalid option chosen, defaulting to msfvenom!", warning=True)
@@ -303,9 +303,9 @@ class Shellcode:
                 # have the user select the payload
                 while payloadSelected == None:
 
-                    print '\n [*] Press [enter] for windows/meterpreter/reverse_tcp'
-                    print ' [*] Press [tab] to list available payloads'
-                    payloadSelected = raw_input(' [>] Please enter metasploit payload: ').strip()
+                    print '\n [*] Press %s for windows/meterpreter/reverse_tcp' % helpers.color('[enter]', yellow=True)
+                    print ' [*] Press %s to list available payloads' % helpers.color('[tab]', yellow=True)
+                    payloadSelected = raw_input(' [>] Please %s metasploit payload: ' % (helpers.color('enter'))).strip()
                     if payloadSelected == "":
                         # default to reverse_tcp for the payload
                         payloadSelected = "windows/meterpreter/reverse_tcp"
@@ -339,7 +339,7 @@ class Shellcode:
 
                             # set the completer to fill in the local IP
                             readline.set_completer(completers.IPCompleter().complete)
-                            value = raw_input(' [>] Enter value for \'LHOST\', [tab] for local IP: ')
++                           value = raw_input(' [>] %s value for \'LHOST\', %s for local IP: ' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True)))
 
                             if '.' in value:
 
@@ -381,7 +381,7 @@ class Shellcode:
 
                             # set the completer to fill in the default MSF port (4444)
                             readline.set_completer(completers.MSFPortCompleter().complete)
-                            value = raw_input(' [>] Enter value for \'' + option + '\': ')
+                            value = raw_input(' [>] %s value for \'' + option + '\': ' % (helpers.color('Enter')))
 
                             if option == "LPORT":
                                 try:
@@ -400,7 +400,7 @@ class Shellcode:
                 while True:
                     # clear out the tab completion
                     readline.set_completer(completers.none().complete)
-                    selection = raw_input(' [>] Enter extra msfvenom options in -OPTION=value or syntax: ')
+                    selection = raw_input(' [>] %s any extra msfvenom options (syntax: OPTION1=value1 OPTION2=value2): '% (helpers.color('Enter')))
                     if selection != "":
                         num_extra_options = selection.split(' ')
                         for xtra_opt in num_extra_options:
