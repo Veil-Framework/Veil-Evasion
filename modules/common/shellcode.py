@@ -358,13 +358,13 @@ class Shellcode:
                         # LHOST is a special case, so we can tab complete the local IP
                         if option == "LHOST":
 
-                            # set the completer to fill in the local IP
                             try:
                                 value = self.required_options['LHOST'][0]
                                 print ' [>] %s value for \'LHOST\', %s for local IP: %s' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True), value)
                             except:
                                 # set the completer to fill in the local IP
                                 readline.set_completer(completers.IPCompleter().complete)
+                                value = raw_input(' [>] %s value for \'LHOST\', %s for local IP: ' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True)))
 
                             if '.' in value:
 

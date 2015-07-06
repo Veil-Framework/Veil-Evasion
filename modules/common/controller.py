@@ -333,6 +333,7 @@ class Controller:
                     print helpers.color("\n [!] Internal error #3.", warning=True)
 
             if not self.ValidatePayload(self.payload):
+
                 print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
                 self.PayloadOptions(self.payload)
                 print ''
@@ -636,7 +637,7 @@ class Controller:
         if interactive:
             raw_input(" [>] Press any key to return to the main menu: ")
             print ""
-            self.MainMenu(showMessage = True)
+            self.MainMenu(showMessage=True)
 
         return OutputFileName
 
@@ -806,7 +807,7 @@ class Controller:
                             self.PayloadOptions(self.payload)
 
 
-    def MainMenu(self, showMessage = True, args=None):
+    def MainMenu(self, showMessage=True, args=None):
         """
         Main interactive menu for payload generation.
 
