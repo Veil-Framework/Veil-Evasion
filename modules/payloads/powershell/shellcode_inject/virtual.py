@@ -24,6 +24,8 @@ class Payload:
         self.language = "powershell"
         self.extension = "bat"
 
+        self.required_options = {}
+
         self.shellcode = shellcode.Shellcode()
 
     def psRaw(self):

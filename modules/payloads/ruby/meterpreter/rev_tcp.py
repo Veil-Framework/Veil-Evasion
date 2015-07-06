@@ -8,7 +8,6 @@ Module built by @harmj0y
 
 """
 
-from modules.common import shellcode
 from modules.common import helpers
 
 

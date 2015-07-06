@@ -19,7 +19,8 @@ class Payload:
         self.extension = "bat"
 
         # optional
-        self.required_options = {   "LHOST" : ["", "IP of the Metasploit handler"],
+        self.required_options = {
+                                    "LHOST" : ["", "IP of the Metasploit handler"],
                                     "LPORT" : ["8080", "Port of the Metasploit handler"],
                                     "PROXY" : ["N", "Use system proxy settings"]
                                 }
