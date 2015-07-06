@@ -7,7 +7,7 @@ Methods used for binary/MSF .dll patching.
 import helpers, settings, os, sys, subprocess, struct
 
 
-# patch the headers or 
+# patch the headers or
 # def selfcontained_patch():
 def headerPatch():
 

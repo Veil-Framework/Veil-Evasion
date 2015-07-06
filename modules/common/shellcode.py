@@ -63,7 +63,7 @@ class Shellcode:
         """
 
         # Variable changed for compatibility with  non-root and non-Kali users
-        # Thanks to Tim Medin for the patch 
+        # Thanks to Tim Medin for the patch
         msfFolder = settings.METASPLOIT_PATH
 
         # I can haz multiple platforms?

