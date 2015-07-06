@@ -310,7 +310,9 @@ class Controller:
                         self.payloadname = name
                     x += 1
 
-        # if a payload isn't found, then list available payloads and exit
+        print " Payload: %s\n" % helpers.color(self.payloadname)
+
+        # if payload is found, then go ahead
         if self.payload:
 
             # options['customShellcode'] = "\x00..."
@@ -325,11 +327,12 @@ class Controller:
                 self.payload.shellcode.SetPayload(options['msfvenom'])
 
             if not self.ValidatePayload(self.payload):
-                print " Payload: %s\n" % self.payloadname
                 print helpers.color("\n [!] WARNING: Not all required options filled\n", warning=True)
                 self.PayloadOptions(self.payload)
+                print ''
                 sys.exit()
 
+        # if a payload isn't found, then list available payloads and exit
         else:
 
             print helpers.color(" [!] Invalid payload selected\n\n", warning=True)
