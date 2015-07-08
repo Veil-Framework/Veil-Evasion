@@ -33,7 +33,7 @@ class Payload:
 
     def generate(self):
 
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
         Shellcode = "0" + ",0".join(Shellcode.split("\\")[1:])
 
         # randomize all our variable names, yo'

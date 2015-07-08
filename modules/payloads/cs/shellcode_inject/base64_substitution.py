@@ -32,7 +32,7 @@ class Payload:
 
     def generate(self):
 
-        Shellcode = self.shellcode.generate()
+        Shellcode = self.shellcode.generate(self.required_options)
 
         # the 'key' is a randomized alpha lookup table [a-zA-Z] used for substitution
         key = ''.join(sorted(list(string.ascii_letters), key=lambda *args: random.random()))

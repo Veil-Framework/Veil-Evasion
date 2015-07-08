@@ -24,7 +24,7 @@ class Payload:
         self.required_options = {
                                     "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
                                     "LHOST"          : ["", "IP of the Metasploit handler"],
-                                    "LPORT"          : ["", "Port of the Metasploit handler"]
+                                    "LPORT"          : ["8443", "Port of the Metasploit handler"]
                                 }
 
     def generate(self):

@@ -52,7 +52,7 @@ def title():
     """
     if settings.TERMINAL_CLEAR != "false": os.system(settings.TERMINAL_CLEAR)
     print '========================================================================='
-    print ' Veil-Evasion | [Version]: ' + version
+    print ' %s | [Version]: %s' % (helpers.color('Veil-Evasion',status=False,bold=True), version)
     print '========================================================================='
     print ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
     print '=========================================================================\n'
@@ -118,4 +118,4 @@ def endmsg():
     Print the exit message.
     """
     print " [*] Your payload files have been generated, don't get caught!"
-    print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", warning=True)
+    print helpers.color(" [!] And don't submit samples to any online scanner! ;)\n", yellow=True)

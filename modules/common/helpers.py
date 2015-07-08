@@ -7,7 +7,7 @@ Contains any miscellaneous helper methods useful across multiple modules.
 import random, string, base64, zlib, re, textwrap, commands, settings, os, sys
 
 
-def color(string, status=True, warning=False, bold=True):
+def color(string, status=True, warning=False, bold=True, yellow=False):
     """
     Change text color for the linux terminal, defaults to green.
 
@@ -22,6 +22,8 @@ def color(string, status=True, warning=False, bold=True):
         attr.append('31')
     if bold:
         attr.append('1')
+    if yellow:
+        attr.append('33')
     return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
 
 

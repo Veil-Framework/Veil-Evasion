@@ -44,7 +44,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()
@@ -85,7 +85,7 @@ class Payload:
                 expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()
@@ -130,7 +130,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()
@@ -173,7 +173,7 @@ class Payload:
                 expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()
@@ -220,7 +220,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()
@@ -262,7 +262,7 @@ class Payload:
                 expiredate = str(todaysdate + timedelta(days=int(self.required_options["EXPIRE_PAYLOAD"][0])))
 
                 # Generate Shellcode Using msfvenom
-                Shellcode = self.shellcode.generate()
+                Shellcode = self.shellcode.generate(self.required_options)
 
                 # Generate Random Variable Names
                 RandPtr = helpers.randomString()

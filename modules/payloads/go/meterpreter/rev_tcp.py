@@ -7,7 +7,6 @@ Module built by @b00stfr3ak44
 
 """
 
-from modules.common import shellcode
 from modules.common import helpers
 
 

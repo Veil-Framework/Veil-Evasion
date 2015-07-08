@@ -248,19 +248,27 @@ if __name__ == '__main__':
         sys.dont_write_bytecode = True
 
         parser = argparse.ArgumentParser()
+        parser.add_argument('-c', metavar='OPTION1=value OPTION2=value', nargs='*', help='Custom payload module options.')
+        parser.add_argument('-o', metavar="OUTPUTBASE", default="payload", help='Output file base for source and compiled binaries.')
         parser.add_argument('-p', metavar="PAYLOAD", nargs='?', const="list", help='Payload to generate. Lists payloads if none specified.')
-        parser.add_argument('-c', metavar='OPTION=value', nargs='*', help='Custom payload module options.')
-        parser.add_argument('-o', metavar="OUTPUTBASE", default="payload", help='Output file base for source and compiled .exes.')
-        parser.add_argument('--msfvenom', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit shellcode to generate.')
-        parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
-        parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
-        parser.add_argument('--pwnstaller', action='store_true', help='Use the Pwnstaller obfuscated loader.')
-        parser.add_argument('--update', action='store_true', help='Update the Veil framework.')
+        #parser.add_argument('-v', action="store_true", help='More detailed output.')
         parser.add_argument('--clean', action='store_true', help='Clean out payload folders.')
+        #parser.add_argument('--custshell', metavar="\\x00...", help='Custom shellcode string to use.')
+        parser.add_argument('--msfoptions', metavar="OPTION=value", nargs='*', help='Options for the specified metasploit payload.')
+        parser.add_argument('--msfvenom', metavar="windows/meterpreter/reverse_tcp", nargs='?', help='Metasploit shellcode to generate.')
         parser.add_argument('--overwrite', action='store_true', help='Overwrite payload/source output files if they already exist.')
+        parser.add_argument('--pwnstaller', action='store_true', help='Use the Pwnstaller obfuscated loader.')
         parser.add_argument('--rpc', action='store_true', help='Run Veil-Evasion as an RPC server.')
         parser.add_argument('--rpcshutdown', action='store_true', help='Shutdown a running Veil-Evasion RPC server.')
+        parser.add_argument('--update', action='store_true', help='Update the Veil framework.')
+        parser.add_argument('--version', action="store_true", help='Displays version and quits.')
+
         args = parser.parse_args()
+
+        # Print version
+        if args.version:
+            messages.title()
+            sys.exit()
 
         # start up the RPC server
         if args.rpc:
@@ -305,7 +313,7 @@ if __name__ == '__main__':
             options['required_options'] = {}
             for option in args.c:
                 name,value = option.split("=")
-                options['required_options'][name] = [value, ""]
+                options['required_options'][name.upper()] = [value, ""]
 
         # pull out any msfvenom shellcode specification and msfvenom options
         if args.msfvenom:

