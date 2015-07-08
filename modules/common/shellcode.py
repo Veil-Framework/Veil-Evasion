@@ -216,15 +216,15 @@ class Shellcode:
             messages.title()
 
         print ' [?] Use msfvenom or supply custom shellcode?\n'
-        print '     %s - msfvenom (default)' % (helpers.color('1'))
+        print '     %s - msfvenom %s' % (helpers.color('1'), helpers.color('(default)',yellow=True))
         print '     %s - custom shellcode string' % (helpers.color('2'))
         print '     %s - file with shellcode (raw)\n' % (helpers.color('3'))
 
         try:
             choice = self.required_options['SHELLCODE'][0].lower().strip()
-            print(" [>] Please %s the number of your choice: %s" % (helpers.color('enter'), choice))
+            print(" [>] Please enter the number of your choice: %s" % (choice))
         except:
-            choice = raw_input(" [>] Please %s the number of your choice: " % (helpers.color('enter'))).strip()
+            choice = raw_input(" [>] Please enter the number of your choice: ").strip()
 
         if choice == '3':
             # instantiate our completer object for path completion
@@ -322,7 +322,7 @@ class Shellcode:
 
                     try:
                         payloadSelected = self.required_options['MSF_PAYLOAD'][0]
-                        print ' [>] Please %s metasploit payload: %s' % (helpers.color('enter'), payloadSelected)
+                        print ' [>] Please enter metasploit payload: %s' % (payloadSelected)
                     except:
                         payloadSelected = raw_input(' [>] Please enter metasploit payload: ').strip()
 
@@ -360,11 +360,11 @@ class Shellcode:
 
                             try:
                                 value = self.required_options['LHOST'][0]
-                                print ' [>] %s value for \'LHOST\', %s for local IP: %s' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True), value)
+                                print ' [>] Enter value for \'LHOST\', [tab] for local IP: %s' % (value)
                             except:
                                 # set the completer to fill in the local IP
                                 readline.set_completer(completers.IPCompleter().complete)
-                                value = raw_input(' [>] %s value for \'LHOST\', %s for local IP: ' % (helpers.color('Enter'), helpers.color('[tab]',yellow=True)))
+                                value = raw_input(' [>] Enter value for \'LHOST\', [tab] for local IP: ').strip()
 
                             if '.' in value:
 
@@ -409,11 +409,11 @@ class Shellcode:
                         elif option == "LPORT":
                             try:
                                 value = self.required_options['LPORT'][0]
-                                print ' [>] %s value for \'LPORT\': %s' % (helpers.color('Enter'), value)
+                                print ' [>] Enter value for \'LPORT\': %s' % (value)
                             except:
                                 # set the completer to fill in the default MSF port (4444)
                                 readline.set_completer(completers.MSFPortCompleter().complete)
-                                value = raw_input(' [>] %s value for \'LPORT\': ' % (helpers.color('Enter')))
+                                value = raw_input(' [>] Enter value for \'LPORT\': ').strip()
 
                             try:
                                 if int(value) <= 0 or int(value) >= 65535:
@@ -426,7 +426,7 @@ class Shellcode:
                                 value = ""
 
                         else:
-                            value = raw_input(' [>] %s value for \'' + option + '\': ' % (helpers.color('Enter')))
+                            value = raw_input(' [>] Enter value for \'' + option + '\': ').strip()
 
                     # append all the msfvenom options
                     self.msfvenomOptions.append(option + "=" + value)
@@ -436,7 +436,7 @@ class Shellcode:
                 while True:
                     # clear out the tab completion
                     readline.set_completer(completers.none().complete)
-                    selection = raw_input(' [>] %s any extra msfvenom options (syntax: OPTION1=value1 OPTION2=value2): '% (helpers.color('Enter')))
+                    selection = raw_input(' [>] Enter any extra msfvenom options (syntax: OPTION1=value1 OPTION2=value2): ').strip()
                     if selection != "":
                         num_extra_options = selection.split(' ')
                         for xtra_opt in num_extra_options:

@@ -55,7 +55,7 @@ class Payload:
         else:
             raise IOError
             print "\nBDF only supports intel 32/64bit PE and ELF binaries\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             self.type = ""
 
     def generate(self):
@@ -145,7 +145,7 @@ class Payload:
         except:
             #I use sys.exits in BDF, so not to leave Veil
             print "\nBackdoorFactory Error, check options and binary\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             return ""
         #Because speed
         time.sleep(3)
@@ -157,7 +157,7 @@ class Payload:
 
         except IOError:
             print "\nError during The Backdoor Factory execution\n"
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             return ""
 
         try:

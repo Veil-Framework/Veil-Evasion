@@ -50,7 +50,7 @@ class Payload:
             f.close()
         except IOError:
             print "\nError during PEScrambler execution:\n" + helpers.color(stdout, warning=True)
-            raw_input("\n[>] Press any key to return to the main menu:")
+            raw_input("\n[>] Press any key to return to the main menu.")
             return ""
 
         # cleanup the temporary output file. TODO: windows compatibility

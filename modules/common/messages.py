@@ -52,7 +52,7 @@ def title():
     """
     if settings.TERMINAL_CLEAR != "false": os.system(settings.TERMINAL_CLEAR)
     print '========================================================================='
-    print ' Veil-Evasion | [Version]: ' + version
+    print ' %s | [Version]: %s' % (helpers.color('Veil-Evasion',status=False,bold=True), version)
     print '========================================================================='
     print ' [Web]: https://www.veil-framework.com/ | [Twitter]: @VeilFramework'
     print '=========================================================================\n'

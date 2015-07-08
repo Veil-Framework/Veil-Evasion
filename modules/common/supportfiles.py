@@ -43,12 +43,12 @@ def supportingFiles(payload, payloadFile, options):
                 # Determine if the user wants Pyinstaller, Pwnstaller, or Py2Exe.
                 if architecture == "32":
                     print '\n [?] How would you like to create your payload executable?\n'
-                    print '     1 - Pyinstaller (default)'
-                    print '     2 - Pwnstaller (obfuscated Pyinstaller loader)'
-                    print '     3 - Py2Exe\n'
+                    print '     %s - Pyinstaller %s' % (helpers.color('1'), helpers.color('(default)',yellow=True))
+                    print '     %s - Pwnstaller (obfuscated Pyinstaller loader)' % (helpers.color('2'))
+                    print '     %s - Py2Exe\n' % (helpers.color('3'))
                 else:
                     print '\n [?] How would you like to create your payload executable?\n'
-                    print '     1 - Pyinstaller (default)'
+                    print '     %s - Pyinstaller %s' % (helpers.color('1'), (helpers.color('(default)',yellow=True)))
 
                 choice = raw_input(" [>] Please enter the number of your choice: ")
                 if choice == "1" or choice == "":

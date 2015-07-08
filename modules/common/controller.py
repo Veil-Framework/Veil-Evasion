@@ -156,7 +156,7 @@ class Controller:
         updoutput, upderr = updater.communicate()
 
         if interactive:
-            raw_input(" [>] Veil updated, press any key to continue: ")
+            raw_input(" [>] Veil updated, press any key to continue.")
 
 
     def CheckVT(self, interactive=True):
@@ -181,15 +181,15 @@ class Controller:
                 if found == False:
                     print " [*] No payloads found on VirusTotal!"
 
-                raw_input("\n [>] Hit enter to continue...")
+                raw_input("\n [>] Press any key to continue...")
 
             else:
                 print helpers.color("\n [!] Hash file is empty, generate a payload first!", warning=True)
-                raw_input("\n [>] Press enter to continue...")
+                raw_input("\n [>] Press any key to continue...")
 
         except OSError as e:
             print helpers.color("\n [!] Error: hash list %s not found" %(settings.HASH_LIST), warning=True)
-            raw_input("\n [>] Press enter to continue...")
+            raw_input("\n [>] Press any key to continue...")
 
 
     def CleanPayloads(self, interactive=True):
@@ -218,7 +218,7 @@ class Controller:
                 print " [*] cleaning ./tools/vt-notify/results.log"
                 os.system('rm -f ./tools/vt-notify/results.log')
 
-                choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu: ")
+                choice = raw_input("\n [>] Folders cleaned, press any key to return to the main menu.")
 
         else:
             print "\n [*] Cleaning %s" %(settings.PAYLOAD_SOURCE_PATH)
@@ -413,7 +413,8 @@ class Controller:
 
             # ensure we get a base name and not a full path
             while OutputBaseChoice != "" and "/" in OutputBaseChoice:
-                OutputBaseChoice = raw_input(helpers.color(" [!] Please enter a base name, not a full path: ", warning=True))
+                print helpers.color(" [!] Please provide a base name, not a path, for the output base", warning=True)
+                OutputBaseChoice = raw_input("\n [>] Please enter the base name for output files (default is 'payload'): ")
 
         # for invalid output base choices that are passed by arguments
         else:
@@ -635,7 +636,7 @@ class Controller:
             print helpers.color("\n [!] Internal error #2. Unable to generate output. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
 
         if interactive:
-            raw_input(" [>] Press any key to return to the main menu: ")
+            raw_input(" [>] Press any key to return to the main menu.")
             print ""
             self.MainMenu(showMessage=True)
 
