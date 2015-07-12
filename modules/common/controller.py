@@ -615,25 +615,25 @@ class Controller:
 
         # This block of code is going to be used to SHA1 hash our compiled payloads to potentially submit the
         # hash with VTNotify to detect if it's been flagged
-        #try:
-        CompiledHashFile = settings.HASH_LIST
-        HashFile = open(CompiledHashFile, 'a')
-        OutputFile = open(OutputFileName, 'rb')
-        Sha1Hasher = hashlib.sha1()
-        Sha1Hasher.update(OutputFile.read())
-        SHA1Hash = Sha1Hasher.hexdigest()
-        OutputFile.close()
-        HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
-        HashFile.close()
+        try:
+            CompiledHashFile = settings.HASH_LIST
+            HashFile = open(CompiledHashFile, 'a')
+            OutputFile = open(OutputFileName, 'rb')
+            Sha1Hasher = hashlib.sha1()
+            Sha1Hasher.update(OutputFile.read())
+            SHA1Hash = Sha1Hasher.hexdigest()
+            OutputFile.close()
+            HashFile.write(SHA1Hash + ":" + FinalBaseChoice + "\n")
+            HashFile.close()
 
         # print the full message containing generation notes
         print message
 
         # print the end message
         messages.endmsg()
-        #except:
+        except:
             # if that option fails, it probably means that the /etc/veil/settings.py file hasn't been updated
-        #    print helpers.color("\n [!] Internal error #2. Unable to generate output. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
+            print helpers.color("\n [!] Internal error #2. Unable to generate output. Please run %s manually\n" % (os.path.abspath("./config/update.py")), warning=True)
 
         if interactive:
             raw_input(" [>] Press any key to return to the main menu.")
