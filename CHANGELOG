@@ -1,3 +1,7 @@
+[07.11.2015]
+     Released.: 2.21.4
+     Updated..: Addressed issue #189, where powershell payloads essentially ignore the compile option since it doesn't apply to them.
+
 [7.01.2015]
      Released.: 2.21.3
      Fixed....: Fixed a bug in controller so it no longer ignores the "compile_to_exe" option.
