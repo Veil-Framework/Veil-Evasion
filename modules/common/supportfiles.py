@@ -193,6 +193,10 @@ def supportingFiles(payload, payloadFile, options):
         else:
             print helpers.color(" [!] ERROR: Unable to create output file.", warning=True)
 
+    elif language.lower() == "powershell":
+        if settings.TERMINAL_CLEAR != "false": messages.title()
+        print helpers.color("\n [!] INFO: Powershell is a script, so this won't \"compile\" :)\n", warning=True)
+
     else:
         if settings.TERMINAL_CLEAR != "false": messages.title()
         print helpers.color("\n [!] ERROR: Only python, c, c#, ruby and go compilation is currently supported (not "+language.lower()+").\n", warning=True)

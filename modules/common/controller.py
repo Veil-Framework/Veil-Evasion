@@ -592,7 +592,7 @@ class Controller:
 
         # check if compile_to_exe is in the required options, if so,
         # call supportfiles.supportingFiles() to compile appropriately
-        if hasattr(self.payload, 'required_options'):
+        if hasattr(self.payload, 'required_options') and self.payload.language.lower() != "powershell":
             if "COMPILE_TO_EXE" in self.payload.required_options:
                 value = self.payload.required_options['COMPILE_TO_EXE'][0].lower()[0]
 
