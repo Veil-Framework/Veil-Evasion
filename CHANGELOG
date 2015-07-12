@@ -1,6 +1,7 @@
 [07.11.2015]
      Released.: 2.21.4
      Updated..: Addressed issue #189, where powershell payloads essentially ignore the compile option since it doesn't apply to them.
+     Updated..: Addressed issue #188, really just expanded upon g0tmilk's PR to give context to the error message.
 
 [7.01.2015]
      Released.: 2.21.3

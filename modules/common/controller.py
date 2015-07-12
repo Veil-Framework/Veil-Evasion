@@ -330,7 +330,7 @@ class Controller:
                 if hasattr(options, 'msfvenom'):
                     self.payload.shellcode.SetPayload(options['msfvenom'])
                 else:
-                    print helpers.color("\n [!] Internal error #3.", warning=True)
+                    print helpers.color("\n [!] Internal error #3: This module does not use msfvenom!", warning=True)
 
             if not self.ValidatePayload(self.payload):
 
