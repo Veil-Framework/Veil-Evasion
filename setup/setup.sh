@@ -37,7 +37,7 @@ func_check_env(){
     exit 1
   fi
 
-  # Check Running User ???
+  # Double Check Install
   if [[ "${silent}" != "true" ]]; then
     echo -e '\n [?] Are you sure you wish to install Veil-Evasion?\n'
     read -p ' Continue With Installation? (y/N): ' rootonly
@@ -70,15 +70,14 @@ func_check_env(){
     func_ruby_deps
   fi
 
-  # Check if go is installed
+  # Check If Go Is Installed
   if [ -f "/usr/src/go/bin/windows_386/go.exe" ]; then
     echo -e '\n\n [*] Go is already installed... Skipping...'
   else
     func_go_deps
   fi
 
-  # Finally, update the config
-    # Check if go is installed
+  # Finally, Update The Config
   if [ -f "/etc/veil/settings.py" ] && [ -d "/usr/share/veil-output/" ]; then
     echo -e '\n\n [*] Setttings already detected... Skipping...'
   else
@@ -90,7 +89,7 @@ func_check_env(){
 func_apt_deps(){
   echo -e '\n\n [*] Initializing APT Package Installation'
 
-  # Update repo check
+  # Update Repo
   sudo apt-get -q update
 
   [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
@@ -101,6 +100,7 @@ func_apt_deps(){
     sudo dpkg --add-architecture i386
     sudo apt-get -q update
     echo -e '\n\n [*] Installing (Wine) i386 Binaries'
+    sudo ${arg} apt-get -y install wine32
     sudo ${arg} apt-get -y install wine-bin:i386
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.\n" && exit 1
@@ -114,24 +114,27 @@ func_apt_deps(){
     [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install APT Dependencies... Exit Code: ${tmp}.\n" && exit 1
 
   if [ "${os}" == "kali" ]; then
-    sudo ${arg} apt-get -y install metasploit
+    sudo ${arg} apt-get -y install metasploit-framework
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install APT Dependencies (Metasploit)... Exit Code: ${tmp}.\n" && exit 1
   fi
 }
 
-# Install Capstone Dependencies - Needed for Backdoor Factory. https://github.com/secretsquirrel/the-backdoor-factory/blob/master/install.sh
+# Install Capstone Dependencies (Needed for Backdoor Factory. https://github.com/secretsquirrel/the-backdoor-factory/blob/master/install.sh)
 func_capstone_deps(){
   echo -e '\n\n [*] Installing Capstone Dependencies...'
   if [ "${os}" == "kali" ]; then
-    sudo apt-get -y install python-capstone
+    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+    sudo ${arg} apt-get -y install python-capstone
+    tmp="$?"
+    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Capstone Dependencies... Exit Code: ${tmp}.\n" && exit 1
   else
     which pip >/dev/null 2>&-
     if [ "$?" -eq 0 ]; then
-      echo -e ' [*] Installing Capstone via PIP'
+      echo -e ' [*] Installing Capstone (via PIP)'
       sudo pip install capstone
     else    # In theory, we should never end up here
-      echo -e ' [*] Installing Capstone from source'
+      echo -e ' [*] Installing Capstone (via Source)'
       git clone https://github.com/aquynh/capstone "${rootdir}/setup/capstone/"
       cd "${rootdir}/setup/capstone/"
       git checkout b53a59af53ffbd5dbe8dbcefba41a00cf4fc7469
@@ -147,29 +150,34 @@ func_capstone_deps(){
       sudo ldconfig
     fi
   fi
-  tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Capstone... Exit Code: ${tmp}.\n" && exit 1
 }
 
 # Install Python Dependencies
 func_python_deps(){
   echo -e '\n\n [*] Initializing (Wine) Python Dependencies Installation...'
 
-  # Check If symmetricjsonrpc Is Already Installed
+  # Check If SymmetricJSONRPC Is Already Installed
   if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]; then
     echo -e '\n\n [*] SymmetricJSONRPC Already Installed... Skipping...'
+  elif [ "${os}" == "kali" ]; then
+    echo -e '\n\n [*] Installing SymmetricJSONRPC Dependency (via Repo)'
+    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+    sudo ${arg} apt-get -y install python-symmetric-jsonrpc
+    tmp="$?"
+    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install SymmetricJSONRPC... Exit Code: ${tmp}.\n" && exit 1
   else
-    echo -e '\n\n [*] Installing SymmetricJSONRPC Dependency...'
+    echo -e '\n\n [*] Installing SymmetricJSONRPC Dependency (via PIP)'
     sudo pip install symmetricjsonrpc
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install SymmetricJSONRPC... Exit Code: ${tmp}.\n" && exit 1
     echo ''
   fi
 
-  # Incase its 'first time run' for WINE
+  # Incase Its 'First Time Run' for WINE (More information: http://wiki.winehq.org/Mono)
+  [[ "${silent}" == "true" ]] && wget -qO - "http://winezeug.googlecode.com/svn/trunk/install-addons.sh" | bash -
   wine cmd.exe /c ipconfig >/dev/null
 
-  # Prepare (Wine) Directories - Required before Python
+  # Prepare (Wine) Directories - Required Before Python
   echo -e '\n\n [*] Preparing (Wine) Directories...'
   mkdir -p ~/.wine/drive_c/Python27/Lib/site-packages/ ~/.wine/drive_c/Python27/Scripts/
   unzip -q -o -d ~/.wine/drive_c/Python27/Lib/ "${rootdir}/setup/python-distutils.zip"
@@ -206,13 +214,16 @@ func_python_deps(){
   popd >/dev/null
 
   if [ "${os}" == "kali" ]; then
-    echo -e '\n\n [*] Installing PyInstaller via repos...'
-    sudo apt-get -y install pyinstaller
+    echo -e '\n\n [*] Installing PyInstaller (via Repos)'
+    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+    sudo ${arg} apt-get -y install pyinstaller
+    tmp="$?"
+    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install PyInstaller... Exit Code: ${tmp}.\n" && exit 1
   else
     if [ -d "/opt/pyinstaller-2.0/" ]; then
       echo -e '\n\n [*] PyInstaller Already Installed... Skipping...'
     else
-      echo -e '\n\n [*] Installing PyInstaller via ZIP...'
+      echo -e '\n\n [*] Installing PyInstaller (via ZIP)'
       sudo unzip -q -o -d /opt "${rootdir}/setup/pyinstaller-2.0.zip"
       sudo chmod -R 0755 /opt/pyinstaller-2.0/
     fi
@@ -232,16 +243,16 @@ func_go_deps(){
 
   version="$(apt-cache show golang-src | awk -F '[:-.]' '/Version/ {print $3$4}')"
   if [[ "${version}" -lt "12" ]]; then
-    echo -e ' [*] Installing Go via TAR'
+    echo -e ' [*] Installing Go (via TAR)'
     sudo tar -xf "${rootdir}/setup/go1.4.2.src.tar.gz" -C /usr/src/
   else
-    # Download source via repos
-    echo -e " [*] Installing Go via repos (v${version})"
+    # Download Source via Repos
+    echo -e " [*] Installing Go (v${version} via Repos)"
     sudo apt-get source golang-go
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Download Go... Exit Code: ${tmp}.\n" && exit 1
 
-    # Put everything in one place
+    # Put Everything In One Place
     sudo cp -rn /tmp/golang-*/* /usr/src/go/
   fi
 
@@ -316,15 +327,15 @@ if [ -z "${os}" ] || [ -z "${version}" ]; then
   echo -e " [ERROR] Internal Issue. Couldn't Detect OS Information...\n"
   exit 1
 elif [ "${os}" == "kali" ]; then
-  echo " [i] Kali Linux ${version} Detected..."
+  echo " [i] Kali Linux ${version} $(uname -m) Detected..."
 elif [ "${os}" == "ubuntu" ]; then
-  echo " [i] Ubuntu ${version} Detected..."
+  echo " [i] Ubuntu ${version} $(uname -m) Detected..."
   if [[ "${version}" -lt "14" ]]; then
     echo -e " [ERROR]: Veil-Evasion Only Supported On Ubuntu 14+.\n"
     exit 1
   fi
 elif [ "${os}" == "debian" ]; then
-  echo " [i] Debian ${version} Detected..."
+  echo " [i] Debian ${version} $(uname -m) Detected..."
   if [[ "${version}" -lt "7" ]]; then
     echo -e " [ERROR]: Veil-Evasion Only Supported On Debian 7+.\n"
     exit 1
@@ -375,6 +386,6 @@ case $1 in
 esac
 
 
-echo -e '\n\n [i] If you have any errors running Veil-Evasion, delete your WINE profile (rm -rf ~/.wine) and re-run setup.sh.'
+echo -e '\n\n [i] If you have any errors running Veil-Evasion, delete your WINE profile (rm -rf ~/.wine/) and re-run setup.sh.'
 echo -e '\n\n [i] Done!'
 exit 0
