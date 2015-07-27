@@ -11,9 +11,26 @@ from modules.common import messages
 from modules.common import helpers
 
 import settings
+import subprocess
 
 PWNSTALLER_VERSION = "1.0"
 
+def pyobfuscate(payloadFile):
+    ret = False
+    obfuscatorPath = settings.VEIL_EVASION_PATH + "tools/pyobfuscate/pyobfuscate"
+    command = "python %s %s" % (obfuscatorPath, payloadFile)
+
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout, stderr = p.communicate()
+
+    if len(stderr) > 0:
+        return ret
+
+    with open(payloadFile, "w") as fp:
+        fp.write(stdout)
+        ret = True
+
+    return ret
 
 def supportingFiles(payload, payloadFile, options):
     """
@@ -32,6 +49,10 @@ def supportingFiles(payload, payloadFile, options):
         architecture = "32"
 
     if language.lower() == "python":
+
+        # first, obfuscate the python code
+        if not pyobfuscate(payloadFile):
+            print helpers.color(" [!] ERROR: something went wrong while obfuscating python code.", warning=True)
 
         # if we aren't passed any options, do the interactive menu
         if len(options) == 0:
