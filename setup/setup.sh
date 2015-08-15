@@ -6,7 +6,7 @@ runuser="$(whoami)"
 rootdir=$(cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd)
 silent=false
 os="$(awk -F '=' '/^ID=/ {print $2}' /etc/os-release 2>&-)"
-version=$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&-)
+version=$(awk -F '=' '/^VERSION_ID=/ {print $2}' /etc/os-release 2>&-)
 arg=""
 
 
@@ -32,7 +32,8 @@ func_check_env(){
     echo ''
     echo ' [ERROR]: This Setup Script Requires sudo!'
     echo '          Please Install and Configure sudo Then Run This Setup Again.'
-    echo '          Hint: apt-get -y install sudo'
+    echo '          Hint: For Debian/Ubuntu: apt-get -y install sudo'
+    echo '                For Fedora 22+: dnf -y install sudo'
     echo ''
     exit 1
   fi
@@ -87,31 +88,49 @@ func_check_env(){
 
 # Install Architecture Dependent Dependencies
 func_apt_deps(){
-  echo -e '\n\n [*] Initializing APT Package Installation'
+  echo -e '\n\n [*] Initializing Package Installation'
 
-  # Update Repo
-  sudo apt-get -q update
-
-  [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+  # Update Repo for deb based distros, yum/dnf doesn't need this step
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+    sudo apt-get -q update
+    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+  fi
 
   # Check For 64-bit Kernel
   if [ $(uname -m) == 'x86_64' ]; then
-    echo -e '\n\n [*] Adding i386 Architecture To x86_64 System'
-    sudo dpkg --add-architecture i386
-    sudo apt-get -q update
-    echo -e '\n\n [*] Installing (Wine) i386 Binaries'
-    sudo ${arg} apt-get -y install wine32
-    sudo ${arg} apt-get -y install wine-bin:i386
-    tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.\n" && exit 1
+    if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+      echo -e '\n\n [*] Adding i386 Architecture To x86_64 System'
+      sudo dpkg --add-architecture i386
+      sudo apt-get -q update
+      echo -e '\n\n [*] Installing (Wine) i386 Binaries'
+      sudo ${arg} apt-get -y install wine32
+      sudo ${arg} apt-get -y install wine-bin:i386
+      tmp="$?"
+      [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.\n" && exit 1
+    else
+      echo -e '\n\n [*] Installing 32bit wine on x86_64 System'
+      sudo dnf install -y wine.i686
+      tmp="$?"
+      [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Wine... Exit Code: ${tmp}.\n" && exit 1
+    fi
   fi
 
-  # Start APT Dependency Install
-  echo -e '\n\n [*] Installing APT Dependencies'
-  sudo ${arg} apt-get -y install mingw-w64 monodoc-browser monodevelop mono-mcs wine unzip ruby golang wget git \
+  # Start Dependency Install
+  echo -e '\n\n [*] Installing Dependencies'
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+    sudo ${arg} apt-get -y install mingw-w64 monodoc-browser monodevelop mono-mcs wine unzip ruby golang wget git \
                           python python-crypto python-pefile python-pip ca-certificates ttf-mscorefonts-installer
     tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install APT Dependencies... Exit Code: ${tmp}.\n" && exit 1
+    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Dependencies... Exit Code: ${tmp}.\n" && exit 1
+  fi
+
+  if [ "${os}" == "fedora" ] || [ "${os}" == "rhel" ] || [ "${os}" == "centos" ]; then
+    sudo ${arg} dnf -y install mingw64-binutils mingw64-cpp mingw64-gcc mingw64-gcc-c++ mono-tools-monodoc monodoc \
+                monodevelop mono-tools mono-core wine unzip ruby golang wget git python python-crypto python-pefile \
+                python-pip ca-certificates msttcore-fonts-installer
+    tmp="$?"
+    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install Dependencies... Exit Code: ${tmp}.\n" && exit 1
+  fi
 
   if [ "${os}" == "kali" ]; then
     sudo ${arg} apt-get -y install metasploit-framework
@@ -338,6 +357,11 @@ elif [ "${os}" == "debian" ]; then
   echo " [i] Debian ${version} $(uname -m) Detected..."
   if [[ "${version}" -lt "7" ]]; then
     echo -e " [ERROR]: Veil-Evasion Only Supported On Debian 7+.\n"
+    exit 1
+  fi
+elif [ "${os}" == "fedora" ]; then
+  if [[ "${version}" -lt "22" ]]; then
+    echo -e " [ERROR]: Veil-Evasion only supported on Fedora 22+.\n"
     exit 1
   fi
 fi
