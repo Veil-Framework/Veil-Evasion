@@ -348,6 +348,7 @@ if [ -z "${os}" ] || [ -z "${version}" ]; then
 elif [ "${os}" == "kali" ]; then
   echo " [i] Kali Linux ${version} $(uname -m) Detected..."
 elif [ "${os}" == "ubuntu" ]; then
+  version=$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&- | cut -d'.' -f1)
   echo " [i] Ubuntu ${version} $(uname -m) Detected..."
   if [[ "${version}" -lt "14" ]]; then
     echo -e " [ERROR]: Veil-Evasion Only Supported On Ubuntu 14+.\n"
