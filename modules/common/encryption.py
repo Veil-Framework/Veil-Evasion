@@ -136,6 +136,7 @@ def knownPlaintext(known_key, random_plaintext):
     # return our encrypted known plaintext
     return encrypted_string
 
+
 def encryptDES(s):
     """
     Generates a random DES key and IV, builds an DES cipher,
@@ -149,7 +150,7 @@ def encryptDES(s):
     desmain = DES.new(key, DES.MODE_CFB, iv)
     encrypted = desmain.encrypt(s)
 
-    return (encrypted, (key,iv) )
+    return (encrypted, (key, iv))
 
 
 def encryptARC(s):
