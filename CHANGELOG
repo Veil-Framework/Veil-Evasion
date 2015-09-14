@@ -1,3 +1,7 @@
+[9.15.2015]
+     Released.: 2.22.0
+     Added....: Added a Ruby payload which base64 decodes its shellcode at runtime and injects into memory
+
 [07.11.2015]
      Released.: 2.21.4
      Updated..: Addressed issue #189, where powershell payloads essentially ignore the compile option since it doesn't apply to them.
