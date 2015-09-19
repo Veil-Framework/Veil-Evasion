@@ -327,10 +327,11 @@ class Controller:
                     print helpers.color("\n [!] Internal error #4.", warning=True)
             # options['msfvenom'] = ["windows/meterpreter/reverse_tcp", ["LHOST=192.168.1.1","LPORT=443"]
             if 'msfvenom' in options:
-                if hasattr(options, 'msfvenom'):
+                if hasattr(self.payload, 'shellcode'):
                     self.payload.shellcode.SetPayload(options['msfvenom'])
                 else:
                     print helpers.color("\n [!] Internal error #3: This module does not use msfvenom!", warning=True)
+                    sys.exit()
 
             if not self.ValidatePayload(self.payload):
 
