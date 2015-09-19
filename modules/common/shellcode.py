@@ -185,7 +185,7 @@ class Shellcode:
         if options:
             for option in options:
                 self.msfvenomCommand += " " + option + " "
-        self.msfvenomCommand += " -b \'\\x00\\x0a\\xff\' -e x86/call4_dword_xor -f c | tr -d \'\"\' | tr -d \'\n\'"
+        self.msfvenomCommand += " -f c | tr -d \'\"\' | tr -d \'\\n\'"
 
         # set the internal msfvenompayload to this payload
         self.msfvenompayload = payload
@@ -459,7 +459,7 @@ class Shellcode:
                     self.options.append(option)
                 if len(extraValues) != 0 :
                     self.msfvenomCommand += " " +  " ".join(extraValues)
-                self.msfvenomCommand += " -b \'\\x00\\x0a\\xff\' -f c | tr -d \'\"\' | tr -d \'\n\'"
+                self.msfvenomCommand += " -f c | tr -d \'\"\' | tr -d \'\\n\'"
 
 
     def generate(self, required_options=None):
