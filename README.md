@@ -40,7 +40,7 @@ Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2
 ```bash
 sudo apt-get -y install git
 git clone https://github.com/Veil-Framework/Veil-Evasion.git
-cd veil-Evasion/
+cd Veil-Evasion/
 bash setup/setup.sh -s
 ```
 
