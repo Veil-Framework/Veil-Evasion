@@ -464,7 +464,6 @@ class Shellcode:
                 if len(extraValues) != 0 :
                     self.msfvenomCommand += " " +  " ".join(extraValues)
                 self.msfvenomCommand += " -f c | tr -d \'\"\' | tr -d \'\\n\'"
-                print self.msfvenomCommand
 
     def generate(self, required_options=None):
         """
