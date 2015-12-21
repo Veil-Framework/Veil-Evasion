@@ -1,3 +1,7 @@
+[11.15.2015]
+     Released.: 2.22.2
+     Updated..: Pure go stager payloads now have the correct buffer length for the latest meterpreter dll.  Fixes issue #243
+
 [9.19.2015]
      Released.: 2.22.1
      Updated..:  Fixed issue with msfvenom output change and command line usage, updated in pull requests #218 and #219, thanks to gryffus for the patches! 

