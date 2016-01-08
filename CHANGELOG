@@ -1,3 +1,8 @@
+[01.15.2016]
+     Released.: 2.23
+     Info.....: Happy New Years!
+     Added....: Added a perl module for Veil-Evasion.  Working on native compilation in Linux, but if you know how to do it, get in touch with me!
+
 [11.15.2015]
      Released.: 2.22.2
      Updated..: Pure go stager payloads now have the correct buffer length for the latest meterpreter dll.  Fixes issue #243
