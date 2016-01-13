@@ -26,201 +26,97 @@ from modules.common import supportfiles
 from modules.common import helpers
 
 
-"""
-The RPC-handler code.
-
-The RPC requests are as follows:
-    method="version"            -   return the current Veil-Evasion version number
-    method="payloads"           -   return all the currently loaded payloads
-    method="payload_options"
-        params="payload_name"   -   return the options for the specified payload
-    method="generate"
-        params=["payload=X",    -   generate the specified payload with the given options
-                "outputbase=Y"
-                "overwrite=Z",
-                "msfvenom=...",
-                "LHOST=blah]
-
-The return value will be the path to the generated executable.
-
-You can start the server with "./Veil-Evasion.py --rpc" and shut it down with
-    "./Veil-Evasin.py --rpcshutdown"
-
-"""
-class VeilEvasionServer(symmetricjsonrpc.RPCServer):
-    class InboundConnection(symmetricjsonrpc.RPCServer.InboundConnection):
-        class Thread(symmetricjsonrpc.RPCServer.InboundConnection.Thread):
-            class Request(symmetricjsonrpc.RPCServer.InboundConnection.Thread.Request):
-
-                # handle an RPC notification
-                def dispatch_notification(self, subject):
-                    print "dispatch_notification(%s)" % (repr(subject),)
-                    # Shutdown the server.
-                    print "[!] Shutting down Veil-Evasion RPC server..."
-                    self.parent.parent.parent.shutdown()
-
-                # handle an RPC request
-                def dispatch_request(self, subject):
-                    print "dispatch_request(%s)" % (repr(subject),)
-
-                    try:
-                        # extract the method name and associated parameters
-                        method = subject['method']
-                        params = subject['params']
-
-                        # instantiate a main Veil-Evasion controller
-                        con = controller.Controller(oneRun=False)
-
-                        # handle a request for version
-                        if method == "version":
-                            return messages.version
-
-                        # handle a request to list all payloads
-                        elif method == "payloads":
-                            payloads = []
-                            # return a list of all available payloads, no params needed
-                            for (name, payload) in con.payloads:
-                                payloads.append(name)
-                            return payloads
-
-                        # handle a request to list a particular payload's options
-                        elif method == "payload_options":
-                            # returns options available for a particular payload
-                            options = []
-
-                            if len(params) > 0:
-                                # nab the payload name
-                                payloadname = params[0]
-
-                                # find this payload from what's available
-                                for (name, payload) in con.payloads:
-
-                                    if payloadname.lower() == name.lower():
-                                        p = payload
-                                        # see what required options are available
-                                        if hasattr(p, 'required_options'):
-                                            for key in sorted(p.required_options.iterkeys()):
-                                                # return for the option - name,default_value,description
-                                                options.append( (key, p.required_options[key][0], p.required_options[key][1]) )
-                                        # check if this is a shellcode-utilizing payload
-                                        if hasattr(p, 'shellcode'):
-                                            options.append("shellcode")
-                            return options
-
-                        # handle a request to generate a payload
-                        elif method == "generate":
-
-                            if len(params) > 0:
-                                payloadName,outputbase = "", ""
-                                overwrite = False
-                                payload = None
-                                options = {}
-                                options['required_options'] = {}
-
-                                # pull these metaoptions out first
-                                try:
-                                    for param in params:
-                                        if param.startswith("payload="):
-                                            t,payloadName = param.split("=")
-                                        elif param.startswith("outputbase="):
-                                            t,outputbase = param.split("=")
-                                        elif param.startswith("pwnstaller="):
-                                            t,pwnstaller = param.split("=")
-                                        elif param.startswith("overwrite="):
-                                            t,choice = param.split("=")
-                                            if choice.lower() == "true":
-                                                overwrite = True
-                                except:
-                                    return ""
-
-                                # find our payload in the controller object list
-                                for (name, p) in con.payloads:
-                                    if payloadName.lower() == name.lower():
-                                        payload = p
-
-                                # error checking
-                                if not payload: return ""
-
-                                # parse all the parameters
-                                for param in params:
-
-                                    # don't include these metaoptions
-                                    if param.startswith("payload=") or param.startswith("outputbase=") or param.startswith("overwrite=") or param.startswith("pwnstaller="):
-                                        continue
-
-                                    # extract the name/value from this parameter
-                                    name,value = param.split("=")
-                                    required_options = []
-
-                                    # extract the required options if they're there
-                                    if hasattr(payload, 'required_options'):
-                                        required_options = payload.required_options.iterkeys()
-
-                                    # if the value we're passed is in the required options
-                                    if name in required_options:
-                                        options['required_options'][name] = [value, ""]
-                                    elif name == "shellcode":
-                                        options['customShellcode'] = value
-                                    elif name == "msfpayload" or name == "msfvenom":
-                                        options['msfvenom'] = [value, []]
-
-                                    # assume we have msfvenom options otherwise
-                                    else:
-                                        # temporarily get the msfoptions out
-                                        t = options['msfvenom']
-                                        if not t[1]:
-                                            # if there are no existing options
-                                            options['msfvenom'] = [t[0], [str((name+"="+value))] ]
-                                        else:
-                                            # if there are, append
-                                            options['msfvenom'] = [t[0], t[1] + [str((name+"="+value))] ]
-
-                                # manually set the payload in the controller object
-                                con.SetPayload(payloadName, options)
-
-                                # generate the payload code
-                                code = con.GeneratePayload()
-
-                                class Args(object): pass
-                                args = Args()
-                                args.overwrite=overwrite
-                                args.o = outputbase
-                                args.pwnstaller = pwnstaller
-
-                                # write out the payload code to the proper output file
-                                outName = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
-
-                                # return the written filename
-                                return outName
-
-                            else:
-                                return ""
-                        else:
-                            return ""
-                    except:
-                        return ""
-
-
 def runRPC(port=4242):
+    from flask import Flask
+    from flask import request
+    import json
     """
     Invoke a Veil-Evasion RPC instance on the specified port.
     """
+    app = Flask(__name__)
+    con = controller.Controller(oneRun=False)
 
-    print "[*] Starting Veil-Evasion RPC server..."
-    # Set up a TCP socket
-    import socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    def payload_options(name):
+        payload = [payload for (payloadname, payload) in con.payloads if name.lower() == payloadname.lower()]
 
-    #  Start listening on the socket for connections
-    s.bind(('', port))
-    s.listen(1)
+        if len(payload) != 1:
+            raise 'Error getting payload with name: %s' % name
 
-    # Create a server thread handling incoming connections
-    server = VeilEvasionServer(s, name="VeilEvasionServer")
+        if hasattr(payload[0], 'required_options'):
+            return json.dumps(payload[0].required_options)
 
-    # Wait for the server to stop serving clients
-    server.join()
+        print "here2"
+        raise 'No payload options found for name: %s' % name
+
+    def generate_payload(options):
+        p = [payload for (payloadname, payload) in con.payloads if options['payload'].lower() == payloadname.lower()]
+
+        if len(p) != 1:
+            raise 'Error getting payload with name: %s' % name
+
+        opts = {}
+        opts['required_options'] = {}
+
+        req_options = p[0].required_options.iterkeys()
+        for r in req_options:
+            if r in options:
+                opts['required_options'][r] = [options[r], '']
+
+        con.SetPayload(options['payload'], opts)
+        code = con.GeneratePayload()
+
+        class Args(object):
+            pass
+
+        args = Args()
+        args.overwrite = options['overwrite'] if 'overwrite' in options else True
+        args.o = options['outputbase']
+        args.pwnstaller = options['pwnstaller'] if 'pwnstaller' in options else False
+
+        filename = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
+        return json.dumps({'path': filename})
+
+
+    @app.errorhandler(Exception)
+    def exception_handler(error):
+        return repr(error)
+
+    @app.route('/', methods=['GET', 'POST'])
+    def index():
+        data = json.loads(request.data)
+
+        if data['action'] == 'version' or request.method == 'GET':
+            return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
+
+        elif data['action'] == 'payloads':
+            return json.dumps([name for (name, payload) in con.payloads])
+
+        elif data['action'] == 'options':
+            try:
+                return payload_options(data['name'])
+            except Exception, e:
+                return json.dumps({'error': e})
+
+        elif data['action'] == 'generate':
+            opts = data['options']
+            if 'payload' not in opts:
+                return json.dumps({'error': 'generated requires a payload to specified'})
+
+            if 'outputbase' not in opts:
+                return json.dumps({'error': 'generated requires a outputbase to specified'})
+
+            if 'LHOST' not in opts:
+                return json.dumps({'error': 'generated requires a lhost to specified'})
+
+            try:
+                return generate_payload(opts)
+            except Exception, e:
+                return json.dumps({'error': e})
+
+        return json.dumps(data)
+
+    print '[*] Starting Veil-Evasion RPC server...'
+    app.run()
 
 
 def shutdownRPC(port=4242):
