@@ -48,33 +48,20 @@ def runRPC(port=4242):
         print "here2"
         raise 'No payload options found for name: %s' % name
 
-    def generate_payload(options):
-        p = [payload for (payloadname, payload) in con.payloads if options['payload'].lower() == payloadname.lower()]
-
-        if len(p) != 1:
-            raise 'Error getting payload with name: %s' % name
-
-        opts = {}
-        opts['required_options'] = {}
-
-        req_options = p[0].required_options.iterkeys()
-        for r in req_options:
-            if r in options:
-                opts['required_options'][r] = [options[r], '']
-
-        con.SetPayload(options['payload'], opts)
+    def generate_payload(payload, filename, options, overwrite=True, pwnstaller=False):
+        con.SetPayload(payload, options)
         code = con.GeneratePayload()
 
         class Args(object):
             pass
 
         args = Args()
-        args.overwrite = options['overwrite'] if 'overwrite' in options else True
-        args.o = options['outputbase']
-        args.pwnstaller = options['pwnstaller'] if 'pwnstaller' in options else False
+        args.overwrite = overwrite
+        args.o = filename
+        args.pwnstaller = pwnstaller
 
-        filename = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
-        return json.dumps({'path': filename})
+        output = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
+        return json.dumps({'path': output})
 
 
     @app.errorhandler(Exception)
@@ -83,6 +70,24 @@ def runRPC(port=4242):
 
     @app.route('/', methods=['GET', 'POST'])
     def index():
+        '''
+        REST API is entirely JSON based, both requests and respoonses. The following is the format:
+
+        version:
+            request => {'action': 'version'}
+            response <= {'version': <version info>}
+
+        module options:
+            request => {'action': 'options', 'name': '<module name>'}
+            response <= {<Dict: <option key> => <optiion value>}
+
+        generate:
+            requests => {'action': 'generate', 'payload': {Dict: <option key> => <option value}}
+            response <= {'path': '<path to binar>'}
+
+        if there is an error processing the request, the response will be:
+            {'error': '<some error message>'}
+        '''
         data = json.loads(request.data)
 
         if data['action'] == 'version' or request.method == 'GET':
@@ -99,19 +104,39 @@ def runRPC(port=4242):
 
         elif data['action'] == 'generate':
             opts = data['options']
-            if 'payload' not in opts:
-                return json.dumps({'error': 'generated requires a payload to specified'})
 
             if 'outputbase' not in opts:
                 return json.dumps({'error': 'generated requires a outputbase to specified'})
 
-            if 'LHOST' not in opts:
-                return json.dumps({'error': 'generated requires a lhost to specified'})
+            ow = opts['overwrite'] if 'overwrite' in opts else True
+            pi = opts['pwnstaller'] if 'pwnstaller' in opts else False
 
-            try:
-                return generate_payload(opts)
-            except Exception, e:
-                return json.dumps({'error': e})
+            if 'payload' in opts:
+                if 'LHOST' not in opts:
+                    return json.dumps({'error': 'generated requires a lhost to specified'})
+
+                p = [payload for (payloadname, payload) in con.payloads if opts['payload'].lower() == payloadname.lower()]
+
+                if len(p) != 1:
+                    raise 'Error getting payload with name: %s' % name
+
+                o = {}
+                o['required_options'] = {r: [opts[r], ''] for r in p[0].required_options.iterkeys() if r in opts}
+
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+            if 'shellcode' in opts:
+                o = {}
+                o['customShellcode'] = opts['shellcode']
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+            if 'msfpayload' in opts or 'msfvenom' in opts:
+                name = opts['msfpayload'] if 'msfpayload' in opts else opts['msfvenom']
+                o = {}
+                o['msfvenom'] = [name, ','.join(['"%s=%s"' % (k,v) for (k,v) in opts.iteritems()])]
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+            return json.dumps({'error': 'there was an error in your generate parameters'})
 
         return json.dumps(data)
 
