@@ -121,8 +121,8 @@ def runRPC(port=4242):
 
                 return json.dumps({'error': 'there was an error in your generate parameters'})
 
-        except:
-            return json.dumps({'error': 'there was an unknown error parsing your request'})
+        except Exception, e:
+            return json.dumps({'error': e})
 
     print ' * Starting Veil-Evasion RPC server'
     app.run(port=port)
