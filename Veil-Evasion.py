@@ -11,14 +11,6 @@ are provided.
 
 # Import Modules
 import sys, argparse, time, os, base64, socket
-try:
-    import symmetricjsonrpc
-except ImportError:
-    print '========================================================================='
-    print ' Necessary component missing'
-    print ' Please run: bash %s -s' % os.path.abspath("setup/setup.sh")
-    print '========================================================================='
-    sys.exit()
 
 from modules.common import controller
 from modules.common import messages
