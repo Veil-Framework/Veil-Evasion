@@ -68,12 +68,15 @@ def runRPC(port=4242):
         try:
             data = json.loads(request.data)
 
+            # Version API call
             if data['action'] == 'version' or request.method == 'GET':
                 return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
 
+            # List all payloads
             elif data['action'] == 'payloads':
                 return json.dumps([name for (name, payload) in con.payloads])
 
+            # List a payloads required options
             elif data['action'] == 'options':
                 p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
 
@@ -85,6 +88,7 @@ def runRPC(port=4242):
 
                 return json.dumps({'error': 'No payload options found for name'})
 
+            # Generate a payload
             elif data['action'] == 'generate':
                 opts = data['options']
 
