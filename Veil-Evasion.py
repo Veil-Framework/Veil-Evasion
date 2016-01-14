@@ -129,7 +129,7 @@ def runRPC(port=4242):
             return json.dumps({'error': e})
 
     print ' * Starting Veil-Evasion RPC server'
-    app.run(port=port)
+    app.run(host="0.0.0.0", port=port)
 
 if __name__ == '__main__':
     try:
