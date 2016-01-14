@@ -25,8 +25,25 @@ from modules.common import messages
 from modules.common import supportfiles
 from modules.common import helpers
 
-
 def runRPC(port=4242):
+    '''
+    REST API is entirely JSON based, both requests and respoonses. The following is the format:
+
+    version:
+        request => {'action': 'version'}
+        response <= {'version': <version info>}
+
+    module options:
+        request => {'action': 'options', 'name': '<module name>'}
+        response <= {<Dict: <option key> => <optiion value>}
+
+    generate:
+        requests => {'action': 'generate', 'payload': {Dict: <option key> => <option value}}
+        response <= {'path': '<path to binar>'}
+
+    if there is an error processing the request, the response will be:
+        {'error': '<some error message>'}
+    '''
     from flask import Flask
     from flask import request
     import json
