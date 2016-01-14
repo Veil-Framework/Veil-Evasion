@@ -82,7 +82,7 @@ def runRPC(port=4242):
             if hasattr(p[0], 'required_options'):
                 return json.dumps(p[0].required_options)
 
-            raise 'No payload options found for name: %s' % name
+            return json.dumps({'error': 'No payload options found for name'})
 
         elif data['action'] == 'generate':
             opts = data['options']
