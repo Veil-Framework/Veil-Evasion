@@ -65,62 +65,64 @@ def runRPC(port=4242):
 
     @app.route('/', methods=['GET', 'POST'])
     def index():
-        data = json.loads(request.data)
+        try:
+            data = json.loads(request.data)
 
-        if data['action'] == 'version' or request.method == 'GET':
-            return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
+            if data['action'] == 'version' or request.method == 'GET':
+                return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
 
-        elif data['action'] == 'payloads':
-            return json.dumps([name for (name, payload) in con.payloads])
+            elif data['action'] == 'payloads':
+                return json.dumps([name for (name, payload) in con.payloads])
 
-        elif data['action'] == 'options':
-            p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
-
-            if len(p) != 1:
-                raise 'Error getting payload with name: %s' % name
-
-            if hasattr(p[0], 'required_options'):
-                return json.dumps(p[0].required_options)
-
-            return json.dumps({'error': 'No payload options found for name'})
-
-        elif data['action'] == 'generate':
-            opts = data['options']
-
-            if 'outputbase' not in opts:
-                return json.dumps({'error': 'generated requires a outputbase to specified'})
-
-            ow = opts['overwrite'] if 'overwrite' in opts else True
-            pi = opts['pwnstaller'] if 'pwnstaller' in opts else False
-
-            if 'payload' in opts:
-                if 'LHOST' not in opts:
-                    return json.dumps({'error': 'generated requires a lhost to specified'})
-
-                p = [payload for (payloadname, payload) in con.payloads if opts['payload'].lower() == payloadname.lower()]
+            elif data['action'] == 'options':
+                p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
 
                 if len(p) != 1:
                     raise 'Error getting payload with name: %s' % name
 
-                o = {}
-                o['required_options'] = {r: [opts[r], ''] for r in p[0].required_options.iterkeys() if r in opts}
+                if hasattr(p[0], 'required_options'):
+                    return json.dumps(p[0].required_options)
 
-                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+                return json.dumps({'error': 'No payload options found for name'})
 
-            if 'shellcode' in opts:
-                o = {}
-                o['customShellcode'] = opts['shellcode']
-                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+            elif data['action'] == 'generate':
+                opts = data['options']
 
-            if 'msfpayload' in opts or 'msfvenom' in opts:
-                name = opts['msfpayload'] if 'msfpayload' in opts else opts['msfvenom']
-                o = {}
-                o['msfvenom'] = [name, ','.join(['"%s=%s"' % (k,v) for (k,v) in opts.iteritems()])]
-                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+                if 'outputbase' not in opts:
+                    return json.dumps({'error': 'generated requires a outputbase to specified'})
 
-            return json.dumps({'error': 'there was an error in your generate parameters'})
+                ow = opts['overwrite'] if 'overwrite' in opts else True
+                pi = opts['pwnstaller'] if 'pwnstaller' in opts else False
 
-        return json.dumps(data)
+                if 'payload' in opts:
+                    if 'LHOST' not in opts:
+                        return json.dumps({'error': 'generated requires a lhost to specified'})
+
+                    p = [payload for (payloadname, payload) in con.payloads if opts['payload'].lower() == payloadname.lower()]
+
+                    if len(p) != 1:
+                        raise 'Error getting payload with name: %s' % name
+
+                    o = {}
+                    o['required_options'] = {r: [opts[r], ''] for r in p[0].required_options.iterkeys() if r in opts}
+
+                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+                if 'shellcode' in opts:
+                    o = {}
+                    o['customShellcode'] = opts['shellcode']
+                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+                if 'msfpayload' in opts or 'msfvenom' in opts:
+                    name = opts['msfpayload'] if 'msfpayload' in opts else opts['msfvenom']
+                    o = {}
+                    o['msfvenom'] = [name, ','.join(['"%s=%s"' % (k,v) for (k,v) in opts.iteritems()])]
+                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
+
+                return json.dumps({'error': 'there was an error in your generate parameters'})
+
+        except:
+            return json.dumps({'error': 'there was an unknown error parsing your request'})
 
     print ' * Starting Veil-Evasion RPC server'
     app.run(port=port)
