@@ -140,8 +140,8 @@ def runRPC(port=4242):
 
         return json.dumps(data)
 
-    print '[*] Starting Veil-Evasion RPC server...'
-    app.run()
+    print ' * Starting Veil-Evasion RPC server'
+    app.run(port=port)
 
 
 def shutdownRPC(port=4242):
@@ -180,7 +180,6 @@ if __name__ == '__main__':
         parser.add_argument('--overwrite', action='store_true', help='Overwrite payload/source output files if they already exist.')
         parser.add_argument('--pwnstaller', action='store_true', help='Use the Pwnstaller obfuscated loader.')
         parser.add_argument('--rpc', action='store_true', help='Run Veil-Evasion as an RPC server.')
-        parser.add_argument('--rpcshutdown', action='store_true', help='Shutdown a running Veil-Evasion RPC server.')
         parser.add_argument('--update', action='store_true', help='Update the Veil framework.')
         parser.add_argument('--version', action="store_true", help='Displays version and quits.')
 
@@ -194,11 +193,6 @@ if __name__ == '__main__':
         # start up the RPC server
         if args.rpc:
             runRPC()
-            sys.exit()
-
-        # shutdown the RPC server
-        if args.rpcshutdown:
-            shutdownRPC()
             sys.exit()
 
         # Print main title
