@@ -47,9 +47,7 @@ def runRPC(port=4242):
     from flask import Flask
     from flask import request
     import json
-    """
-    Invoke a Veil-Evasion RPC instance on the specified port.
-    """
+
     app = Flask(__name__)
     con = controller.Controller(oneRun=False)
 
@@ -62,7 +60,6 @@ def runRPC(port=4242):
         if hasattr(payload[0], 'required_options'):
             return json.dumps(payload[0].required_options)
 
-        print "here2"
         raise 'No payload options found for name: %s' % name
 
     def generate_payload(payload, filename, options, overwrite=True, pwnstaller=False):
@@ -87,24 +84,6 @@ def runRPC(port=4242):
 
     @app.route('/', methods=['GET', 'POST'])
     def index():
-        '''
-        REST API is entirely JSON based, both requests and respoonses. The following is the format:
-
-        version:
-            request => {'action': 'version'}
-            response <= {'version': <version info>}
-
-        module options:
-            request => {'action': 'options', 'name': '<module name>'}
-            response <= {<Dict: <option key> => <optiion value>}
-
-        generate:
-            requests => {'action': 'generate', 'payload': {Dict: <option key> => <option value}}
-            response <= {'path': '<path to binar>'}
-
-        if there is an error processing the request, the response will be:
-            {'error': '<some error message>'}
-        '''
         data = json.loads(request.data)
 
         if data['action'] == 'version' or request.method == 'GET':
@@ -159,26 +138,6 @@ def runRPC(port=4242):
 
     print ' * Starting Veil-Evasion RPC server'
     app.run(port=port)
-
-
-def shutdownRPC(port=4242):
-    """
-    Shutdown a running Veil-Evasion RPC server on a specified port.
-    """
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    #  Connect to the server
-    s.connect(('localhost', 4242))
-
-    # Create a client thread handling for incoming requests
-    client = symmetricjsonrpc.RPCClient(s)
-
-    # shut the server down
-    client.notify("shutdown")
-    client.shutdown()
-    print "[!] Veil-Evasion RPC server shutdown"
-
 
 if __name__ == '__main__':
     try:
