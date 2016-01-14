@@ -43,17 +43,6 @@ def runRPC(port=4242):
     app = Flask(__name__)
     con = controller.Controller(oneRun=False)
 
-    def payload_options(name):
-        payload = [payload for (payloadname, payload) in con.payloads if name.lower() == payloadname.lower()]
-
-        if len(payload) != 1:
-            raise 'Error getting payload with name: %s' % name
-
-        if hasattr(payload[0], 'required_options'):
-            return json.dumps(payload[0].required_options)
-
-        raise 'No payload options found for name: %s' % name
-
     def generate_payload(payload, filename, options, overwrite=True, pwnstaller=False):
         con.SetPayload(payload, options)
         code = con.GeneratePayload()
@@ -85,10 +74,15 @@ def runRPC(port=4242):
             return json.dumps([name for (name, payload) in con.payloads])
 
         elif data['action'] == 'options':
-            try:
-                return payload_options(data['name'])
-            except Exception, e:
-                return json.dumps({'error': e})
+            p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
+
+            if len(p) != 1:
+                raise 'Error getting payload with name: %s' % name
+
+            if hasattr(p[0], 'required_options'):
+                return json.dumps(p[0].required_options)
+
+            raise 'No payload options found for name: %s' % name
 
         elif data['action'] == 'generate':
             opts = data['options']
