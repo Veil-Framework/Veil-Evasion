@@ -41,11 +41,12 @@ def runRPC(port=4242):
     import json
 
     app = Flask(__name__)
+    con = controller.Controller(oneRun=False)
 
     def generate_payload(payload, filename, options, overwrite=True, pwnstaller=False):
-        con = controller.Controller(oneRun=False)
-        con.SetPayload(payload, options)
-        code = con.GeneratePayload()
+        c = controller.Controller(oneRun=False)
+        c.SetPayload(payload, options)
+        code = c.GeneratePayload()
 
         class Args(object):
             pass
