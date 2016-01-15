@@ -8,7 +8,7 @@ import settings
 import helpers
 
 
-version = "2.22.2"
+version = "2.23"
 
 
 # try to find and import the settings.py config file
