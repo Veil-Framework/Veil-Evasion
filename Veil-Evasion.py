@@ -44,9 +44,9 @@ def runRPC(port=4242):
     con = controller.Controller(oneRun=False)
 
     def generate_payload(payload, filename, options, overwrite=True, pwnstaller=False):
-        c = controller.Controller(oneRun=False)
-        c.SetPayload(payload, options)
-        code = c.GeneratePayload()
+        #c = controller.Controller(oneRun=False)
+        con.SetPayload(payload, options)
+        code = con.GeneratePayload()
 
         class Args(object):
             pass
@@ -57,6 +57,7 @@ def runRPC(port=4242):
         args.pwnstaller = pwnstaller
 
         output = con.OutputMenu(con.payload, code, showTitle=False, interactive=False, args=args)
+        print output
         return json.dumps({'path': output})
 
 
@@ -66,68 +67,64 @@ def runRPC(port=4242):
 
     @app.route('/', methods=['GET', 'POST'])
     def index():
-        try:
-            data = json.loads(request.data)
+        data = json.loads(request.data)
 
-            # Version API call
-            if data['action'] == 'version' or request.method == 'GET':
-                return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
+        # Version API call
+        if data['action'] == 'version' or request.method == 'GET':
+            return json.dumps({'version': 'Veil-Evasion RPC Server %s' % messages.version})
 
-            # List all payloads
-            elif data['action'] == 'payloads':
-                return json.dumps([name for (name, payload) in con.payloads])
+        # List all payloads
+        elif data['action'] == 'payloads':
+            return json.dumps([name for (name, payload) in con.payloads])
 
-            # List a payloads required options
-            elif data['action'] == 'options':
-                p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
+        # List a payloads required options
+        elif data['action'] == 'options':
+            p = [payload for (payloadname, payload) in con.payloads if data['name'].lower() == payloadname.lower()]
+
+            if len(p) != 1:
+                raise 'Error getting payload with name: %s' % name
+
+            if hasattr(p[0], 'required_options'):
+                return json.dumps(p[0].required_options)
+
+            return json.dumps({'error': 'No payload options found for name'})
+
+        # Generate a payload
+        elif data['action'] == 'generate':
+            opts = data['options']
+
+            if 'outputbase' not in opts:
+                return json.dumps({'error': 'generated requires a outputbase to specified'})
+
+            ow = opts['overwrite'] if 'overwrite' in opts else True
+            pi = opts['pwnstaller'] if 'pwnstaller' in opts else False
+
+            if 'payload' in opts:
+                if 'LHOST' not in opts:
+                    return json.dumps({'error': 'generated requires a lhost to specified'})
+
+                p = [payload for (payloadname, payload) in con.payloads if opts['payload'].lower() == payloadname.lower()]
 
                 if len(p) != 1:
                     raise 'Error getting payload with name: %s' % name
 
-                if hasattr(p[0], 'required_options'):
-                    return json.dumps(p[0].required_options)
+                o = {}
+                o['required_options'] = {r: [opts[r], ''] for r in p[0].required_options.iterkeys() if r in opts}
 
-                return json.dumps({'error': 'No payload options found for name'})
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
 
-            # Generate a payload
-            elif data['action'] == 'generate':
-                opts = data['options']
+            if 'shellcode' in opts:
+                o = {}
+                o['customShellcode'] = opts['shellcode']
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
 
-                if 'outputbase' not in opts:
-                    return json.dumps({'error': 'generated requires a outputbase to specified'})
+            if 'msfpayload' in opts or 'msfvenom' in opts:
+                name = opts['msfpayload'] if 'msfpayload' in opts else opts['msfvenom']
+                o = {}
+                o['msfvenom'] = [name, ','.join(['"%s=%s"' % (k,v) for (k,v) in opts.iteritems()])]
+                return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
 
-                ow = opts['overwrite'] if 'overwrite' in opts else True
-                pi = opts['pwnstaller'] if 'pwnstaller' in opts else False
-
-                if 'payload' in opts:
-                    if 'LHOST' not in opts:
-                        return json.dumps({'error': 'generated requires a lhost to specified'})
-
-                    p = [payload for (payloadname, payload) in con.payloads if opts['payload'].lower() == payloadname.lower()]
-
-                    if len(p) != 1:
-                        raise 'Error getting payload with name: %s' % name
-
-                    o = {}
-                    o['required_options'] = {r: [opts[r], ''] for r in p[0].required_options.iterkeys() if r in opts}
-
-                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
-
-                if 'shellcode' in opts:
-                    o = {}
-                    o['customShellcode'] = opts['shellcode']
-                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
-
-                if 'msfpayload' in opts or 'msfvenom' in opts:
-                    name = opts['msfpayload'] if 'msfpayload' in opts else opts['msfvenom']
-                    o = {}
-                    o['msfvenom'] = [name, ','.join(['"%s=%s"' % (k,v) for (k,v) in opts.iteritems()])]
-                    return generate_payload(opts['payload'], opts['outputbase'], o, ow, pi)
-
-                return json.dumps({'error': 'there was an error in your generate parameters'})
-
-        except Exception, e:
-            return json.dumps({'error': e})
+            return json.dumps({'error': 'there was an error in your generate parameters'})
 
     print ' * Starting Veil-Evasion RPC server'
     app.run(host="0.0.0.0", port=port)
