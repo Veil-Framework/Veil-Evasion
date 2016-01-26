@@ -109,20 +109,17 @@ func_package_deps(){
 
   # Check For 64-bit Kernel
   if [ $(uname -m) == 'x86_64' ]; then
-    if [ "${os}" == "kali" ]; then
-      echo -e ${YELLOW}'\n\n [*] Skipping Adding i386 Architecture To x86_64 System'${RESET}
-    elif [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ]; then
+    if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
       echo -e ${YELLOW}'\n\n [*] Adding i386 Architecture To x86_64 System'${RESET}
       sudo dpkg --add-architecture i386
       sudo apt-get -q update
 
       echo -e ${YELLOW}'\n\n [*] Installing (Wine) i386 Binaries'${RESET}
-      sudo ${arg} apt-get -y install wine32
-      sudo ${arg} apt-get -y install wine-bin:i386
+      sudo ${arg} apt-get -y install wine32   #wine-bin:i386
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.${RESET}\n" && exit 1
     else
-      echo -e '\n\n [*] Installing Wine 32bit on x86_64 System'
+      echo -e '\n\n [*] Installing Wine 32-bit on x86_64 System'
       sudo dnf install -y wine.i686
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -158,10 +155,10 @@ func_capstone_deps(){
   else
     which pip >/dev/null 2>&-
     if [ "$?" -eq 0 ]; then
-      echo -e ' [*] Installing Capstone (via PIP)'
+      echo -e ${BOLD}' [*] Installing Capstone (via PIP)'${RESET}
       sudo pip install capstone
     else    # In theory, we should never end up here
-      echo -e ' [*] Installing Capstone (via Source)'
+      echo -e ${BOLD}' [*] Installing Capstone (via Source)'${RESET}
       git clone https://github.com/aquynh/capstone "${rootdir}/setup/capstone/"
       cd "${rootdir}/setup/capstone/"
       git checkout b53a59af53ffbd5dbe8dbcefba41a00cf4fc7469
@@ -201,7 +198,7 @@ func_python_deps(){
   [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install SymmetricJSONRPC... Exit Code: ${tmp}.${RESET}\n" && exit 1
 
   # Incase Its 'First Time Run' for WINE (More information: http://wiki.winehq.org/Mono)
-  [[ "${silent}" == "true" ]] && wget -qO - "http://winezeug.googlecode.com/svn/trunk/install-addons.sh" | bash -
+  [[ "${silent}" == "true" ]] && bash "${rootdir}/setup/install-addons.sh"   #wget -qO - "http://winezeug.googlecode.com/svn/trunk/install-addons.sh"
   wine cmd.exe /c ipconfig >/dev/null
 
   # Prepare (Wine) Directories - Required Before Python
@@ -213,7 +210,7 @@ func_python_deps(){
 
   # Install Setup Files
   echo -e ${YELLOW}'\n\n [*] Installing (Wine) Python...'${RESET}
-  echo -e ${YELLOW}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt'${RESET}
+  echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
   [ "${silent}" == "true" ] && arg="TARGETDIR=C:\Python27 ALLUSERS=1 /q"
   wine msiexec /i "${rootdir}/setup/python-2.7.5.msi" ${arg}
   tmp="$?"
@@ -224,14 +221,14 @@ func_python_deps(){
   echo -e ${YELLOW}'\n\n [*] Installing (Wine) Python Dependencies...'${RESET}
   pushd "${rootdir}/setup/" >/dev/null
   for FILE in pywin32-219.win32-py2.7.exe pycrypto-2.6.win32-py2.7.exe; do
-    echo -e "${YELLOW}\n\n [*] Installing Python's $FILE...${RESET}"
+    echo -e "\n\n${YELLOW} [*] Installing Python's ${FILE}...${RESET}"
     if [ "${silent}" == "true" ]; then
       unzip -q -o "${FILE}"
       cp -rf PLATLIB/* ~/.wine/drive_c/Python27/Lib/site-packages/
       [ -e "SCRIPTS" ] && cp -rf SCRIPTS/* ~/.wine/drive_c/Python27/Scripts/
       rm -rf "PLATLIB/" "SCRIPTS/"
     else
-      echo -e ${YELLOW}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt'${RESET}
+      echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
       wine "${FILE}"
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install ${FILE}... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -239,13 +236,13 @@ func_python_deps(){
   done
 
   echo -e ${YELLOW}'\n\n [*] Installing (Wine) Python Dependencies - pywin32...'${RESET}
-  echo -e ${YELLOW}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt'${RESET}
+  echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
   wine C://Python27//python.exe C://Python27//Scripts//pywin32_postinstall.py -install
 
   popd >/dev/null
 
   if [ "${os}" == "kali" ]; then
-    echo -e ${YELLOW}'\n\n [*] Installing PyInstaller via Repository...'${RESET}
+    echo -e ${YELLOW}'\n\n [*] Installing PyInstaller (via Repository)...'${RESET}
     [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
     sudo ${arg} apt-get -y install pyinstaller
     tmp="$?"
@@ -254,7 +251,7 @@ func_python_deps(){
     if [ -d "/opt/pyinstaller-2.0/" ]; then
       echo -e ${YELLOW}'\n\n [*] PyInstaller Already Installed... Skipping...'${RESET}${RESET}
     else
-      echo -e ${YELLOW}'\n\n [*] Installing PyInstaller via ZIP...'${RESET}
+      echo -e ${YELLOW}'\n\n [*] Installing PyInstaller (via ZIP)...'${RESET}
       sudo unzip -q -o -d /opt "${rootdir}/setup/pyinstaller-2.0.zip"
       sudo chmod -R 0755 /opt/pyinstaller-2.0/
     fi
@@ -272,30 +269,41 @@ func_go_deps(){
 
   sudo mkdir -p /usr/src/go/
 
-  version="$(apt-cache show golang-src | awk -F '[:-.]' '/Version/ {print $3$4}')"
-  if [ "${version}" -lt "12" ]; then
-    echo -e ' [*] Installing Go (via TAR)'
-    sudo tar -xf "${rootdir}/setup/go1.4.2.src.tar.gz" -C /usr/src/
-  else
-    # Download source via Repository
-    echo -e " [*] Installing Go (v${version} via Repository)"
-    sudo apt-get source golang  #golang-go
-    tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Download Go... Exit Code: ${tmp}.${RESET}\n" && exit 1
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+    goversion="$(apt-cache show golang-src | awk -F '[:-.]' '/Version/ {print $3$4}')"
+    if [[ ! $(grep "#*deb-src" /etc/apt/sources.list) ]] && [ "${goversion}" -gt "12" ]; then
+      # Download source via Repository
+      echo -e "${BOLD} [*] Installing Go (v${goversion} via Repository)${RESET}"
+      sudo apt-get source golang-go  #golang
+      tmp="$?"
+      [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Download Go... Exit Code: ${tmp}.${RESET}\n" && exit 1
 
-    # Put Everything In One Place
-    sudo cp -rn /tmp/golang-*/* /usr/src/go/
+      # Put Everything In One Place
+      sudo cp -rn /tmp/golang-*/* /usr/src/go/
+    fi
+    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+    sudo ${arg} apt-get -y install gccgo-5
+    sudo update-alternatives --set go /usr/bin/go-5
+  fi
+
+  if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
+    echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
+    sudo tar -xf "${rootdir}/setup/go1.5.2.tar.gz" -C /usr/src/   #wget -q https://github.com/golang/go/archive/go1.5.2.tar.gz
   fi
 
   # Compile
-  cd /usr/src/go/src/
-  sudo ./make.bash
+  export GOROOT=/usr/src/go-go1.5.2/
+  #export GOROOT_BOOTSTRAP=$GOROOT
+  cd "${GOROOT}/src/"
+  sudo env GOROOT_BOOTSTRAP=/usr ./make.bash
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Compile Go... Exit Code: ${tmp}.${RESET}... SKIPPING\n" #&& exit 1    # Do not quit if this doesn't complete!
+  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
 
   # Cross-Compile
-  sudo env GOOS=windows GOARCH=386 ./make.bash --no-clean
-  sudo env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
+  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 ./make.bash --no-clean
+  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 CGO_ENABLED=1 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
+  tmp="$?"
+  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Cross-Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
 
   # Done
   popd >/dev/null
@@ -309,7 +317,7 @@ func_ruby_deps(){
 
   # Install Ruby Under Wine
   echo -e ${YELLOW}'\n\n [*] Installing (Wine) Ruby & Dependencies'${RESET}
-  echo -e ${YELLOW}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt'${RESET}
+  echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
   mkdir -p ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/
 
   [ "${silent}" == "true" ] && arg="/silent"
