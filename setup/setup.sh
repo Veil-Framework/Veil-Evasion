@@ -296,10 +296,12 @@ func_go_deps(){
   mkdir /usr/src/go1.5.3
   $currentdir = `pwd`
   cd /usr/src/go1.5.3
-  git clone https://go.googlecode.com/go
+  git clone https://go.googlesource.com/go
+  cd go
   git checkout go1.5.3
   cd src
   ./all.bash
+  export GOROOT=/usr/src/go1.5.3/go
   cd $currentdir
   
   # Done
