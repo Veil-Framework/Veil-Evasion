@@ -291,20 +291,17 @@ func_go_deps(){
     sudo tar -xf "${rootdir}/setup/go1.5.2.tar.gz" -C /usr/src/   #wget -q https://github.com/golang/go/archive/go1.5.2.tar.gz
   fi
 
-  # Compile
-  export GOROOT=/usr/src/go-go1.5.2/
-  #export GOROOT_BOOTSTRAP=$GOROOT
-  cd "${GOROOT}/src/"
-  sudo env GOROOT_BOOTSTRAP=/usr ./make.bash
-  tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
-
-  # Cross-Compile
-  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 ./make.bash --no-clean
-  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 CGO_ENABLED=1 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
-  tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Cross-Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
-
+  # Use 1.5.2 to compile 1.5.3
+  export GOROOT_BOOTSTRAP=/usr/src/go-go1.5.2
+  mkdir /usr/src/go1.5.3
+  $currentdir = `pwd`
+  cd /usr/src/go1.5.3
+  git clone https://go.googlecode.com/go
+  git checkout go1.5.3
+  cd src
+  ./all.bash
+  cd $currentdir
+  
   # Done
   popd >/dev/null
 }
