@@ -294,7 +294,7 @@ func_go_deps(){
   # Use 1.5.2 to compile 1.5.3
   export GOROOT_BOOTSTRAP=/usr/src/go-go1.5.2
   mkdir /usr/src/go1.5.3
-  $currentdir=`pwd`
+  currentdir=`pwd`
   cd /usr/src/go1.5.3
   git clone https://go.googlesource.com/go
   cd go
