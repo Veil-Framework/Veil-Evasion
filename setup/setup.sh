@@ -288,22 +288,13 @@ func_go_deps(){
 
   if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
     echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
-    sudo tar -xf "${rootdir}/setup/go1.5.2.tar.gz" -C /usr/src/   #wget -q https://github.com/golang/go/archive/go1.5.2.tar.gz
+    wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
+    tar -C /usr/local -xvf go1.5.3.linux-amd64.tar.gz
+    export GOROOT=/usr/local/go
+    rm /usr/bin/go
+    ln -s /usr/local/go/bin/go /usr/bin/go
   fi
 
-  # Use 1.5.2 to compile 1.5.3
-  export GOROOT_BOOTSTRAP=/usr/src/go-go1.5.2
-  mkdir /usr/src/go1.5.3
-  currentdir=`pwd`
-  cd /usr/src/go1.5.3
-  git clone https://go.googlesource.com/go
-  cd go
-  git checkout go1.5.3
-  cd src
-  ./all.bash
-  export GOROOT=/usr/src/go1.5.3/go
-  cd $currentdir
-  
   # Done
   popd >/dev/null
 }
