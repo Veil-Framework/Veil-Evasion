@@ -288,22 +288,12 @@ func_go_deps(){
 
   if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
     echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
-    sudo tar -xf "${rootdir}/setup/go1.5.2.tar.gz" -C /usr/src/   #wget -q https://github.com/golang/go/archive/go1.5.2.tar.gz
+    wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
+    tar -C /usr/local -xvf go1.5.3.linux-amd64.tar.gz
+    export GOROOT=/usr/local/go
+    rm /usr/bin/go
+    ln -s /usr/local/go/bin/go /usr/bin/go
   fi
-
-  # Compile
-  export GOROOT=/usr/src/go-go1.5.2/
-  #export GOROOT_BOOTSTRAP=$GOROOT
-  cd "${GOROOT}/src/"
-  sudo env GOROOT_BOOTSTRAP=/usr ./make.bash
-  tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
-
-  # Cross-Compile
-  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 ./make.bash --no-clean
-  sudo env GOROOT_BOOTSTRAP=/usr GOOS=windows GOARCH=386 CGO_ENABLED=1 CC_FOR_TARGET="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" ./make.bash --no-clean
-  tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Cross-Compile Go... Exit Code: ${tmp}.${RESET}...\n" && exit 1
 
   # Done
   popd >/dev/null

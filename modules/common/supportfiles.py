@@ -205,7 +205,8 @@ def supportingFiles(payload, payloadFile, options):
     elif language.lower() == "go":
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        os.system('env GOROOT=/usr/local/go GOOS=windows GOARCH=386 /usr/bin/go build -ldflags -H=windowsgui -v -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        #os.system('mv ' + payloadFile.split('.')[0] + '.exe ' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
 
