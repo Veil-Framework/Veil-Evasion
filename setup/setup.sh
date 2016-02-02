@@ -289,14 +289,18 @@ func_go_deps(){
   if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
     echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
     if [ $(uname -m) == 'x86_64' ]; then
-      tar -C /usr/local -xvf "${rootdir}/setup/go1.5.3.linux-amd64.tar.gz"
+      wget https://www.veil-framework.com/InstallMe/go153x64.tar.gz
+      sudo tar -C /usr/local -xvf go153x64.tar.gz
+      sudo rm go153x64.tar.gz
     fi
     if [ $(uname -m) == 'i686' ]; then
-      tar -C /usr/local -xvf "${rootdir}/setup/go1.5.3.linux-386.tar.gz"
+      wget https://www.veil-framework.com/InstallMe/go153x86.tar.gz
+      sudo tar -C /usr/local -xvf go153x86.tar.gz
+      sudo rm go153x86.tar.gz
     fi
-    export GOROOT=/usr/local/go
-    rm /usr/bin/go
-    ln -s /usr/local/go/bin/go /usr/bin/go
+    sudo export GOROOT=/usr/local/go
+    sudo rm /usr/bin/go
+    sudo ln -s /usr/local/go/bin/go /usr/bin/go
   fi
 
   # Done
