@@ -288,8 +288,12 @@ func_go_deps(){
 
   if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
     echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
-    wget https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
-    tar -C /usr/local -xvf go1.5.3.linux-amd64.tar.gz
+    if [ $(uname -m) == 'x86_64' ]; then
+      tar -C /usr/local -xvf "${rootdir}/setup/go1.5.3.linux-amd64.tar.gz"
+    fi
+    if [ $(uname -m) == 'i686' ]; then
+      tar -C /usr/local -xvf "${rootdir}/setup/go1.5.3.linux-386.tar.gz"
+    fi
     export GOROOT=/usr/local/go
     rm /usr/bin/go
     ln -s /usr/local/go/bin/go /usr/bin/go
