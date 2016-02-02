@@ -298,7 +298,7 @@ func_go_deps(){
       sudo tar -C /usr/local -xvf go153x86.tar.gz
       sudo rm go153x86.tar.gz
     fi
-    sudo export GOROOT=/usr/local/go
+    export GOROOT=/usr/local/go
     sudo rm /usr/bin/go
     sudo ln -s /usr/local/go/bin/go /usr/bin/go
   fi
