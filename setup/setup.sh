@@ -290,13 +290,25 @@ func_go_deps(){
     echo -e "${BOLD} [*] Installing Go (via TAR)${RESET}"
     if [ $(uname -m) == 'x86_64' ]; then
       wget https://www.veil-framework.com/InstallMe/go153x64.tar.gz
-      sudo tar -C /usr/local -xvf go153x64.tar.gz
-      sudo rm go153x64.tar.gz
+      shasum1=`openssl dgst -sha256 go153x64.tar.gz | cut -d' ' -f2`
+      if [ "$shasum1" == "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae53" ]; then
+        sudo tar -C /usr/local -xvf go153x64.tar.gz
+        sudo rm go153x64.tar.gz
+      else
+        echo "HASH MISMATCH!  Run again, or alert developer!!!!"
+        exit
+      fi
     fi
     if [ $(uname -m) == 'i686' ]; then
       wget https://www.veil-framework.com/InstallMe/go153x86.tar.gz
-      sudo tar -C /usr/local -xvf go153x86.tar.gz
-      sudo rm go153x86.tar.gz
+      shasum2=`openssl dgst -sha256 go153x86.tar.gz | cut -d' ' -f2`
+      if [ "$shasum2" == "c1ce206b7296db1b10ff7896044d9ca50e87efa5bc3477e8fd8c2fb149bfca8f" ]; then
+        sudo tar -C /usr/local -xvf go153x86.tar.gz
+        sudo rm go153x86.tar.gz
+      else
+        echo "HASH MISMATCH!  Run again, or alert developer!!!!"
+        exit
+      fi
     fi
     export GOROOT=/usr/local/go
     sudo rm /usr/bin/go
