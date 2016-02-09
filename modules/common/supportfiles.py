@@ -143,7 +143,8 @@ def supportingFiles(payload, payloadFile, options):
             if architecture == "64":
                 os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
             else:
-                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile)
+                random_key = helpers.randomString()
+                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key' + random_key + ' ' + payloadFile)
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
 
