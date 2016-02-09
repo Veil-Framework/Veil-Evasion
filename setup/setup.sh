@@ -246,7 +246,7 @@ func_python_deps(){
   [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
   if [ -f "/usr/share/pyinstaller/PKG-INFO" ]; then
     pyinstversion=`sed -n '3{p;q;}' /usr/share/pyinstaller/PKG-INFO | cut -d' ' -f2`
-    if [ "$pyinstversion" == "3.1.1"]
+    if [ "$pyinstversion" == "3.1.1"]; then
       echo "PyInstaller version 3.1.1 is already installed, skipping!"
     else
       # Install pyinstaller now
