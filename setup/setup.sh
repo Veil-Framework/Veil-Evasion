@@ -273,7 +273,7 @@ func_python_deps(){
 
   if [ ! -f "${rootdir}/.wine/drive_c/Python27/Lib/site-packages/setuptools-0.6c11-py2.7.egg-info" ]; then
     wget https://www.veil-framework.com/InstallMe/distribute_setup.py
-    wine ${rootdir}/.wine/drive_c/Python27/python.exe distribute_setup.py
+    wine /root/.wine/drive_c/Python27/python.exe distribute_setup.py
     rm distribute_setup.py
   fi
 }
