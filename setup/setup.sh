@@ -241,20 +241,40 @@ func_python_deps(){
 
   popd >/dev/null
 
-  if [ "${os}" == "kali" ]; then
-    echo -e ${YELLOW}'\n\n [*] Installing PyInstaller (via Repository)...'${RESET}
-    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
-    sudo ${arg} apt-get -y install pyinstaller
-    tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " [ERROR] Failed To Install PyInstaller... Exit Code: ${tmp}.\n" && exit 1
-  else
-    if [ -d "/opt/pyinstaller-2.0/" ]; then
-      echo -e ${YELLOW}'\n\n [*] PyInstaller Already Installed... Skipping...'${RESET}${RESET}
+  # Start the pyinstaller process
+  echo -e '\n\n [*] Installing PyInstaller (via Repos)'
+  [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+  if [ -f "/usr/share/pyinstaller/PKG-INFO" ]; then
+    pyinstversion=`sed -n '3{p;q;}' /usr/share/pyinstaller/PKG-INFO | cut -d' ' -f2`
+    if [ "$pyinstversion" == "3.1.1"]; then
+      echo "PyInstaller version 3.1.1 is already installed, skipping!"
     else
-      echo -e ${YELLOW}'\n\n [*] Installing PyInstaller (via ZIP)...'${RESET}
-      sudo unzip -q -o -d /opt "${rootdir}/setup/pyinstaller-2.0.zip"
-      sudo chmod -R 0755 /opt/pyinstaller-2.0/
+      # Install pyinstaller now
+      wget https://www.veil-framework.com/InstallMe/PyInstaller-3.1.1.tar.gz
+      shasum3=`openssl dgst -sha256 PyInstaller-3.1.1.tar.gz | cut -d' ' -f2`
+      if [ "$shasum3" == "b111d35d836237bf954e9b47dcb338da48a40210c318b2b0bc163dba8ca8e096" ]; then
+        tar -xvf PyInstaller-3.1.1.tar.gz
+        sudo mv PyInstaller-3.1.1 /usr/share/pyinstaller
+      else
+        echo "Bad hash for PyInstaller!  Please try again for inform the developer!"
+      fi
     fi
+  else
+    # Install pyinstaller now
+    wget https://www.veil-framework.com/InstallMe/PyInstaller-3.1.1.tar.gz
+    shasum3=`openssl dgst -sha256 PyInstaller-3.1.1.tar.gz | cut -d' ' -f2`
+    if [ "$shasum3" == "b111d35d836237bf954e9b47dcb338da48a40210c318b2b0bc163dba8ca8e096" ]; then
+      tar -xvf PyInstaller-3.1.1.tar.gz
+      sudo mv PyInstaller-3.1.1 /usr/share/pyinstaller
+    else
+      echo "Bad hash for PyInstaller!  Please try again for inform the developer!"
+    fi
+  fi
+
+  if [ ! -f "${rootdir}/.wine/drive_c/Python27/Lib/site-packages/setuptools-0.6c11-py2.7.egg-info" ]; then
+    wget https://www.veil-framework.com/InstallMe/distribute_setup.py
+    wine /root/.wine/drive_c/Python27/python.exe distribute_setup.py
+    rm distribute_setup.py
   fi
 }
 
