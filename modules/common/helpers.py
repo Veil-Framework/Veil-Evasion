@@ -48,7 +48,7 @@ def LHOST():
     """
     Return the IP of eth0
     """
-    return commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1][5:]
+    return commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1]
 
 
 def isValidHostname(hostname):
