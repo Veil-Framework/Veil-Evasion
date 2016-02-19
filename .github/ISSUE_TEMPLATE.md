@@ -4,7 +4,7 @@
 ## OS Used - all info (architecture, linux flavor, etc)
 
 
-## Pastebin link to error you are encountering
+## Pastebin link to error you are encountering (include console actions you took prior to error)
 
 
 ## Expected behavior
