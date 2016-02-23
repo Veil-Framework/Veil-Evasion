@@ -38,6 +38,11 @@ def generateConfig(options):
     config += 'TERMINAL_CLEAR="' + options['TERMINAL_CLEAR'] + '"\n\n'
     print " [*] TERMINAL_CLEAR = " + options['TERMINAL_CLEAR']
 
+    config += '# Wine environment\n'
+    config += 'import os\n'
+    config += 'os.environ["WINEPREFIX"]="' + options["WINEPREFIX"] + '"\n\n'
+    print " [*] WINEPREFIX = " + options["WINEPREFIX"]
+
     config += '# Path to temporary directory\n'
     config += 'TEMP_DIR="' + options["TEMP_DIR"] + '"\n\n'
     print " [*] TEMP_DIR = " + options["TEMP_DIR"]
@@ -193,6 +198,19 @@ if __name__ == '__main__':
         # last of the general options
         options["TEMP_DIR"] = "/tmp/"
         options["MSFVENOM_OPTIONS"] = ""
+
+        # Get the real user if we're being ran under sudo
+        wineprefix = ""
+        try:
+            user = os.environ.get("SUDO_USER")
+            if user == 'root':
+                wineprefix = "/root/.config/wine/veil/"
+            else:
+                wineprefix = "/home/" + user + "/.config/wine/veil/"
+        except KeyError:
+            print(" [*] Unable to get user from SUDO_USER environment variable\n")
+            print("     Your WINEPREFIX option might be screwed. You can fix it in /etc/veil/settings.py")
+        options["WINEPREFIX"] = wineprefix
 
         # Veil-Evasion specific options
         veil_evasion_path = "/".join(os.getcwd().split("/")[:-1]) + "/"
