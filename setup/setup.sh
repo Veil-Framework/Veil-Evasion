@@ -63,13 +63,15 @@ func_check_env(){
     echo '          Please Install and Configure sudo Then Run This Setup Again.'
     echo '          Example: For Debian/Ubuntu: apt-get -y install sudo'
     echo '                   For Fedora 22+: dnf -y install sudo'
-    echo "${YELLOW}\n\n[!] Before you begin the install, make sure that you have the metasploit\n"
-    echo "    framework installed. We are not going to hold your hand!\n${RESET}"
     exit 1
   fi
 
   # Double Check Install
   if [ "${silent}" != "true" ]; then
+    if [ ${os} != "kali" ]; then
+      echo -e "${BOLD} [!] NON-KALI Users: Before you begin the install, make sure that you have"
+      echo -e "     the metasploit framework installed before you proceed!\n${RESET}"
+    fi
     echo -e ${BOLD}'\n [?] Are you sure you wish to install Veil-Evasion?\n'${RESET}
     read -p ' Continue With Installation? ([y]es/[s]ilent/[N]o): ' installveil
     if [ "${installveil}" == 's' ]; then
@@ -154,11 +156,17 @@ func_package_deps(){
       "${RED} [!] CRITICAL ERROR: Architecture ${arch} is not supported!"
       exit 1
     fi
-
     # Red Hat based distributions
   elif [ "${os}" == "fedora" ] || [ "${os}" == "rhel" ] || [ "${os}" == "centos" ]; then
     echo -e "${YELLOW}\n\n [*] Installing Wine 32-bit on x86_64 System${RESET}\n"
     sudo dnf install -y wine.i686 wine
+    tmp="$?"
+    [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.${RESET}\n" && exit 1
+  elif [ "$os" == "arch" ]; then
+    if grep -Fxq "#[multilib]" /etc/pacman.conf; then
+      echo "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+    fi
+    sudo pacman -Syu ${args} --needed --noconfirm wine wine-mono wine_gecko git
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine x86_64... Exit Code: ${tmp}.${RESET}\n" && exit 1
   fi
@@ -226,6 +234,30 @@ func_package_deps(){
     sudo ${arg} dnf -y install mingw64-binutils mingw64-cpp mingw64-gcc mingw64-gcc-c++ mono-tools-monodoc monodoc \
       monodevelop mono-tools mono-core wine unzip ruby golang wget git python python-crypto python-pefile \
       python-pip ca-certificates msttcore-fonts-installer
+  elif [ "${os}" ==  "arch" ]; then
+    sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-mingw-w64-winpthreads \
+      mono mono-tools mono-addins python-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
+    if [ -f /usr/bin/yaourt ]; then
+      echo -e " [I] ${YELLOW}Setting up yaourt to install packages from AUR...${RESET}"
+      cd /tmp
+      sudo -u ${trueuser} git clone https://aur.archlinux.org/package-query.git
+      # Let the users confirm for now, since some might be iffy about it
+      # makepkg does not let you run as root. Arch users expect this behaviour.
+      cd package-query
+      sudo -u ${trueuser} makepkg --needed -Ccsi
+      cd /tmp
+      sudo -u ${trueuser} git clone https://aur.archlinux.org/yaourt.git
+      cd yaourt
+      sudo -u ${trueuser} makepkg --needed -Ccsi
+      cd ${rootdir}
+      echo -e "\n [!] ${YELLOW}Installing python-pefile-git from AUR. https://aur.archlinux.org/packages/python-pefile-git"
+      echo -e "     Yaourt will prompt you for your password as it's safer to build under your user: ${trueuser}.${RESET}\n"
+      sudo -u ${trueuser} yaourt -S python-pefile-git
+    else
+      echo -e "\n [!] ${YELLOW}Installing python-pefile-git from AUR. https://aur.archlinux.org/packages/python-pefile-git"
+      echo -e "     Yaourt will prompt you for your password as it's safer to build under your user: ${trueuser}.${RESET}\n"
+      sudo -u ${trueuser} yaourt -S python-pefile-git
+    fi
   fi
   tmp="$?"
   [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Dependencies... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -273,20 +305,30 @@ func_capstone_deps(){
 func_python_deps(){
   echo -e "\n [*] ${YELLOW}Initializing (Wine) Python Dependencies Installation...${RESET}"
 
-  # Check If SymmetricJSONRPC Is Already Installed
-  if [ -d /usr/local/lib/python2.7/dist-packages/symmetricjsonrpc/ ]; then
-    echo -e "\n [*] ${YELLOW}SymmetricJSONRPC Already Installed... Skipping...${RESET}"
-  elif [ "${os}" == "kali" ]; then
-    echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via Repository)${RESET}"
-    [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
-    sudo ${arg} apt-get -y install python-symmetric-jsonrpc
-  else
-    echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via PIP)...${RESET}"
-    sudo pip install symmetricjsonrpc
-    echo ''
-  fi
+  # Check If SymmetricJSONRPC Is Already Installd - If not, install it.
+  pythonversion=$(python -c "import sys;t='{v[0]}.{v[1]}'.format(v=list(sys.version_info[:2]));sys.stdout.write(t)")
+  pypkgdir=("/usr/local/lib/python${pythonversion}/dist-packages/symmetricjsonrpc/"
+  "/usr/local/lib/python${pythonversion}/site-packages/symmetricjsonrpc/"
+  "/usr/lib/python${pythonversion}/dist-packages/symmetricjsonrpc/"
+  "/usr/lib/python${pythonversion}/site-packages/symmetricjsonrpc/")
+
+  for ((i = 0; i < ${#pypkgdir[@]}; i++)); do
+    if [ -d ${pypkgdir[$i]} ]; then
+      echo "[I] Found SymmetricJSONRPC already installed in ${pypkgdir[$i]}"
+      break
+    else
+      if [ ${os} == "kali" ]; then
+        echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via repository)${RESET}"
+        [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
+        sudo ${arg} apt-get install -y python-symmetric-jsonrpc
+      else
+        echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via PIP)...${RESET}"
+        sudo pip install symmetricjsonrpc
+      fi
+    fi
+  done
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install SymmetricJSONRPC... Exit Code: ${tmp}.${RESET}\n" && exit 1
+  [ "${tmp}" -ne "0" ] && echo -e " [ERROR]${RED} Failed To Install SymmetricJSONRPC... Exit Code: ${tmp}.${RESET}\n" && exit 1
 
   # Incase Its 'First Time Run' for WINE (More information: http://wiki.winehq.org/Mono)
   [[ "${silent}" == "true" ]] && bash "${rootdir}/setup/install-addons.sh"   #wget -qO - "http://winezeug.googlecode.com/svn/trunk/install-addons.sh"
@@ -300,11 +342,11 @@ func_python_deps(){
 
   # Install Setup Files
   echo -e "\n [*]${YELLOW} Installing (Wine) Python...${RESET}"
-  echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
+  echo -e "${BOLD} [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.${RESET}\n"
   [ "${silent}" == "true" ] && arg="TARGETDIR=C:\Python27 ALLUSERS=1 /q"
   sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine msiexec /i "${rootdir}/setup/python-2.7.5.msi ${arg}"
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install (Wine) Python 2.7.5... Exit Code: ${tmp}.${RESET}\n" && exit 1
+  [ "${tmp}" -ne "0" ] && echo -e " [ERROR] ${RED}Failed To Install (Wine) Python 2.7.5... Exit Code: ${tmp}.${RESET}\n" && exit 1
 
   sleep 3s
 
@@ -318,7 +360,7 @@ func_python_deps(){
       [ -e "SCRIPTS" ] && sudo -u ${trueuser} cp -rf SCRIPTS/* ${winedrive}/Python27/Scripts/
       rm -rf "PLATLIB/" "SCRIPTS/"
     else
-      echo -e ${BOLD}' [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.'${RESET}
+      echo -e "[*] ${BOLD} Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values.\n${RESET}"
       sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "${FILE}"
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install ${FILE}... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -326,12 +368,12 @@ func_python_deps(){
   done
 
   echo -e " [*]${YELLOW} Installing (Wine) Python Dependencies - pywin32...${RESET}"
-  echo -e "${BOLD} [*] Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values. ${RESET}"
+  echo -e " [*] ${BOLD} Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values. ${RESET}\n"
   sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "C://Python27//python.exe" "C://Python27//Scripts//pywin32_postinstall.py -install"
 
   popd >/dev/null
 
-  # Start the pyinstaller process
+  # Start the pyinstaller processpip
   echo -e '\n\n [*] Installing PyInstaller (via Repos)'
   [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
   if [ -f "/usr/share/pyinstaller/PKG-INFO" ]; then
@@ -473,7 +515,7 @@ func_update_config(){
   # snip 8<-  -  -  -  -  -  -  -  -  -  -  -  -  - The alternative below without "sudo -u username"...
   #      - | sudo python update.py ($USER=root $SUDO_USER=root)
   # snip 8<-  -  -  -  -  -  -  -  -  -  -  -  -  - And thus it would have screwed up the $WINEPREFIX dir for the user.
-  sudo -u ${trueuser} sudo python update.py
+  sudo -u ${trueuser} sudo python2 update.py
 
   mkdir -p "${outputfolder}"
 
@@ -503,27 +545,36 @@ if [ "${arch}" != "x86" ] && [ "${arch}" != "x86_64" ]; then
 fi
 
 # Check OS
-if [ -z "${os}" ] || [ -z "${version}" ]; then
-  echo -e " ${RED}[ERROR] Internal Issue. Couldn't Detect OS Information...${RESET}\n"
-  exit 1
-elif [ "${os}" == "kali" ]; then
+if [ "${os}" == "kali" ]; then
   echo -e " [I]${YELLOW} Kali Linux ${version} ${arch} Detected...${RESET}\n"
 elif [ "${os}" == "ubuntu" ]; then
   version=$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&- | cut -d'.' -f1)
-  echo -e "${YELLOW} [I] Ubuntu ${version} ${arch} Detected...${RESET}\n"
+  echo -e " [I] ${YELLOW}Ubuntu ${version} ${arch} Detected...${RESET}\n"
   if [[ "${version}" -lt "15" ]]; then
     echo -e "${RED} [ERROR]: Veil-Evasion Only Supported On Ubuntu 15.10+.\n${RESET}"
     exit 1
   fi
 elif [ "${os}" == "debian" ]; then
-  echo -e "[I]${YELLOW} Debian ${version} ${arch} Detected...${RESET}\n"
-  if [ ${version} -lt 7 ]; then
+  version=$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&- | cut -d'.' -f1)
+  if [ ${version} -lt 8 ]; then
     echo -e " [ERROR]${red} Only Debian 8 (Jessie) and above are supported!\n"
+    exit 1
   fi
 elif [ "${os}" == "fedora" ]; then
   echo "${YELLOW} [I] Fedora ${version} ${arch} detected...\n${RESET}"
   if [[ "${version}" -lt "22" ]]; then
     echo -e "${RED} [ERROR]: Veil-Evasion only supported on Fedora 22+.\n${RESET}"
+    exit 1
+  fi
+else
+  os=$(awk -F '["=]' '/^ID=/ {print $2}' /etc/os-release 2>&- | cut -d'.' -f1)
+  if [ ${os} == "arch" ]; then
+    echo -e " [I] ${YELLOW}Arch Linux ${arch} detected...\n${RESET}"
+  elif [ ${os} == "debian" ]; then
+    echo -e " [!] ${RED}Debian Linux sid/TESTING ${arch} *possibly* detected..."
+    echo - "      If you are not currently running Debian Testing, you should exit this installer!\n${RESET}"
+  else
+    echo -e " [!] ${RED}Unable to determine OS information. Exiting...\n${RESET}"
     exit 1
   fi
 fi
