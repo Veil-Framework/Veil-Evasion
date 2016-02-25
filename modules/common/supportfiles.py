@@ -140,10 +140,11 @@ def supportingFiles(payload, payloadFile, options):
             exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
             # TODO: os.system() is depreciated, use subprocess or commands instead
+            random_key = helpers.randomString()
             if architecture == "64":
-                os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+                os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile )
             else:
-                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile)
+                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
 
@@ -205,7 +206,8 @@ def supportingFiles(payload, payloadFile, options):
     elif language.lower() == "go":
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        os.system('env GOROOT=/usr/local/go GOOS=windows GOARCH=386 /usr/bin/go build -ldflags -H=windowsgui -v -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        #os.system('mv ' + payloadFile.split('.')[0] + '.exe ' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
 

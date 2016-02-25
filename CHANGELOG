@@ -1,3 +1,13 @@
+[02.16.2016]
+     Released.: 2.24
+     Added....: I've added obfuscation to the python payloads.  Some AVs are triggering on ctypes being referenced everywhere, at the moment, it's only in the file once.
+     Updated..: Pyinstaller has been updated to version 3.1 which allows us to encrypt the bytecode using the -key option.  The key is randomly generated time a payload is made.
+
+[01.15.2016]
+     Released.: 2.23
+     Info.....: Happy New Years!
+     Added....: Added a perl module for Veil-Evasion.  Working on native compilation in Linux, but if you know how to do it, get in touch with me!
+
 [11.15.2015]
      Released.: 2.22.2
      Updated..: Pure go stager payloads now have the correct buffer length for the latest meterpreter dll.  Fixes issue #243

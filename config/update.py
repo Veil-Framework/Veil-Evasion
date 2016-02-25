@@ -178,7 +178,7 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = "/opt/metasploit/msf3/"
-            options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
+            options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller"
         else:
             options["OPERATING_SYSTEM"] = "Linux"
             options["TERMINAL_CLEAR"] = "clear"
@@ -188,7 +188,7 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = msfpath
-            options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
+            options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller"
 
         # last of the general options
         options["TEMP_DIR"] = "/tmp/"

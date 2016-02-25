@@ -341,7 +341,7 @@ class IPCompleter(object):
         line = readline.get_line_buffer().split()
 
         if not line:
-            ip = [commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1][5:]] + [None]
+            ip = [commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1]] + [None]
             return ip[state]
         else:
             return text[state]
