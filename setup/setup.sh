@@ -236,28 +236,9 @@ func_package_deps(){
       python-pip ca-certificates msttcore-fonts-installer
   elif [ "${os}" ==  "arch" ]; then
     sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-mingw-w64-winpthreads \
-      mono mono-tools mono-addins python-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
-    if [ -f /usr/bin/yaourt ]; then
-      echo -e " [I] ${YELLOW}Setting up yaourt to install packages from AUR...${RESET}"
-      cd /tmp
-      sudo -u ${trueuser} git clone https://aur.archlinux.org/package-query.git
-      # Let the users confirm for now, since some might be iffy about it
-      # makepkg does not let you run as root. Arch users expect this behaviour.
-      cd package-query
-      sudo -u ${trueuser} makepkg --needed -Ccsi
-      cd /tmp
-      sudo -u ${trueuser} git clone https://aur.archlinux.org/yaourt.git
-      cd yaourt
-      sudo -u ${trueuser} makepkg --needed -Ccsi
-      cd ${rootdir}
-      echo -e "\n [!] ${YELLOW}Installing python-pefile-git from AUR. https://aur.archlinux.org/packages/python-pefile-git"
-      echo -e "     Yaourt will prompt you for your password as it's safer to build under your user: ${trueuser}.${RESET}\n"
-      sudo -u ${trueuser} yaourt -S python-pefile-git
-    else
-      echo -e "\n [!] ${YELLOW}Installing python-pefile-git from AUR. https://aur.archlinux.org/packages/python-pefile-git"
-      echo -e "     Yaourt will prompt you for your password as it's safer to build under your user: ${trueuser}.${RESET}\n"
-      sudo -u ${trueuser} yaourt -S python-pefile-git
-    fi
+      mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
+    # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
+    sudo pip2 install pefile
   fi
   tmp="$?"
   [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Dependencies... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -276,10 +257,10 @@ func_capstone_deps(){
     [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
     sudo ${arg} apt-get -y install python-capstone
   else
-    which pip >/dev/null 2>&-
+    which pip2 >/dev/null 2>&-
     if [ "$?" -eq 0 ]; then
       echo -e ${BOLD}' [*] Installing Capstone (via PIP)'${RESET}
-      sudo pip install capstone
+      sudo pip2 install capstone
     else    # In theory, we should never end up here
       echo -e ${BOLD}' [*] Installing Capstone (via Source)'${RESET}
       git clone https://github.com/aquynh/capstone "${rootdir}/setup/capstone/"
@@ -323,7 +304,7 @@ func_python_deps(){
         sudo ${arg} apt-get install -y python-symmetric-jsonrpc
       else
         echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via PIP)...${RESET}"
-        sudo pip install symmetricjsonrpc
+        sudo pip2 install symmetricjsonrpc
       fi
     fi
   done

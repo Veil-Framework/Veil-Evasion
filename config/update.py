@@ -39,8 +39,7 @@ def generateConfig(options):
     print " [*] TERMINAL_CLEAR = " + options['TERMINAL_CLEAR']
 
     config += '# Wine environment\n'
-    config += 'import os\n'
-    config += 'os.environ["WINEPREFIX"]="' + options["WINEPREFIX"] + '"\n\n'
+    config += 'WINEPREFIX="' + options["WINEPREFIX"] + '"\n\n'
     print " [*] WINEPREFIX = " + options["WINEPREFIX"]
 
     config += '# Path to temporary directory\n'
