@@ -123,18 +123,18 @@ def supportingFiles(payload, payloadFile, options):
 
             # Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
             # Thanks to Tim Medin for patching for non-root non-kali users
-            #if (architecture == "32" \
-            #    and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')\
-            #   ) or ( architecture == "64" \
-            #    and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')):
-            #    # Tim Medin's Patch for non-root non-kali users
-            #    if settings.TERMINAL_CLEAR != "false": messages.title()
-            #    if architecture == "32":
-            #        print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
-            #    else:
-            #        print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
-            #    print helpers.color(" [!] ERROR: Make sure the python.exe binary exists before using PyInstaller.", warning=True)
-            #    sys.exit()
+            if (architecture == "32" \
+                and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')\
+               ) or ( architecture == "64" \
+                and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')):
+                # Tim Medin's Patch for non-root non-kali users
+                if settings.TERMINAL_CLEAR != "false": messages.title()
+                if architecture == "32":
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
+                else:
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
+                print helpers.color(" [!] ERROR: Make sure the python.exe binary exists before using PyInstaller.", warning=True)
+                sys.exit()
 
             # extract the payload base name and turn it into an .exe
             exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
@@ -142,11 +142,9 @@ def supportingFiles(payload, payloadFile, options):
             # TODO: os.system() is depreciated, use subprocess or commands instead
             random_key = helpers.randomString()
             if architecture == "64":
-                #os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine64 ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
-                os.system('WINEPREFIX=~/.config/wine/veil/ wine64 ' + os.path.expanduser('~/.config/wine/veil/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile )
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine64 ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
             else:
-                #os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
-                os.system('WINEPREFIX=~/.config/wine/veil/ wine ' + os.path.expanduser('~/.config/wine/veil/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
 
