@@ -6,7 +6,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 #install capstone
-pip install capstone
+pip2 install capstone
 
 uname -a | grep BSD &> /dev/null
 if [ $? -eq 0 ]; then
@@ -26,8 +26,8 @@ fi
 
 #install pefile
 #check for pip
-if hash pip 2>/dev/null; then
-        pip install pefile
+if hash pip2 2>/dev/null; then
+        pip2 install pefile
 else
         echo 'Install pefile manually, pip is not installed'
         echo ""
