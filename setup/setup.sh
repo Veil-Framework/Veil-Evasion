@@ -496,7 +496,12 @@ func_update_config(){
   # snip 8<-  -  -  -  -  -  -  -  -  -  -  -  -  - The alternative below without "sudo -u username"...
   #      - | sudo python update.py ($USER=root $SUDO_USER=root)
   # snip 8<-  -  -  -  -  -  -  -  -  -  -  -  -  - And thus it would have screwed up the $WINEPREFIX dir for the user.
+  if [ -f /etc/veil/settings.py ]; then
+    echo -e " [*] ${YELLOW}Detected current Veil Framework settings file. Removing...${RESET}"
+    rm /etc/veil/settings.py
+  fi
   sudo -u ${trueuser} sudo python2 update.py
+  
 
   mkdir -p "${outputfolder}"
 
