@@ -148,7 +148,7 @@ func_package_deps(){
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine... Exit Code: ${tmp}.${RESET}\n" && exit 1
     elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
-      sudo apt-get -qq udpate
+      sudo apt-get -qq update
       sudo ${arg} apt-get -y -qq install wine32
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine... Exit Code: ${tmp}.${RESET}\n" && exit 1
