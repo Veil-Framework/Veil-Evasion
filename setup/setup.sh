@@ -147,8 +147,8 @@ func_package_deps(){
       fi
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine... Exit Code: ${tmp}.${RESET}\n" && exit 1
-    elif [ ${arch} == 'x86' ]; then
-      sudo apt-get -qq udpate
+    elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
+      sudo apt-get -qq update
       sudo ${arg} apt-get -y -qq install wine32
       tmp="$?"
       [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Wine... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -213,7 +213,7 @@ func_package_deps(){
         echo -e "${RED}         Check for existence of ${winedrive}\n${RESET}"
         exit 1
       fi
-    elif [ "${arch}" == "x86" ]; then
+    elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
       echo -e "${YELLOW} [*] Initializing Veil's Wine environment...${RESET}\n"
       sudo -u ${trueuser} WINEPREFIX=${winedir} wineboot -u
       if [ -d "${winedrive}" ]; then
@@ -433,7 +433,7 @@ func_go_deps(){
         exit
       fi
     fi
-    if [ ${arch} == 'i686' ]; then
+    if [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
       wget https://www.veil-framework.com/InstallMe/go153x86.tar.gz
       shasum2=`openssl dgst -sha256 go153x86.tar.gz | cut -d' ' -f2`
       if [ "$shasum2" == "c1ce206b7296db1b10ff7896044d9ca50e87efa5bc3477e8fd8c2fb149bfca8f" ]; then
@@ -525,7 +525,7 @@ func_update_config(){
 func_title
 
 # Check Architecture
-if [ "${arch}" != "x86" ] && [ "${arch}" != "x86_64" ]; then
+if [ "${arch}" != "x86" ] && [ "${arch}" != "i686" ] && [ "${arch}" != "x86_64" ]; then
   echo -e "${RED} [ERROR] Your architecture ${arch} is not supported!\n\n${RESET}"
   exit 1
 fi
