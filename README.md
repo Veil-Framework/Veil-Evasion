@@ -31,7 +31,7 @@ Thanks to:
 
 ## Setup (tl;dr)
 
-Run `./setup/setup.sh` on Kali x86 (for Pyinstaller).
+Run sudo setup.sh -c on Kali x86.
 
 Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2Exe).
 
@@ -41,7 +41,8 @@ Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2
 sudo apt-get -y install git
 git clone https://github.com/Veil-Framework/Veil-Evasion.git
 cd veil-Evasion/
-bash setup/setup.sh -s
+cd setup
+sudo setup.sh -c
 ```
 
 ## Description
