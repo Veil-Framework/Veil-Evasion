@@ -213,7 +213,7 @@ def runRPC(port=4242):
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     #  Start listening on the socket for connections
-    s.bind(('', port))
+    s.bind(('127.0.0.1', port))
     s.listen(1)
 
     # Create a server thread handling incoming connections
