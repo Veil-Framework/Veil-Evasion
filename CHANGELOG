@@ -1,3 +1,8 @@
+[03.29.2016]
+     Released.: 2.25
+     Fixed....: Security vulnerability reported to us by @botnet_hunter.  There was an issue with the RPC server when binding to 0.0.0.0 that essentially allowed RCE.  If you weren't using the RPC server, you weren't affected, but it's good to patch.
+     Thanks...: Thanks to Brian Wallace (@botnet_hunter) for reporting this vulnerability and allowing us to push a patch.
+
 [02.16.2016]
      Released.: 2.24
      Added....: I've added obfuscation to the python payloads.  Some AVs are triggering on ctypes being referenced everywhere, at the moment, it's only in the file once.
