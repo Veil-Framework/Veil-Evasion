@@ -175,6 +175,10 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                             # if there are, append
                                             options['msfvenom'] = [t[0], t[1] + [str((name+"="+value))] ]
 
+                                if '=' not in options['msfvenom'] or '&&' in options['msfvenom']:
+                                    # initial bad info detection
+                                    return ""
+
                                 # manually set the payload in the controller object
                                 con.SetPayload(payloadName, options)
 
