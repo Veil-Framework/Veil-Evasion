@@ -71,6 +71,8 @@ def has_potential_command_injection(user_input):
             "^",
             "$",
             "`",
+            "(",
+            "{",
         ]:
             print "Detected potential command injection"
             return True
