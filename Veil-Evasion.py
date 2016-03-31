@@ -71,9 +71,10 @@ def has_potential_command_injection(user_input):
             "^",
             "$",
             "`",
-            "=",
         ]:
+            print "Detected potential command injection"
             return True
+        token = s.get_token()
     return False
 
 
@@ -205,9 +206,10 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                             # if there are, append
                                             options['msfvenom'] = [t[0], t[1] + [str((name+"="+value))] ]
 
-                                if has_potential_command_injection(options['msfvenom']):
-                                    # initial bad info detection
-                                    return ""
+                                for o in options['msfvenom']:
+                                    if has_potential_command_injection(o):
+                                        # initial bad info detection
+                                        return ""
 
                                 # manually set the payload in the controller object
                                 con.SetPayload(payloadName, options)
