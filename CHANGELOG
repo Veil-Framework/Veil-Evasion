@@ -1,3 +1,7 @@
+[03.31.2016]
+     Released.: 2.26
+     Fixed....: Fixed command injection vulnerability because @botnet_hunter supplied us with a fix that worked against all of his tests.  Thanks to @botnet_hunter for helping to remediate this issue!
+
 [03.29.2016]
      Released.: 2.25
      Fixed....: Security vulnerability reported to us by @botnet_hunter.  There was an issue with the RPC server when binding to 0.0.0.0 that essentially allowed RCE.  If you weren't using the RPC server, you weren't affected, but it's good to patch.
