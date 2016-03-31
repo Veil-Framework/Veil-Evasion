@@ -10,7 +10,7 @@ are provided.
 """
 
 # Import Modules
-import sys, argparse, time, os, base64, socket
+import sys, argparse, time, os, base64, socket, shlex
 try:
     import symmetricjsonrpc
 except ImportError:
@@ -47,6 +47,39 @@ You can start the server with "./Veil-Evasion.py --rpc" and shut it down with
     "./Veil-Evasin.py --rpcshutdown"
 
 """
+
+
+def has_potential_command_injection(user_input):
+    """
+    In order to detect potential command injection methods, we'll use shlex to parse the input as a shell script,
+    and look for indications of additional commands.  This method is used instead of escaping due to the base
+    functionality allowing for a user to supply more than a single parameter at a time.
+    """
+    s = shlex.shlex(user_input)
+    token = s.get_token()
+    while token != "":
+        if token in [
+            ";",
+            "|",
+            "||",
+            "&",
+            "&&",
+            ">",
+            ">>",
+            "<",
+            "<<",
+            "^",
+            "$",
+            "`",
+            "(",
+            "{",
+        ]:
+            print "Detected potential command injection"
+            return True
+        token = s.get_token()
+    return False
+
+
 class VeilEvasionServer(symmetricjsonrpc.RPCServer):
     class InboundConnection(symmetricjsonrpc.RPCServer.InboundConnection):
         class Thread(symmetricjsonrpc.RPCServer.InboundConnection.Thread):
@@ -175,9 +208,10 @@ class VeilEvasionServer(symmetricjsonrpc.RPCServer):
                                             # if there are, append
                                             options['msfvenom'] = [t[0], t[1] + [str((name+"="+value))] ]
 
-                                if '=' not in options['msfvenom'] or '&&' in options['msfvenom']:
-                                    # initial bad info detection
-                                    return ""
+                                for o in options['msfvenom']:
+                                    if has_potential_command_injection(o):
+                                        # initial bad info detection
+                                        return ""
 
                                 # manually set the payload in the controller object
                                 con.SetPayload(payloadName, options)
