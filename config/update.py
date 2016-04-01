@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import platform, os, sys
+import platform, os, sys, pwd
 
 """
 
@@ -200,15 +200,11 @@ if __name__ == '__main__':
 
         # Get the real user if we're being ran under sudo
         wineprefix = ""
-        try:
-            user = os.environ.get("SUDO_USER")
-            if user == 'root':
-                wineprefix = "/root/.config/wine/veil/"
-            else:
-                wineprefix = "/home/" + user + "/.config/wine/veil/"
-        except KeyError:
-            print(" [*] Unable to get user from SUDO_USER environment variable\n")
-            print("     Your WINEPREFIX option might be screwed. You can fix it in /etc/veil/settings.py")
+        user = os.environ.get("SUDO_USER", pwd.getpwuid(os.getuid()).pw_name)
+        if user == 'root':
+            wineprefix = "/root/.config/wine/veil/"
+        else:
+            wineprefix = "/home/" + user + "/.config/wine/veil/"
         options["WINEPREFIX"] = wineprefix
 
         # Veil-Evasion specific options

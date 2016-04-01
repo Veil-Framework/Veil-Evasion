@@ -1,3 +1,7 @@
+[04.01.2016]
+     Released.: 2.26.1
+     Updated..: Our update.py script has been updated for better compatibility with Kali.  Thanks to @Sbrun for providing the patch!
+
 [03.31.2016]
      Released.: 2.26
      Fixed....: Fixed command injection vulnerability because @botnet_hunter supplied us with a fix that worked against all of his tests.  Thanks to @botnet_hunter for helping to remediate this issue!
