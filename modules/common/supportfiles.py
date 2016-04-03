@@ -124,15 +124,15 @@ def supportingFiles(payload, payloadFile, options):
             # Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
             # Thanks to Tim Medin for patching for non-root non-kali users
             if (architecture == "32" \
-                and not os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))\
+                and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')\
                ) or ( architecture == "64" \
-                and not os.path.isfile(os.path.expanduser('~/.wine/drive_c/Python27/python.exe'))):
+                and not os.path.isfile(settings.WINEPREFIX + 'drive_c/Python27/python.exe')):
                 # Tim Medin's Patch for non-root non-kali users
                 if settings.TERMINAL_CLEAR != "false": messages.title()
                 if architecture == "32":
-                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine/drive_c/Python27/'), warning=True)
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
                 else:
-                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser('~/.wine64/drive_c/Python27/'), warning=True)
+                    print helpers.color("\n [!] ERROR: Can't find python.exe in " + os.path.expanduser(settings.WINEPREFIX + 'drive_c/Python27/'), warning=True)
                 print helpers.color(" [!] ERROR: Make sure the python.exe binary exists before using PyInstaller.", warning=True)
                 sys.exit()
 
@@ -140,10 +140,11 @@ def supportingFiles(payload, payloadFile, options):
             exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
             # TODO: os.system() is depreciated, use subprocess or commands instead
+            random_key = helpers.randomString()
             if architecture == "64":
-                os.system('WINEPREFIX=~/.wine64 wine64 ' + os.path.expanduser('~/.wine64/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile )
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine64 ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
             else:
-                os.system('wine ' + os.path.expanduser('~/.wine/drive_c/Python27/python.exe') + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile ' + payloadFile)
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
 
@@ -193,7 +194,7 @@ def supportingFiles(payload, payloadFile, options):
         # extract the payload base name and turn it into an .exe
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        os.system('wine ~/.wine/drive_c/Ruby187/bin/ruby.exe ~/.wine/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ~/.wine/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
+        os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Ruby187/bin/ruby.exe ' + settings.WINEPREFIX + '/drive_c/Ruby187/bin/ocra --windows '+ payloadFile + ' --output ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + settings.WINEPREFIX + '/drive_c/Ruby187/lib/ruby/gems/1.8/gems/win32-api-1.4.8-x86-mingw32/lib/win32/*')
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
 
@@ -205,7 +206,8 @@ def supportingFiles(payload, payloadFile, options):
     elif language.lower() == "go":
         exeName = ".".join(payloadFile.split("/")[-1].split(".")[:-1]) + ".exe"
 
-        os.system('env GOROOT=/usr/src/go CGO_ENABLED=1 GOOS=windows GOARCH=386 CC=\"i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp\" /usr/src/go/bin/go build -ldflags -H=windowsgui -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        os.system('env GOROOT=/usr/local/go GOOS=windows GOARCH=386 /usr/bin/go build -ldflags -H=windowsgui -v -o ' + settings.PAYLOAD_COMPILED_PATH + exeName + ' ' + payloadFile)
+        #os.system('mv ' + payloadFile.split('.')[0] + '.exe ' + settings.PAYLOAD_COMPILED_PATH + exeName)
 
         if settings.TERMINAL_CLEAR != "false": messages.title()
 
