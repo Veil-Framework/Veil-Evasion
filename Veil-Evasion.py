@@ -350,7 +350,7 @@ if __name__ == '__main__':
         if args.c:
             options['required_options'] = {}
             for option in args.c:
-                name,value = option.split("=")
+                name,value = option.split("=",1)
                 options['required_options'][name.upper()] = [value, ""]
 
         # pull out any msfvenom shellcode specification and msfvenom options
