@@ -1179,11 +1179,6 @@ def main():
     # code. Obfuscate those symbols gathered earlier. Change
     # indentation, blank lines etc.
     TokenPrinter(source, ce.result)
-    
-    # Step 5: Output a marker that makes it possible to recognize
-    # obfuscated files
-    print "# dd678faae9ac167bc83abf78e5cb2f3f0688d3a3"
 
 if __name__ == "__main__":
     main()
-

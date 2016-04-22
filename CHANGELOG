@@ -1,3 +1,7 @@
+[04.22.2016]
+     Released.: 2.26.2
+     Modified.: pyobfuscator code no longer embeds a static hash at the end of each python payload
+
 [04.01.2016]
      Released.: 2.26.1
      Updated..: Our update.py script has been updated for better compatibility with Kali.  Thanks to @Sbrun for providing the patch!
