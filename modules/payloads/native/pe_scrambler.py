@@ -35,15 +35,15 @@ class Payload:
 
         # the command to invoke hyperion. TODO: windows compatibility
         if not os.path.isfile(self.required_options["ORIGINAL_EXE"][0]):
-            print "\nError during Hyperion execution:\nInput file does not exist"
+            print "\nError during PEScrambler execution:\nInput file does not exist"
             raw_input("\n[>] Press any key to return to the main menu.")
             return ""
 
         print helpers.color("\n[*] Running PEScrambler on " + self.required_options["ORIGINAL_EXE"][0] + "...")
 
         # be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-        p = subprocess.Popen(["wine", "PEScrambler.exe", "-i", self.required_options["ORIGINAL_EXE"][0], "-o", outputFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_EVASION_PATH+"tools/pescrambler/", shell=True)
-        time.sleep(3)
+        p = subprocess.Popen(["wine", settings.VEIL_EVASION_PATH + "tools/pescrambler/PEScrambler.exe", "-i", self.required_options["ORIGINAL_EXE"][0], "-o", outputFile], cwd=settings.VEIL_EVASION_PATH+"tools/pescrambler/")
+        time.sleep(7)
         stdout, stderr = p.communicate()
 
         try:

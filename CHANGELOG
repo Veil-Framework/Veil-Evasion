@@ -1,3 +1,7 @@
+[05.04.2016]
+     Released.: 2.26.3
+     Modified.: Hyperion and PEScrambler payload modules are now working.  This fixes issue #326
+
 [04.22.2016]
      Released.: 2.26.2
      Modified.: pyobfuscator code no longer embeds a static hash at the end of each python payload

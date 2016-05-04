@@ -42,7 +42,8 @@ class Payload:
 
         # the command to invoke hyperion. TODO: windows compatibility
         # be sure to set 'cwd' to the proper directory for hyperion so it properly runs
-        p = subprocess.Popen(["wine", "hyperion.exe", self.required_options["ORIGINAL_EXE"][0], outputFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=settings.VEIL_EVASION_PATH+"tools/hyperion/", shell=True)
+        command = ['wine', settings.VEIL_EVASION_PATH + 'tools/hyperion/hyperion.exe', self.required_options["ORIGINAL_EXE"][0], outputFile]
+        p = subprocess.Popen(command, cwd=settings.VEIL_EVASION_PATH+"tools/hyperion/")
         stdout, stderr = p.communicate()
 
         try:
@@ -50,6 +51,9 @@ class Payload:
             f = open(outputFile, 'rb')
             PayloadCode = f.read()
             f.close()
+            command2 = "rm " + outputFile
+            p2 = subprocess.Popen(command2.split())
+            stdout, stderr = p.communicate()
         except IOError:
             print "\nError during Hyperion execution:\n" + helpers.color(stdout, warning=True)
             raw_input("\n[>] Press any key to return to the main menu.")
