@@ -51,6 +51,9 @@ class Payload:
             f = open(outputFile, 'rb')
             PayloadCode = f.read()
             f.close()
+            command2 = "rm " + outputFile
+            p2 = subprocess.Popen(command2.split())
+            stdout, stderr = p.communicate()
         except IOError:
             print "\nError during PEScrambler execution:\n" + helpers.color(stdout, warning=True)
             raw_input("\n[>] Press any key to return to the main menu.")
