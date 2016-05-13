@@ -568,6 +568,10 @@ class Controller:
                 if "LPORT" in keys:
                     handler += "set LPORT " + payload.required_options["LPORT"][0] + "\n"
 
+                # grab the LURI value if it was set. ignore the / as that is the default
+                if "LURI" in keys and payload.required_options["LURI"][0] != "/":
+                    handler += "set LURI " + payload.required_options["LURI"][0] + "\n"
+
                 handler += "set ExitOnSession false\n"
                 handler += "exploit -j\n"
 
