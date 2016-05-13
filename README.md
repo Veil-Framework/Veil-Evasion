@@ -121,7 +121,7 @@ And the server response:
 
 An example of a client program can be found here: http://github.com/miligulmohar/python-symmetric-jsonrpc/blob/master/examples/client.py
 
-Note: The port for Veil-Evasion is 4242. This must be changed in client.py in order to work with it.
+> NOTE: The port for Veil-Evasion is 4242. This must be changed in client.py in order to work with it.
 
 In order to generate a payload, *ALL* parameters must be included:
 
