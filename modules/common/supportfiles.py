@@ -51,8 +51,8 @@ def supportingFiles(payload, payloadFile, options):
     if language.lower() == "python":
 
         # first, obfuscate the python code
-        if not pyobfuscate(payloadFile):
-            print helpers.color(" [!] ERROR: something went wrong while obfuscating python code.", warning=True)
+        #if not pyobfuscate(payloadFile):
+        #    print helpers.color(" [!] ERROR: something went wrong while obfuscating python code.", warning=True)
 
         # if we aren't passed any options, do the interactive menu
         if len(options) == 0:
