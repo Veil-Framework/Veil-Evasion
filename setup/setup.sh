@@ -68,7 +68,7 @@ func_check_env(){
 
   # Double Check Install
   if [ "${silent}" != "true" ]; then
-    if [ ${os} != "kali" ]; then
+    if [ ${os} != "kali" ] || [ "${os}" == "parrot" ]; then
       echo -e "${BOLD} [!] NON-KALI Users: Before you begin the install, make sure that you have"
       echo -e "     the metasploit framework installed before you proceed!\n${RESET}"
     fi
@@ -128,7 +128,7 @@ func_package_deps(){
   # Always install 32bit support for 64bit architectures
 
   # Debian based distributions
-  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
 
     if [ "${silent}" == "true" ]; then
       echo -e "\n\n [*]${YELLOW} Silent Mode: Enabled ${RESET}"
@@ -227,7 +227,7 @@ func_package_deps(){
 
   # Start Dependency Install
   echo -e ${YELLOW}'\n\n [*] Installing Dependencies'${RESET}
-  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     sudo ${arg} apt-get -y install mingw-w64 monodoc-browser monodevelop mono-mcs wine unzip ruby golang wget git \
       python python-crypto python-pefile python-pip ca-certificates #ttf-mscorefonts-installer
   elif [ "${os}" == "fedora" ] || [ "${os}" == "rhel" ] || [ "${os}" == "centos" ]; then
@@ -243,7 +243,7 @@ func_package_deps(){
   tmp="$?"
   [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Dependencies... Exit Code: ${tmp}.${RESET}\n" && exit 1
 
-  if [ "${os}" == "kali" ]; then
+  if [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     sudo ${arg} apt-get -y install metasploit-framework
     tmp="$?"
     [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed To Install Dependencies (Metasploit-Framework)... Exit Code: ${tmp}.${RESET}\n" && exit 1
@@ -253,7 +253,7 @@ func_package_deps(){
 # Install Capstone Dependencies (Needed for Backdoor Factory. https://github.com/secretsquirrel/the-backdoor-factory/blob/master/install.sh)
 func_capstone_deps(){
   echo -e "\n [*] ${YELLOW}Installing Capstone Dependencies...${RESET}"
-  if [ "${os}" == "kali" ]; then
+  if [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
     sudo ${arg} apt-get -y install python-capstone
   else
@@ -298,7 +298,7 @@ func_python_deps(){
       echo "[I] Found SymmetricJSONRPC already installed in ${pypkgdir[$i]}"
       break
     else
-      if [ ${os} == "kali" ]; then
+      if [ ${os} == "kali" ] || [ "${os}" == "parrot" ]; then
         echo -e "\n [*] ${YELLOW}Installing SymmetricJSONRPC Dependency (via repository)${RESET}"
         [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
         sudo ${arg} apt-get install -y python-symmetric-jsonrpc
@@ -403,7 +403,7 @@ func_go_deps(){
 
   sudo mkdir -p /usr/src/go/
 
-  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ]; then
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     goversion="$(apt-cache show golang-src | awk -F '[:-.]' '/Version/ {print $3$4}')"
     if [[ ! $(grep "#*deb-src" /etc/apt/sources.list) ]] && [ "${goversion}" -gt "12" ]; then
       # Download source via Repository
@@ -533,6 +533,8 @@ fi
 # Check OS
 if [ "${os}" == "kali" ]; then
   echo -e " [I]${YELLOW} Kali Linux ${version} ${arch} Detected...${RESET}\n"
+elif [ "${os}" == "parrot" ]; then
+  echo -e " [I]${YELLOW} Parrot Security ${version} ${arch} Detected...${RESET}\n"
 elif [ "${os}" == "ubuntu" ]; then
   version=$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&- | cut -d'.' -f1)
   echo -e " [I] ${YELLOW}Ubuntu ${version} ${arch} Detected...${RESET}\n"
