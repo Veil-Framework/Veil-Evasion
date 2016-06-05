@@ -119,7 +119,7 @@ def supportingFiles(payload, payloadFile, options):
             else:
                 # copy the original runw.exe into the proper location
                 runwPath = settings.VEIL_EVASION_PATH+"tools/runw_orig.exe"
-                os.system("cp "+runwPath+" " + settings.PYINSTALLER_PATH + "support/loader/Windows-32bit/runw.exe")
+                os.system("cp " + runwPath + " " + settings.PYINSTALLER_PATH + "/PyInstaller/bootloader/Windows-32bit/runw.exe")
 
             # Check for Wine python.exe Binary (Thanks to darknight007 for this fix.)
             # Thanks to Tim Medin for patching for non-root non-kali users
@@ -1482,5 +1482,4 @@ def generatePwnstaller():
     # copy the loader into the correct location
     os.system("mv runw.exe " + settings.PYINSTALLER_PATH + "support/loader/Windows-32bit/")
 
-    print " [*] Pwnstaller runw.exe moved to "+ settings.PYINSTALLER_PATH + "support/loader/Windows-32bit/\n"
-
+    print " [*] Pwnstaller runw.exe moved to "+ settings.PYINSTALLER_PATH + "/PyInstaller/bootloader/Windows-32bit/\n"
