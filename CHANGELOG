@@ -1,4 +1,8 @@
-[06.15.2016]
+[06.14.2016]
+     Released.: 2.27
+     Added....: Added stallion payload which self-brute forces itself.
+
+[06.05.2016]
      Released.: 2.26.5
      Modified.: SupportFiles.py not properly handles the correct path for runw.exe and prevents error from displaying
 
