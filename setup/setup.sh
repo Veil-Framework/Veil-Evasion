@@ -350,7 +350,7 @@ func_python_deps(){
 
   echo -e " [*]${YELLOW} Installing (Wine) Python Dependencies - pywin32...${RESET}"
   echo -e " [*] ${BOLD} Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values. ${RESET}\n"
-  sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "C://Python27//python.exe" "C://Python27//Scripts//pywin32_postinstall.py -install"
+  sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "${WINEPREFIX}//Python27//python.exe" "pefile-2016.3.28/setup.py -install"
 
   popd >/dev/null
 
@@ -366,8 +366,8 @@ func_python_deps(){
       wget https://www.veil-framework.com/InstallMe/PyInstaller-3.2.tar.gz
       shasum3=`openssl dgst -sha256 PyInstaller-3.2.tar.gz | cut -d' ' -f2`
       if [ "$shasum3" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
-        tar -xvf PyInstaller-3.1.1.tar.gz
-        sudo mv PyInstaller-3.1.1 /usr/share/pyinstaller
+        tar -xvf PyInstaller-3.2.tar.gz
+        sudo mv PyInstaller-3.2 /usr/share/pyinstaller
       else
         echo "Bad hash for PyInstaller!  Please try again for inform the developer!"
       fi
@@ -389,8 +389,9 @@ func_python_deps(){
   shasum4=`openssl dgst -sha256 pefile-2016.3.28.tar.gz | cut -d' ' -f2`
   if [ "$shasum4" == "f24021085b5c3ef7b0898bb1f1d93eecd3839e03512769e22b0c5a10d9095f7b" ]; then
     tar -xvf pefile-2016.3.28.tar.gz
+    sudo chown -R $trueuser pefile-2016.3.28
     cd pefile-2016.3.28
-    sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "C://Python27//python.exe" "setup.py -install"
+    sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine ${winedrive}/Python27/python.exe $rootdir/setup/pefile-2016.3.28/setup.py install
   else
     echo "Bad hash for PEFile!  Please try again for inform the developer!"
   fi
