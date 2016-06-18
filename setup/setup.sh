@@ -366,6 +366,7 @@ func_python_deps(){
       wget https://www.veil-framework.com/InstallMe/PyInstaller-3.2.tar.gz
       shasum3=`openssl dgst -sha256 PyInstaller-3.2.tar.gz | cut -d' ' -f2`
       if [ "$shasum3" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+        sudo rm -rf /usr/share/pyinstaller
         tar -xvf PyInstaller-3.2.tar.gz
         sudo mv PyInstaller-3.2 /usr/share/pyinstaller
       else
@@ -377,6 +378,7 @@ func_python_deps(){
     wget https://www.veil-framework.com/InstallMe/PyInstaller-3.2.tar.gz
     shasum3=`openssl dgst -sha256 PyInstaller-3.2.tar.gz | cut -d' ' -f2`
     if [ "$shasum3" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+      sudo rm -rf /usr/share/pyinstaller
       tar -xvf PyInstaller-3.2.tar.gz
       sudo mv PyInstaller-3.2 /usr/share/pyinstaller
     else
