@@ -394,8 +394,22 @@ func_python_deps(){
     sudo chown -R $trueuser pefile-2016.3.28
     cd pefile-2016.3.28
     sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine ${winedrive}/Python27/python.exe $rootdir/setup/pefile-2016.3.28/setup.py install
+    cd ..
   else
     echo "Bad hash for PEFile!  Please try again for inform the developer!"
+  fi
+
+  # Install Futures for PyInstaller
+  wget https://www.veil-framework.com/InstallMe/future-0.15.2.tar.gz
+  shasum5=`openssl dgst -sha256 future-0.15.2.tar.gz | cut -d' ' -f2`
+  if [ "$shasum5" == "3d3b193f20ca62ba7d8782589922878820d0a023b885882deec830adbf639b97" ]; then
+    tar -xvf future-0.15.2.tar.gz
+    sudo chown -R $trueuser future-0.15.2
+    cd future-0.15.2
+    sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine ${winedrive}/Python27/python.exe $rootdir/setup/future-0.15.2/setup.py install
+    cd ..
+  else
+    echo "Bad hash for Futures!  Please try again for inform the developer!"
   fi
 
   # Check to see if setup tools is available, if not, install it.
