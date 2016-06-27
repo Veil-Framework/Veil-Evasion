@@ -142,9 +142,9 @@ def supportingFiles(payload, payloadFile, options):
             # TODO: os.system() is depreciated, use subprocess or commands instead
             random_key = helpers.randomString()
             if architecture == "64":
-                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine64 ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine64 ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --onefile --key ' + random_key + ' ' + payloadFile)
             else:
-                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --noconsole --onefile --key ' + random_key + ' ' + payloadFile)
+                os.system('WINEPREFIX=' + settings.WINEPREFIX + ' wine ' + settings.WINEPREFIX + '/drive_c/Python27/python.exe' + ' ' + os.path.expanduser(settings.PYINSTALLER_PATH + '/pyinstaller.py') + ' --onefile --key ' + random_key + ' ' + payloadFile)
 
             if settings.TERMINAL_CLEAR != "false": messages.title()
 
