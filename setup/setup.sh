@@ -350,7 +350,7 @@ func_python_deps(){
 
   echo -e " [*]${YELLOW} Installing (Wine) Python Dependencies - pywin32...${RESET}"
   echo -e " [*] ${BOLD} Next -> Next -> Next -> Finished! ...Overwrite if prompt. Use default values. ${RESET}\n"
-  sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "C://Python27//python.exe" "C://Python27//Scripts//pywin32_postinstall.py -install"
+  sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine "${WINEPREFIX}//Python27//python.exe" "pefile-2016.3.28/setup.py -install"
 
   popd >/dev/null
 
@@ -359,29 +359,57 @@ func_python_deps(){
   [[ "${silent}" == "true" ]] && arg="DEBIAN_FRONTEND=noninteractive"
   if [ -f "/usr/share/pyinstaller/PKG-INFO" ]; then
     pyinstversion=`sed -n '3{p;q;}' /usr/share/pyinstaller/PKG-INFO | cut -d' ' -f2`
-    if [ "$pyinstversion" == "3.1.1" ]; then
-      echo "PyInstaller version 3.1.1 is already installed, skipping!"
+    if [ "$pyinstversion" == "3.2" ]; then
+      echo "PyInstaller version 3.2 is already installed, skipping!"
     else
       # Install pyinstaller now
-      wget https://www.veil-framework.com/InstallMe/PyInstaller-3.1.1.tar.gz
-      shasum3=`openssl dgst -sha256 PyInstaller-3.1.1.tar.gz | cut -d' ' -f2`
-      if [ "$shasum3" == "b111d35d836237bf954e9b47dcb338da48a40210c318b2b0bc163dba8ca8e096" ]; then
-        tar -xvf PyInstaller-3.1.1.tar.gz
-        sudo mv PyInstaller-3.1.1 /usr/share/pyinstaller
+      wget https://www.veil-framework.com/InstallMe/PyInstaller-3.2.tar.gz
+      shasum3=`openssl dgst -sha256 PyInstaller-3.2.tar.gz | cut -d' ' -f2`
+      if [ "$shasum3" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+        sudo rm -rf /usr/share/pyinstaller
+        tar -xvf PyInstaller-3.2.tar.gz
+        sudo mv PyInstaller-3.2 /usr/share/pyinstaller
       else
         echo "Bad hash for PyInstaller!  Please try again for inform the developer!"
       fi
     fi
   else
     # Install pyinstaller now
-    wget https://www.veil-framework.com/InstallMe/PyInstaller-3.1.1.tar.gz
-    shasum3=`openssl dgst -sha256 PyInstaller-3.1.1.tar.gz | cut -d' ' -f2`
-    if [ "$shasum3" == "b111d35d836237bf954e9b47dcb338da48a40210c318b2b0bc163dba8ca8e096" ]; then
-      tar -xvf PyInstaller-3.1.1.tar.gz
-      sudo mv PyInstaller-3.1.1 /usr/share/pyinstaller
+    wget https://www.veil-framework.com/InstallMe/PyInstaller-3.2.tar.gz
+    shasum3=`openssl dgst -sha256 PyInstaller-3.2.tar.gz | cut -d' ' -f2`
+    if [ "$shasum3" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+      sudo rm -rf /usr/share/pyinstaller
+      tar -xvf PyInstaller-3.2.tar.gz
+      sudo mv PyInstaller-3.2 /usr/share/pyinstaller
     else
       echo "Bad hash for PyInstaller!  Please try again for inform the developer!"
     fi
+  fi
+
+  # Install PEFile for PyInstaller
+  wget https://www.veil-framework.com/InstallMe/pefile-2016.3.28.tar.gz
+  shasum4=`openssl dgst -sha256 pefile-2016.3.28.tar.gz | cut -d' ' -f2`
+  if [ "$shasum4" == "f24021085b5c3ef7b0898bb1f1d93eecd3839e03512769e22b0c5a10d9095f7b" ]; then
+    tar -xvf pefile-2016.3.28.tar.gz
+    sudo chown -R $trueuser pefile-2016.3.28
+    cd pefile-2016.3.28
+    sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine ${winedrive}/Python27/python.exe $rootdir/setup/pefile-2016.3.28/setup.py install
+    cd ..
+  else
+    echo "Bad hash for PEFile!  Please try again for inform the developer!"
+  fi
+
+  # Install Futures for PyInstaller
+  wget https://www.veil-framework.com/InstallMe/future-0.15.2.tar.gz
+  shasum5=`openssl dgst -sha256 future-0.15.2.tar.gz | cut -d' ' -f2`
+  if [ "$shasum5" == "3d3b193f20ca62ba7d8782589922878820d0a023b885882deec830adbf639b97" ]; then
+    tar -xvf future-0.15.2.tar.gz
+    sudo chown -R $trueuser future-0.15.2
+    cd future-0.15.2
+    sudo -u ${trueuser} WINEPREFIX=${WINEPREFIX} wine ${winedrive}/Python27/python.exe $rootdir/setup/future-0.15.2/setup.py install
+    cd ..
+  else
+    echo "Bad hash for Futures!  Please try again for inform the developer!"
   fi
 
   # Check to see if setup tools is available, if not, install it.
