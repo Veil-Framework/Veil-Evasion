@@ -1,3 +1,7 @@
+[06.29.2016]
+     Released.: 2.27.2
+     Modified.: Setup script now contains a fix for a bug in ubuntu and arch
+
 [06.26.2016]
      Released.: 2.27.1
      Modified.: Python payloads now show a console until issue with --noconsole is figured out
