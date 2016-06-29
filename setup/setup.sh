@@ -3,10 +3,20 @@
 
 # Global Variables
 arch="$(uname -m)"
-runuser="$(whoami)"
-trueuser="$(who am i | awk '{print $1}')" # if this is blank, we're actually root (kali)
 # Edge cases... urgh. There *was* a reason it's like this. It'll get tested further
 # later and get cleaned up as required in a later patch.
+nukewinedir=""
+silent=false
+os="$(awk -F '=' '/^ID=/ {print $2}' /etc/os-release 2>&-)"
+version=$(awk -F '=' '/^VERSION_ID=/ {print $2}' /etc/os-release 2>&-)
+arg=""
+outputfolder="/usr/share/veil-output/"
+runuser="$(whoami)"
+if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
+  trueuser="$(who | awk '{print $1}')"
+else
+  trueuser="$(who am i | awk '{print $1}')" # if this is blank, we're actually root (kali)
+fi
 if [ "$runuser" == "root" ] && [ "$trueuser" == "" ]; then
   trueuser="root"
 fi
@@ -20,12 +30,6 @@ rootdir=$(cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd)
 winedir="${userhomedir}/.config/wine/veil"
 winedrive="${userhomedir}/.config/wine/veil/drive_c"
 WINEPREFIX="${userhomedir}/.config/wine/veil"
-nukewinedir=""
-silent=false
-os="$(awk -F '=' '/^ID=/ {print $2}' /etc/os-release 2>&-)"
-version=$(awk -F '=' '/^VERSION_ID=/ {print $2}' /etc/os-release 2>&-)
-arg=""
-outputfolder="/usr/share/veil-output/"
 BOLD="\033[01;01m"     # Highlight
 RED="\033[01;31m"      # Issues/Errors
 GREEN="\033[01;32m"    # Success
