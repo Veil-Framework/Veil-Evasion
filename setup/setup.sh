@@ -184,7 +184,7 @@ func_package_deps(){
   if [ -d "${winedir}" ]; then
     echo -e "\n\n [*]${RED} ALERT: Existing Veil Wine environment detected at ${winedir}${RESET}\n"
     read -p "            Do you want to nuke it? (recommended) [Y/n]: " nukewinedir
-    if [ "${nukewinedir}" == 'y' ]; then
+    if [ "${nukewinedir}" == 'y' ] || [ "${nukewinedir}" == 'Y' ]; then
       echo -e "\n\n [*]${YELLOW} Deleting existing Veil Wine environment...${RESET}\n"
       rm -rf "${winedir}"
     else
@@ -199,7 +199,7 @@ func_package_deps(){
     winebootexists=false
   fi
 
-  if [ "${nukewinedir}" == 'y' ] || [ ! -d "${winedir}" ]; then
+  if [ "${nukewinedir}" == 'y' ] || [ ! -d "${winedir}" ] || [ "${nukewinedir}" == 'Y' ]; then
     echo -e " [*]${YELLOW} Creating new Veil Wine environment in ${winedir} ${RESET}"
     if [ "${arch}" == "x86_64" ]; then
       echo -e " [*]${YELLOW} Initializing Veil's Wine environment...${RESET}"
