@@ -14,6 +14,7 @@ import re
 import readline
 import subprocess
 import binascii
+import string
 
 from modules.common import messages
 from modules.common import helpers
@@ -441,6 +442,9 @@ class Shellcode:
                         num_extra_options = selection.split(' ')
                         for xtra_opt in num_extra_options:
                             if xtra_opt is not '':
+				if -1 == string.find("=",xtra_opt) :
+					print "parameter grammar error!"
+					continue
                                 if "-" in xtra_opt.split('=')[0]:
                                     final_opt = xtra_opt.split('=')[0] + " " + xtra_opt.split('=')[1]
                                     extraValues.append(final_opt)
