@@ -1,3 +1,7 @@
+[07.19.2016]
+     Released.: 2.28
+     Fixed....: Fixed issue within Veil where Python scripts gave cannot open archive.  Determined it to be an issue with the bootloader.  An old bootloader (runw.exe) was being used on the pyinstaller payloads which introduced the error.  Updating to the latest bootloader fixed the problem.  Might have to look into removing pwnstaller since it uses the old bootloader.
+
 [06.29.2016]
      Released.: 2.27.2
      Modified.: Setup script now contains a fix for a bug in ubuntu and arch
