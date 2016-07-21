@@ -13,7 +13,7 @@ arg=""
 outputfolder="/usr/share/veil-output/"
 runuser="$(whoami)"
 if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
-  trueuser="$(who | awk '{print $1}')"
+  trueuser="$(who | tr -d '\n' | awk '{print $1}')"
 else
   trueuser="$(who am i | awk '{print $1}')" # if this is blank, we're actually root (kali)
 fi
