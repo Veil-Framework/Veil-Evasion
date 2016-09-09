@@ -9,6 +9,7 @@ silent=false
 os="$(awk -F '=' '/^ID=/ {print $2}' /etc/os-release 2>&-)"
 version="$(awk -F '=' '/^VERSION_ID=/ {print $2}' /etc/os-release 2>&-)"
 arg=""
+errors=""
 outputfolder="/usr/share/veil-output"
 runuser="$(whoami)"
 if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
@@ -84,7 +85,7 @@ func_check_env(){
 
   if [ "${silent}" == "true" ]; then
     echo -e "\n [?] ${BOLD}Are you sure you wish to install Veil-Evasion?${RESET}\n"
-    echo -e "     Continue with installation? ([${BOLD}y${RESET}]/[${GREEN}s${RESET}]ilent/[${BOLD}N${RESET}]o): ${GREEN}S${RESET}"
+    echo -e "     Continue with installation? ([${BOLD}y${RESET}]/[${GREEN}S${RESET}]ilent/[${BOLD}n${RESET}]o): ${GREEN}S${RESET}"
   else
     echo -e "\n [?] ${BOLD}Are you sure you wish to install Veil-Evasion?${RESET}\n"
     read -p '     Continue with installation? ([y]/[s]ilent/[N]o): ' installveil
@@ -144,7 +145,7 @@ func_package_deps(){
   # Debian based distributions
   if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     if [ "${silent}" == "true" ]; then
-      echo -e "\n\n [*] ${YELLOW}Silent Mode: Enabled${RESET}\n"
+      echo -e "\n\n [*] ${YELLOW}Silent Mode${RESET}: ${GREEN}Enabled${RESET}\n"
       arg=" DEBIAN_FRONTEND=noninteractive"
     fi
 
@@ -160,13 +161,21 @@ func_package_deps(){
         sudo ${arg} apt-get -y -qq install wine wine1.6 wine1.6-i386
       fi
       tmp="$?"
-      [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine... Exit code: ${tmp}${RESET}\n" && exit 1
+      if [ "${tmp}" -ne "0" ]; then
+        msg="Failed to install Wine... Exit code: ${tmp}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+      fi
 
     elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
       sudo apt-get -qq update
       sudo ${arg} apt-get -y -qq install wine32
       tmp="$?"
-      [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine... Exit code: ${tmp}${RESET}\n" && exit 1
+      if [ "${tmp}" -ne "0" ]; then
+        msg="Failed to install Wine... Exit code: ${tmp}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+      fi
 
     else # Dead code. We really shouldn't end up here, but, you never know...
       echo -e "${RED}[ERROR]: Architecture ${arch} is not supported!\n${RESET}"
@@ -177,7 +186,11 @@ func_package_deps(){
     echo -e "\n\n [*] ${YELLOW}Installing Wine 32-bit on x86_64 System${RESET}"
     sudo dnf install -y wine.i686 wine
     tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine x86_64... Exit code: ${tmp}${RESET}\n" && exit 1
+    if [ "${tmp}" -ne "0" ]; then
+      msg="Failed to install Wine x86_64... Exit code: ${tmp}"
+      errors="${errors}\n${msg}"
+      echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+    fi
   elif [ "${os}" == "arch" ]; then
     if grep -Fxq "#[multilib]" /etc/pacman.conf; then
       echo "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
@@ -185,7 +198,11 @@ func_package_deps(){
 
     sudo pacman -Syu ${args} --needed --noconfirm wine wine-mono wine_gecko git
     tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Wine x86_64... Exit code: ${tmp}${RESET}\n" && exit 1
+    if [ "${tmp}" -ne "0" ]; then
+      msg="Failed to install Wine x86_64... Exit code: ${tmp}"
+      errors="${errors}\n${msg}"
+      echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+    fi
   fi
 
   # Setup Wine prefices
@@ -232,9 +249,13 @@ func_package_deps(){
       if [ -d "${winedrive}" ]; then
         echo -e " [*] ${GREEN}Veil Wine environment successfully created!${RESET}\n"
       else
-        echo -e " ${RED}[ERROR] Veil Wine environment could not be found!${RESET}\n"
-        echo -e "         ${RED}Check for existence of ${winedrive}${RESET}\n"
-        exit 1
+        msg="Veil Wine environment could not be found!"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+
+        msg="Check for existence of ${winedrive}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
       fi
     elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
       echo -e " [*] ${YELLOW}Initializing Veil's Wine environment...${RESET}\n"
@@ -243,9 +264,13 @@ func_package_deps(){
       if [ -d "${winedrive}" ]; then
         echo -e " [*] ${GREEN}Veil Wine environment successfully created!${RESET}\n"
       else
-        echo -e " ${RED}[ERROR] Veil Wine environment could not be found!"
-        echo -e "         ${RED}Check for existence of ${winedrive}${RESET}\n"
-        exit 1
+        msg="Veil Wine environment could not be found!"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+
+        msg="Check for existence of ${winedrive}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
       fi
     fi
   fi
@@ -268,12 +293,20 @@ func_package_deps(){
     sudo pip2 install pefile
   fi
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install dependencies... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install dependencies... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 
   if [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     sudo ${arg} apt-get -y install metasploit-framework
     tmp="$?"
-    [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install dependencies (Metasploit-Framework)... Exit code: ${tmp}${RESET}\n" && exit 1
+    if [ "${tmp}" -ne "0" ]; then
+      msg="Failed to install dependencies (Metasploit-Framework)... Exit code: ${tmp}"
+      errors="${errors}\n${msg}"
+      echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+    fi
   fi
 }
 
@@ -306,7 +339,11 @@ func_capstone_deps(){
     fi
   fi
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install Capstone... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install Capstone... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 }
 
 # Install Python dependencies
@@ -346,7 +383,11 @@ func_python_deps(){
   fi
 
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install SymmetricJSONRPC... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install SymmetricJSONRPC... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 
   # Python (OS) - install-addons.sh
   # In-case its 'First time run' for Wine (More information - http://wiki.winehq.org/Mono)
@@ -369,7 +410,11 @@ func_python_deps(){
   [ "${silent}" == "true" ] && arg=" TARGETDIR=C:\Python27 ALLUSERS=1 /q /norestart"
   sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine msiexec /i "${rootdir}/setup/python-2.7.5.msi" ${arg}
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install (Wine) Python 2.7.5... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install (Wine) Python 2.7.5... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 
   # Cool down
   sleep 3s
@@ -391,7 +436,11 @@ func_python_deps(){
       sleep 1s
       sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine "${FILE}"
       tmp="$?"
-      [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install ${FILE}... Exit code: ${tmp}${RESET}\n" && exit 1
+      if [ "${tmp}" -ne "0" ]; then
+        msg="Failed to install ${FILE}... Exit code: ${tmp}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+      fi
     fi
   done
 
@@ -408,24 +457,28 @@ func_python_deps(){
       # Install PyInstaller now
       file="${rootdir}/setup/PyInstaller-3.2.tar.gz"
       shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-      if [ "$shasum" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+      if [ "${shasum}" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
         sudo rm -rf /opt/veil/PyInstaller-*
         sudo mkdir -p /opt/veil
         sudo tar -C /opt/veil -xzf "${file}"
       else
-        echo -e "\n\n [*] ${RED}Bad hash for PyInstaller!  Please try again for inform the developer!${RESET}\n"
+        msg="Bad hash for PyInstaller.tar.gz!"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
       fi
     fi
   else
     # Install PyInstaller now
     file="${rootdir}/setup/PyInstaller-3.2.tar.gz"
     shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-    if [ "$shasum" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+    if [ "${shasum}" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
       sudo rm -rf /opt/veil/PyInstaller-*
       sudo mkdir -p /opt/veil
       sudo tar -C /opt/veil -xzf "${file}"
     else
-      echo -e "\n\n [*] ${RED}Bad hash for PyInstaller!  Please try again for inform the developer!${RESET}\n"
+      msg="Bad hash for PyInstaller.tar.gz!"
+      errors="${errors}\n${msg}"
+      echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
     fi
   fi
 
@@ -433,7 +486,7 @@ func_python_deps(){
   echo -e "\n\n [*] ${YELLOW}Installing Python's PEFile (For PyInstaller)${RESET}"
   file="${rootdir}/setup/pefile-2016.3.28.tar.gz"
   shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-  if [ "$shasum" == "f24021085b5c3ef7b0898bb1f1d93eecd3839e03512769e22b0c5a10d9095f7b" ]; then
+  if [ "${shasum}" == "f24021085b5c3ef7b0898bb1f1d93eecd3839e03512769e22b0c5a10d9095f7b" ]; then
     sudo rm -rf /opt/veil/pefile-*
     sudo mkdir -p /opt/veil
     sudo tar -C /opt/veil -xzf "${file}"
@@ -442,14 +495,16 @@ func_python_deps(){
     sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine "${winedrive}/Python27/python.exe" "setup.py" install
     popd >/dev/null
   else
-    echo -e "\n\n [*] ${RED}Bad hash for PEFile!  Please try again for inform the developer!${RESET}\n"
+    msg="Bad hash for PEFile.tar.gz!"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
   fi
 
   # Install futures for PyInstaller
   echo -e "\n\n [*] ${YELLOW}Installing Python's Futures (For PyInstaller)${RESET}"
   file="${rootdir}/setup/future-0.15.2.tar.gz"
   shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-  if [ "$shasum" == "3d3b193f20ca62ba7d8782589922878820d0a023b885882deec830adbf639b97" ]; then
+  if [ "${shasum}" == "3d3b193f20ca62ba7d8782589922878820d0a023b885882deec830adbf639b97" ]; then
     sudo rm -rf /opt/veil/future-*
     sudo mkdir -p /opt/veil
     sudo tar -C /opt/veil -xzf "${file}"
@@ -458,7 +513,9 @@ func_python_deps(){
     sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine "${winedrive}/Python27/python.exe" "setup.py" install
     popd >/dev/null
   else
-    echo -e "\n\n [*] ${RED}Bad hash for Futures!  Please try again for inform the developer!${RESET}\n"
+    msg="Bad hash for future.tar.gz!"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
   fi
 
   # Check to see if setup tools is available, if not, install it.
@@ -487,7 +544,11 @@ func_go_deps(){
       echo -e "\n\n [*] ${YELLOW}Installing Go (v${goversion} via Repository)${RESET}"
       sudo apt-get source golang-go  #golang
       tmp="$?"
-      [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to download Go... Exit code: ${tmp}${RESET}\n" && exit 1
+      if [ "${tmp}" -ne "0" ]; then
+        msg="Failed to download Go... Exit code: ${tmp}"
+        errors="${errors}\n${msg}"
+        echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+      fi
 
       # Put Everything In One Place
       sudo cp -rn /tmp/golang-*/* /usr/src/go/
@@ -498,24 +559,31 @@ func_go_deps(){
   fi
 
   if [ ! -f "/usr/src/go/bin/windows_386/go.exe" ]; then
-    echo -e "\n\n [*] ${YELLOW}Installing Go (via TAR)${RESET}"
     if [ "${arch}" == "x86_64" ]; then
+      echo -e "\n\n [*] ${YELLOW}Installing Go x86_64 (via TAR)${RESET}"
       file="${rootdir}/setup/go153x64.tar.gz"
       shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-      if [ "$shasum" == "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae53" ]; then
+      if [ "${shasum}" == "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae5" ]; then
         sudo tar -C /usr/local -xzf "${file}"
       else
-        echo -e "\n\n [*] ${RED}Bad hash for go153x64.tar.gz!  Please try again for inform the developer!"
-        exit 1
+        if [ "${tmp}" -ne "0" ]; then
+          msg="Bad hash for go153x64.tar.gz!"
+          errors="${errors}\n${msg}"
+          echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+        fi
       fi
     elif [ "${arch}" == "x86" ] || [ "${arch}" == "i686" ]; then
+      echo -e "\n\n [*] ${YELLOW}Installing Go x86 (via TAR)${RESET}"
       file="${rootdir}/setup/go153x86.tar.gz"
       shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-      if [ "$shasum" == "c1ce206b7296db1b10ff7896044d9ca50e87efa5bc3477e8fd8c2fb149bfca8f" ]; then
+      if [ "${shasum}" == "c1ce206b7296db1b10ff7896044d9ca50e87efa5bc3477e8fd8c2fb149bfca8f" ]; then
         sudo tar -C /usr/local -xzf "${file}"
       else
-        echo -e "\n\n [*] ${RED}Bad hash for go153x86.tar.gz!  Please try again for inform the developer!"
-        exit 1
+        if [ "${tmp}" -ne "0" ]; then
+          msg="Bad hash for go153x86.tar.gz!"
+          errors="${errors}\n${msg}"
+          echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+        fi
       fi
     fi
     export GOROOT=/usr/local/go
@@ -542,13 +610,21 @@ func_ruby_deps(){
   [ "${silent}" == "true" ] && arg=" /silent"
   sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine "${rootdir}/setup/rubyinstaller-1.8.7-p371.exe" ${arg}
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install (Wine) Ruby.exe... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install (Wine) Ruby.exe... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 
   # Install the OCRA Gem under Wine
   echo -e "\n [*] ${YELLOW}Installing (Wine) Ruby OCRA gem...${RESET}"
   sudo -u "${trueuser}" WINEPREFIX="${winedir}" wine "${winedrive}/Ruby187/bin/ruby.exe" "${winedrive}/Ruby187/bin/gem" install ocra-1.3.0.gem
   tmp="$?"
-  [ "${tmp}" -ne "0" ] && echo -e " ${RED}[ERROR] Failed to install (Wine) Ruby OCRA Gem... Exit code: ${tmp}${RESET}\n" && exit 1
+  if [ "${tmp}" -ne "0" ]; then
+    msg="Failed to install (Wine) Ruby OCRA Gem... Exit code: ${tmp}"
+    errors="${errors}\n${msg}"
+    echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
+  fi
 
   # Unzip the Ruby dependencies
   echo -e "\n [*] ${YELLOW}Extracting (Wine) Ruby dependencies...${RESET}\n"
@@ -683,12 +759,17 @@ case $1 in
   ;;
 
 *)
-  echo -e "\n\n ${RED}[ERROR] Unknown pption: $1${RESET}\n"
+  echo -e "\n\n ${RED}[ERROR] Unknown option: $1${RESET}\n"
   exit 1
   ;;
 esac
 
-file=$(dirname "$(readlink -f "$0")")"/setup.sh"
+if [ "${errors}" != "" ]; then
+  echo -e " ${RED} There was issues installing the following:${RESET}\n"
+  echo -e " ${BOLD}${errors}${RESET}\n"
+fi
+
+file="${rootdir}/setup/setup.sh"
 echo -e "\n [I] ${BOLD}If you have any errors${RESET} running Veil-Evasion, delete the Veil Wine profile (${BOLD}'rm -rf ${winedir}'${RESET}) and re-run: '${BOLD}${file} -c'${RESET}\n"
 
 echo -e "\n [I] ${GREEN}Done!${RESET}\n"
