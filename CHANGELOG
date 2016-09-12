@@ -1,3 +1,8 @@
+[09.12.2016]
+     Released.: 2.28.2
+     Modified.: Setup script heavily updated by @g0tmi1k, thanks for the continued updates!
+     Modified.: update.py script now changes the pyinstaller update path based on the latest setup script updates
+
 [07.19.2016]
      Released.: 2.28.1
      Modified.: Modified user submission, checks to ensure "=" is present for extra msfvenom options, and doesn't error out.  Converted tabs to spaces
