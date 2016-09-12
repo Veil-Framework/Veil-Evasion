@@ -170,8 +170,10 @@ if __name__ == '__main__':
             else:
                 msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
                 options["MSFVENOM_PATH"] = msfpath
-            if os.path.isdir('/usr/share/pyinstaller'):
-                options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller/"
+            if os.path.isdir('/opt/veil/PyInstaller-3.2/'):
+                options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
+            elif os.path.isdir('/usr/share/pyinstaller'):
+                options["PYINSTALLER_PATH"] = '/usr/share/pyinstaller/'
             else:
                 options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
         elif issue.startswith("BackTrack"):
@@ -182,7 +184,7 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = "/opt/metasploit/msf3/"
-            options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller"
+            options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
         else:
             options["OPERATING_SYSTEM"] = "Linux"
             options["TERMINAL_CLEAR"] = "clear"
@@ -192,7 +194,7 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = msfpath
-            options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller"
+            options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
 
         # last of the general options
         options["TEMP_DIR"] = "/tmp/"
