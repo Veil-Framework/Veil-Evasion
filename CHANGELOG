@@ -1,3 +1,71 @@
+[09.12.2016]
+     Released.: 2.28.2
+     Modified.: Setup script heavily updated by @g0tmi1k, thanks for the continued updates!
+     Modified.: update.py script now changes the pyinstaller update path based on the latest setup script updates
+
+[07.19.2016]
+     Released.: 2.28.1
+     Modified.: Modified user submission, checks to ensure "=" is present for extra msfvenom options, and doesn't error out.  Converted tabs to spaces
+
+[07.19.2016]
+     Released.: 2.28
+     Fixed....: Fixed issue within Veil where Python scripts gave cannot open archive.  Determined it to be an issue with the bootloader.  An old bootloader (runw.exe) was being used on the pyinstaller payloads which introduced the error.  Updating to the latest bootloader fixed the problem.  Might have to look into removing pwnstaller since it uses the old bootloader.
+
+[06.29.2016]
+     Released.: 2.27.2
+     Modified.: Setup script now contains a fix for a bug in ubuntu and arch
+
+[06.26.2016]
+     Released.: 2.27.1
+     Modified.: Python payloads now show a console until issue with --noconsole is figured out
+
+[06.14.2016]
+     Released.: 2.27
+     Added....: Added stallion payload which self-brute forces itself.
+
+[06.05.2016]
+     Released.: 2.26.5
+     Modified.: SupportFiles.py not properly handles the correct path for runw.exe and prevents error from displaying
+
+[05.19.2016]
+     Released.: 2.26.4
+     Removed..: PyObfuscate is no longer used.  It looks like it is less random using it vs. Veil's randomization.
+
+[05.04.2016]
+     Released.: 2.26.3
+     Modified.: Hyperion and PEScrambler payload modules are now working.  This fixes issue #326
+
+[04.22.2016]
+     Released.: 2.26.2
+     Modified.: pyobfuscator code no longer embeds a static hash at the end of each python payload
+
+[04.01.2016]
+     Released.: 2.26.1
+     Updated..: Our update.py script has been updated for better compatibility with Kali.  Thanks to @Sbrun for providing the patch!
+
+[03.31.2016]
+     Released.: 2.26
+     Fixed....: Fixed command injection vulnerability because @botnet_hunter supplied us with a fix that worked against all of his tests.  Thanks to @botnet_hunter for helping to remediate this issue!
+
+[03.29.2016]
+     Released.: 2.25
+     Fixed....: Security vulnerability reported to us by @botnet_hunter.  There was an issue with the RPC server when binding to 0.0.0.0 that essentially allowed RCE.  If you weren't using the RPC server, you weren't affected, but it's good to patch.
+     Thanks...: Thanks to Brian Wallace (@botnet_hunter) for reporting this vulnerability and allowing us to push a patch.
+
+[02.16.2016]
+     Released.: 2.24
+     Added....: I've added obfuscation to the python payloads.  Some AVs are triggering on ctypes being referenced everywhere, at the moment, it's only in the file once.
+     Updated..: Pyinstaller has been updated to version 3.1 which allows us to encrypt the bytecode using the -key option.  The key is randomly generated time a payload is made.
+
+[01.15.2016]
+     Released.: 2.23
+     Info.....: Happy New Years!
+     Added....: Added a perl module for Veil-Evasion.  Working on native compilation in Linux, but if you know how to do it, get in touch with me!
+
+[11.15.2015]
+     Released.: 2.22.2
+     Updated..: Pure go stager payloads now have the correct buffer length for the latest meterpreter dll.  Fixes issue #243
+
 [9.19.2015]
      Released.: 2.22.1
      Updated..:  Fixed issue with msfvenom output change and command line usage, updated in pull requests #218 and #219, thanks to gryffus for the patches! 

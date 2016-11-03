@@ -7,6 +7,7 @@ More information from
 
 """
 
+import os
 import time
 import shutil
 from modules.common import helpers
@@ -63,35 +64,15 @@ class Payload:
         if self.required_options["ORIGINAL_EXE"][0] == "WinSCP.exe":
             self.required_options["ORIGINAL_EXE"][0] = settings.VEIL_EVASION_PATH + "testbins/WinSCP.exe"
 
+        if not os.path.isfile(self.required_options["ORIGINAL_EXE"][0]):
+            print "\nError during Backdoor Factory execution:\nInput file does not exist"
+            raw_input("\n[>] Press any key to return to the main menu.")
+            return ""
+
         #Make sure the bin is supported
         self.basicDiscovery()
 
         shellcodeChoice = self.required_options['PAYLOAD'][0]
-        #cave_miner_inline
-        #iat_reverse_tcp_inline
-        #iat_reverse_tcp_inline_threaded
-        #iat_reverse_tcp_stager_threaded
-        #iat_user_supplied_shellcode_threaded
-        #meterpreter_reverse_https_threaded
-        #reverse_shell_tcp_inline
-        #reverse_tcp_stager_threaded
-        #user_supplied_shellcode_threaded
-        #if self.type == 'PE':
-        #    if not (shellcodeChoice == 'meterpreter_https' and shellcodeChoice == 'meter_https'
-        #        and shellcodeChoice == 'meterpreter_tcp'  and shellcodeChoice == 'meter_tcp'
-        #        and shellcodeChoice == 'reverse_shell'  and shellcodeChoice == 'rev_shell'
-        #        and shellcodeChoice == 'custom'):
-        #            print helpers.color("\n [*] Invalid payload: %s..." % shellcodeChoice, warning=True)
-        #            return ""
-        #elif self.type == 'ELF':
-        #    if not (shellcodeChoice == 'meterpreter_tcp'  and shellcodeChoice == 'meter_tcp'
-        #        and shellcodeChoice == 'reverse_shell'  and shellcodeChoice == 'rev_shell'
-        #        and shellcodeChoice == 'custom'):
-        #            print helpers.color("\n[*] Invalid payload: %s..." % shellcodeChoice, warning=True)
-        #            return ""
-        #else:
-        #    print helpers.color("\n[*] Invalid type: %s..." % self.type, warning=True)
-        #    return ""
 
         if shellcodeChoice == "custom":
 

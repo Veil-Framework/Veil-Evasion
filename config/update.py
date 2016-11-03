@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import platform, os, sys
+import platform, os, sys, pwd
 
 """
 
@@ -37,6 +37,10 @@ def generateConfig(options):
     config += '# Terminal clearing method to use (use "false" to disable it)\n'
     config += 'TERMINAL_CLEAR="' + options['TERMINAL_CLEAR'] + '"\n\n'
     print " [*] TERMINAL_CLEAR = " + options['TERMINAL_CLEAR']
+
+    config += '# Wine environment\n'
+    config += 'WINEPREFIX="' + options["WINEPREFIX"] + '"\n\n'
+    print " [*] WINEPREFIX = " + options["WINEPREFIX"]
 
     config += '# Path to temporary directory\n'
     config += 'TEMP_DIR="' + options["TEMP_DIR"] + '"\n\n'
@@ -166,8 +170,10 @@ if __name__ == '__main__':
             else:
                 msfpath = raw_input(" [>] Please enter the path of your metasploit installation: ")
                 options["MSFVENOM_PATH"] = msfpath
-            if os.path.isdir('/usr/share/pyinstaller'):
-                options["PYINSTALLER_PATH"] = "/usr/share/pyinstaller/"
+            if os.path.isdir('/opt/veil/PyInstaller-3.2/'):
+                options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
+            elif os.path.isdir('/usr/share/pyinstaller'):
+                options["PYINSTALLER_PATH"] = '/usr/share/pyinstaller/'
             else:
                 options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
         elif issue.startswith("BackTrack"):
@@ -178,7 +184,7 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = "/opt/metasploit/msf3/"
-            options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
+            options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
         else:
             options["OPERATING_SYSTEM"] = "Linux"
             options["TERMINAL_CLEAR"] = "clear"
@@ -188,11 +194,20 @@ if __name__ == '__main__':
                 options["MSFVENOM_PATH"] = "/usr/bin/"
             else:
                 options["MSFVENOM_PATH"] = msfpath
-            options["PYINSTALLER_PATH"] = "/opt/pyinstaller-2.0/"
+            options["PYINSTALLER_PATH"] = "/opt/veil/PyInstaller-3.2/"
 
         # last of the general options
         options["TEMP_DIR"] = "/tmp/"
         options["MSFVENOM_OPTIONS"] = ""
+
+        # Get the real user if we're being ran under sudo
+        wineprefix = ""
+        user = os.environ.get("SUDO_USER", pwd.getpwuid(os.getuid()).pw_name)
+        if user == 'root':
+            wineprefix = "/root/.config/wine/veil/"
+        else:
+            wineprefix = "/home/" + user + "/.config/wine/veil/"
+        options["WINEPREFIX"] = wineprefix
 
         # Veil-Evasion specific options
         veil_evasion_path = "/".join(os.getcwd().split("/")[:-1]) + "/"
