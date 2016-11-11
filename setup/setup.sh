@@ -478,7 +478,8 @@ func_python_deps(){
       sudo rm -rf /opt/veil/PyInstaller-*
       sudo mkdir -p /opt/veil
       sudo tar -C /opt/veil -xzf "${file}" # See earlier comment for this addition -Opticshade
-      sudo mv /opt/veil/pyinstaller-pyinstaller-c2f3966 /opt/veil/PyInstaller-3.3 
+      sudo mv /opt/veil/pyinstaller-pyinstaller-c2f3966 /opt/veil/PyInstaller-3.3
+      sudo mkdir -p /opt/veil/PyInstaller-3.3/support/loader/Windows-32bit #No idea why this never gets made on Fedora 24. -Opticshade 
     else
       msg="Bad hash for PyInstaller.tar.gz!"
       errors="${errors}\n${msg}"

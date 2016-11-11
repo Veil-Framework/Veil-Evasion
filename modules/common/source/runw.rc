@@ -7,5 +7,5 @@
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #pragma code_page(1252)
 #endif
-IDI_ICON1               ICON    DISCARDABLE     "./icons/12.ico"
+IDI_ICON1               ICON    DISCARDABLE     "./icons/4.ico"
 #endif
