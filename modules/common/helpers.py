@@ -3,9 +3,13 @@
 Contains any miscellaneous helper methods useful across multiple modules.
 
 """
-
+# Added function to gen random user agent using the fake_useragent module -Opticshade
 import random, string, base64, zlib, re, textwrap, commands, settings, os, sys
+from fake_useragent import UserAgent
 
+def randomUserAgent():
+    ua = UserAgent()
+    return ua.random
 
 def color(string, status=True, warning=False, bold=True, yellow=False):
     """
@@ -73,12 +77,12 @@ def formatLong(title, message, frontTab=True, spacing=16):
     i = 1
     if len(lines) > 0:
         if frontTab:
-            returnString += "\t%s%s" % (('{0: <%s}'%spacing).format(title), lines[0])
+            returnString += "    %s%s" % (('{0: <%s}'%spacing).format(title), lines[0])
         else:
             returnString += " %s%s" % (('{0: <%s}'%(spacing-1)).format(title), lines[0])
     while i < len(lines):
         if frontTab:
-            returnString += "\n\t"+' '*spacing+lines[i]
+            returnString += "\n    "+' '*spacing+lines[i]
         else:
             returnString += "\n"+' '*spacing+lines[i]
         i += 1

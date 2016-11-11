@@ -291,6 +291,7 @@ func_package_deps(){
       mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
     # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
     sudo pip2 install pefile
+    sudo pip2 install fake_useragent
   fi
   tmp="$?"
   if [ "${tmp}" -ne "0" ]; then

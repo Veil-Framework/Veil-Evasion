@@ -24,7 +24,7 @@ from modules.common import controller
 from modules.common import messages
 from modules.common import supportfiles
 from modules.common import helpers
-
+from fake_useragent import UserAgent
 
 """
 The RPC-handler code.
@@ -325,8 +325,11 @@ if __name__ == '__main__':
         controller = controller.Controller(oneRun=False)
 
         # call the update functionality for Veil and then exit
+	# Also update the user agent db for fake_useragent module -Opticshade
         if args.update:
             controller.UpdateVeil(interactive=False)
+            ua = UserAgent()
+            ua.update()
             sys.exit()
 
         # call the payload folder cleaning for Veil and then exit
