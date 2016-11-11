@@ -15,7 +15,7 @@ runuser="$(whoami)"
 if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
   trueuser="$(who | tr -d '\n' | cut -d' ' -f1)"
 else
-  trueuser="$(who am i | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
+  trueuser="$(whoami | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
 fi
 
 if [ "${runuser}" == "root" ] && [ "${trueuser}" == "" ]; then
