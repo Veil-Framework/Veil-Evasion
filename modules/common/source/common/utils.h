@@ -1,10 +1,10 @@
 #include "launch.h"
-void icVUknz(void);
-int YhcCLXSbYpkxA(char *vxeVSX, const char *VCkGQdzYs);
-int VpzRrZjtiCb(char *fiGJQuKMfoU, char *VSJsRoHnbiJ);
-void PhiJDNRtWIEDX(void);
-int NZmEXaeLBMNnCG(LPWSTR YTdoWJ);
-void nWMdmKnGbuwqIL(char *MXavjnI, const char *GSiKCpooSi);
-void RqAgZvlB(char *OxFhVE, const char *PxFujLkdlxPP);
-int oskIhm(const ARCHIVE_STATUS *WzZffJNJN);
-int htsFqKqCvKVri(LPWSTR TOggLFeHHfsu);
+void iwJRZWMzSyV(void);
+int JVCyONZgQ(char *jabVtfTwYM, const char *TIfOGGbYjf);
+int APVPgiK(char *dMMgSCoLwuBvVdl, char *VPdnAQKkW);
+void pfMCjgKdOujxkxR(void);
+int IuLLLcULmVX(LPWSTR pYJznGyU);
+void MVzPDdJSZh(char *goCdhK, const char *ZpGwYFBTQCT);
+void DKKeJygLDad(char *SkFHYnTdW, const char *hogKEYoOXr);
+int cOkGOydsmgDQ(const ARCHIVE_STATUS *JUnuppAsi);
+int RMZiMs(LPWSTR jZCrBjZJchEYYQW);
