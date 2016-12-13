@@ -287,7 +287,7 @@ func_package_deps(){
       python-pip ca-certificates msttcore-fonts-installer
 
   elif [ "${os}" ==  "arch" ]; then
-    sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-mingw-w64-winpthreads \
+    sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-winpthreads \
       mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
     # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
     sudo pip2 install pefile
