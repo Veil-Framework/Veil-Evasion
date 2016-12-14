@@ -158,7 +158,7 @@ func_package_deps(){
       if [ "${os}" != "ubuntu" ]; then
         sudo ${arg} apt-get -y -qq install wine wine64 wine32
       else # Special snowflakes... urghbuntu
-        sudo ${arg} apt-get -y -qq install wine wine1.6 wine1.6-i386
+        sudo ${arg} apt-get -y -qq install wine-stable wine1.6 wine1.6-i386
       fi
       tmp="$?"
       if [ "${tmp}" -ne "0" ]; then
@@ -277,8 +277,12 @@ func_package_deps(){
 
   # Start dependency install
   echo -e "\n\n [*] ${YELLOW}Installing dependencies${RESET}"
-  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
+  if [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
     sudo ${arg} apt-get -y install mingw-w64 monodoc-browser monodevelop mono-mcs wine unzip ruby golang wget git \
+      python python-crypto python-pefile python-pip ca-certificates #ttf-mscorefonts-installer
+
+  elif [ "${os}" == "ubuntu" ]; then
+    sudo ${arg} apt-get -y install mingw-w64 monodoc-browser monodevelop mono-mcs wine-stable unzip ruby golang wget git \
       python python-crypto python-pefile python-pip ca-certificates #ttf-mscorefonts-installer
 
   elif [ "${os}" == "fedora" ] || [ "${os}" == "rhel" ] || [ "${os}" == "centos" ]; then
