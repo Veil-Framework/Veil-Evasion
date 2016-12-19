@@ -60,7 +60,7 @@ func_title(){
 
 # Trap CTRl-C
 function ctrl_c() {
-  echo -e "\n\n${RED}Quitting..."
+  echo -e "\n\n${RED}Quitting...${RESET}\n"
   exit 2
 }
 
