@@ -12,7 +12,7 @@ arg=""
 errors=""
 outputfolder="/usr/share/veil-output"
 runuser="$(whoami)"
-if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
+if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
   trueuser="$(who | tr -d '\n' | cut -d' ' -f1)"
 else
   trueuser="$(who am i | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
@@ -191,7 +191,7 @@ func_package_deps(){
       errors="${errors}\n${msg}"
       echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
     fi
-  elif [ "${os}" == "arch" ]; then
+  elif [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
     if grep -Fxq "#[multilib]" /etc/pacman.conf; then
       echo "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
     fi
@@ -290,7 +290,7 @@ func_package_deps(){
       monodevelop mono-tools mono-core wine unzip ruby golang wget git python python-crypto python-pefile \
       python-pip ca-certificates msttcore-fonts-installer
 
-  elif [ "${os}" ==  "arch" ]; then
+  elif [ "${os}" ==  "arch" ] || [ "${os}" == "manjaro" ]; then
     sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-winpthreads \
       mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
     # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
@@ -710,8 +710,8 @@ elif [ "${os}" == "fedora" ]; then
   fi
 else
   os="$(awk -F '["=]' '/^ID=/ {print $2}' /etc/os-release 2>&- | cut -d'.' -f1)"
-  if [ "${os}" == "arch" ]; then
-    echo -e " [I] ${YELLOW}Arch Linux ${arch} detected...${RESET}\n"
+  if [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
+    echo -e " [I] ${YELLOW}Arch Linux or Manjaro ${arch} detected...${RESET}\n"
   elif [ "${os}" == "debian" ]; then
     echo -e " [!] ${RED}Debian Linux sid/TESTING ${arch} *possibly* detected..."
     echo -e "     If you are not currently running Debian Testing, you should exit this installer!${RESET}\n"
