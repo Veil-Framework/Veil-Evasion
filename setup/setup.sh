@@ -12,7 +12,7 @@ arg=""
 errors=""
 outputfolder="/usr/share/veil-output"
 runuser="$(whoami)"
-if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
+if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
   trueuser="$(who | tr -d '\n' | cut -d' ' -f1)"
 else
   trueuser="$(who am i | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
@@ -191,7 +191,7 @@ func_package_deps(){
       errors="${errors}\n${msg}"
       echo -e " ${RED}[ERROR] ${msg}${RESET}\n"
     fi
-  elif [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
+  elif [ "${os}" == "arch" ]; then
     if grep -Fxq "#[multilib]" /etc/pacman.conf; then
       echo "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
     fi
@@ -290,7 +290,7 @@ func_package_deps(){
       monodevelop mono-tools mono-core wine unzip ruby golang wget git python python-crypto python-pefile \
       python-pip ca-certificates msttcore-fonts-installer
 
-  elif [ "${os}" ==  "arch" ] || [ "${os}" == "manjaro" ]; then
+  elif [ "${os}" ==  "arch" ]; then
     sudo pacman -Sy ${arg} --needed mingw-w64-binutils mingw-w64-crt mingw-w64-gcc mingw-w64-headers mingw-w64-winpthreads \
       mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
     # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
