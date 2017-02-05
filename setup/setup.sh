@@ -710,8 +710,8 @@ elif [ "${os}" == "fedora" ]; then
   fi
 else
   os="$(awk -F '["=]' '/^ID=/ {print $2}' /etc/os-release 2>&- | cut -d'.' -f1)"
-  if [ "${os}" == "arch" ]; then
-    echo -e " [I] ${YELLOW}Arch Linux ${arch} detected...${RESET}\n"
+  if [ "${os}" == "arch" ] || [ "${os}" == "manjaro" ]; then
+    echo -e " [I] ${YELLOW}Arch Linux or Manjaro ${arch} detected...${RESET}\n"
   elif [ "${os}" == "debian" ]; then
     echo -e " [!] ${RED}Debian Linux sid/TESTING ${arch} *possibly* detected..."
     echo -e "     If you are not currently running Debian Testing, you should exit this installer!${RESET}\n"
