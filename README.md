@@ -1,5 +1,10 @@
 # Veil-Evasion
+--------------------------------------------------------
+I decided to complete some of the TODOs in the Veil-Evasion code and add some things of my own in I thought might be useful.
 
+PLEASE NOTE! This is not the normal Veil-Evasion, it is modded as I think of things. I was bored and saw a few TODOs in the code and thought I could contribute, and play with the code a bit.
+-Opticshade
+--------------------------------------------------------
 Veil-Evasion is a tool designed to generate metasploit payloads that bypass common anti-virus solutions.
 
 > NOTE: `./setup/setup.sh` should be re-run on every major version update. If you receive any major errors on running Veil-Evasion, first try re-running this script to install any additional packages and update the common configuration file.
@@ -21,6 +26,7 @@ Thanks to:
 
 1.  Install Python 2.7
 2.  Install PyCrypto >= 2.3
+3.  Install fake_useragent 
 
 ### Windows (for Py2Exe compilation)
 
@@ -41,7 +47,7 @@ Install Python 2.7, Py2Exe, PyCrypto, and PyWin32 on a Windows computer (for Py2
 
 ```bash
 apt-get -y install git
-git clone https://github.com/Veil-Framework/Veil-Evasion.git
+git clone https://github.com/opticshade/Veil-Evasion.git
 cd Veil-Evasion/
 cd setup
 setup.sh -c

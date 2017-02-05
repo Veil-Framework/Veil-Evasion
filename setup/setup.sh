@@ -15,7 +15,7 @@ runuser="$(whoami)"
 if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
   trueuser="$(who | tr -d '\n' | cut -d' ' -f1)"
 else
-  trueuser="$(who am i | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
+  trueuser="$(whoami | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
 fi
 
 if [ "${runuser}" == "root" ] && [ "${trueuser}" == "" ]; then
@@ -295,6 +295,7 @@ func_package_deps(){
       mono mono-tools mono-addins python2-pip wget unzip ruby python python2 python-crypto gcc-go ca-certificates base-devel
     # Install pefile for python2 using pip, rather than via AUR as the package is currently broken.
     sudo pip2 install pefile
+    sudo pip2 install fake_useragent
   fi
   tmp="$?"
   if [ "${tmp}" -ne "0" ]; then
@@ -451,20 +452,22 @@ func_python_deps(){
   popd >/dev/null
 
   # Install Python (OS) extra setup files (PyInstaller)
+  # My change might break this. So I'm gonna force to use my version -Opticshade
   echo -e "\n\n [*] ${YELLOW}Installing Python's PyInstaller${RESET}"
   [[ "${silent}" == "true" ]] && arg=" DEBIAN_FRONTEND=noninteractive"
   if [ -f "/usr/share/pyinstaller/PKG-INFO" ]; then
     pyinstversion="$(sed -n '3{p;q;}' /usr/share/pyinstaller/PKG-INFO | cut -d' ' -f2)"
-    if [ "$pyinstversion" == "3.2" ]; then
+    if [ "$pyinstversion" == "999" ]; then # Lazy hack to force it to sue dev version -Opticshade
       echo -e "\n\n [*] ${YELLOW}PyInstaller v3.2 is already installed... Skipping...${RESET}\n"
     else
       # Install PyInstaller now
-      file="${rootdir}/setup/PyInstaller-3.2.tar.gz"
+      file="${rootdir}/setup/PyInstaller-dev-11102016.tgz"
       shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-      if [ "${shasum}" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+      if [ "${shasum}" == "5442affcde200acbefc05e16067b73d767418edac5d7448eeec0315b4743bcdf" ]; then
         sudo rm -rf /opt/veil/PyInstaller-*
         sudo mkdir -p /opt/veil
-        sudo tar -C /opt/veil -xzf "${file}"
+        sudo tar -C /opt/veil -xzf "${file}" # Dev snapshot dir is based on build number not version -Opticshade
+        sudo mv /opt/veil/pyinstaller-pyinstaller-c2f3966 /opt/veil/PyInstaller-3.3
       else
         msg="Bad hash for PyInstaller.tar.gz!"
         errors="${errors}\n${msg}"
@@ -473,12 +476,14 @@ func_python_deps(){
     fi
   else
     # Install PyInstaller now
-    file="${rootdir}/setup/PyInstaller-3.2.tar.gz"
+    file="${rootdir}/setup/PyInstaller-dev-11102016.tgz"
     shasum="$(openssl dgst -sha256 "${file}" | cut -d' ' -f2)"
-    if [ "${shasum}" == "7598d4c9f5712ba78beb46a857a493b1b93a584ca59944b8e7b6be00bb89cabc" ]; then
+    if [ "${shasum}" == "5442affcde200acbefc05e16067b73d767418edac5d7448eeec0315b4743bcdf" ]; then
       sudo rm -rf /opt/veil/PyInstaller-*
       sudo mkdir -p /opt/veil
-      sudo tar -C /opt/veil -xzf "${file}"
+      sudo tar -C /opt/veil -xzf "${file}" # See earlier comment for this addition -Opticshade
+      sudo mv /opt/veil/pyinstaller-pyinstaller-c2f3966 /opt/veil/PyInstaller-3.3
+      sudo mkdir -p /opt/veil/PyInstaller-3.3/support/loader/Windows-32bit #No idea why this never gets made on Fedora 24. -Opticshade 
     else
       msg="Bad hash for PyInstaller.tar.gz!"
       errors="${errors}\n${msg}"
