@@ -12,7 +12,7 @@ arg=""
 errors=""
 outputfolder="/usr/share/veil-output"
 runuser="$(whoami)"
-if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ]; then
+if [ "${os}" == "ubuntu" ] || [ "${os}" == "arch" ] || [ "${os}" == "linuxmint" ]; then
   trueuser="$(who | tr -d '\n' | cut -d' ' -f1)"
 else
   trueuser="$(who am i | cut -d' ' -f1)" # If this is blank, we're actually root (kali)
@@ -143,7 +143,7 @@ func_package_deps(){
   # Always install 32-bit support for 64-bit architectures
 
   # Debian based distributions
-  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
+  if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ] || [ "${os}" == "linuxmint" ]; then
     if [ "${silent}" == "true" ]; then
       echo -e "\n\n [*] ${YELLOW}Silent Mode${RESET}: ${GREEN}Enabled${RESET}\n"
       arg=" DEBIAN_FRONTEND=noninteractive"
@@ -155,10 +155,12 @@ func_package_deps(){
       sudo apt-get -qq update
 
       echo -e " [*] ${YELLOW}Installing Wine 32-bit and 64-bit binaries${RESET}"
-      if [ "${os}" != "ubuntu" ]; then
+      if [ "${os}" == "ubuntu" ]; then # Special snowflakes... urghbuntu
+	sudo ${arg} apt-get -y -qq install wine-stable wine1.6 wine1.6-i386
+      elif [ "${os}" == "linuxmint" ]; then
+	sudo ${arg} apt-get -y -qq install wine1.6
+      else
         sudo ${arg} apt-get -y -qq install wine wine64 wine32
-      else # Special snowflakes... urghbuntu
-        sudo ${arg} apt-get -y -qq install wine-stable wine1.6 wine1.6-i386
       fi
       tmp="$?"
       if [ "${tmp}" -ne "0" ]; then
@@ -180,6 +182,10 @@ func_package_deps(){
     else # Dead code. We really shouldn't end up here, but, you never know...
       echo -e "${RED}[ERROR]: Architecture ${arch} is not supported!\n${RESET}"
       exit 1
+    fi
+
+    if [ "${os}" == "linuxmint" ]; then
+      sudo ${arg} apt-get -y -qq install python-pip python-setuptools python-pefile
     fi
   # Red Hat based distributions
   elif [ "${os}" == "fedora" ] || [ "${os}" == "rhel" ] || [ "${os}" == "centos" ]; then
@@ -317,7 +323,7 @@ func_package_deps(){
 # Install Capstone dependencies (Needed for Backdoor Factory - https://github.com/secretsquirrel/the-backdoor-factory/blob/master/install.sh)
 func_capstone_deps(){
   echo -e "\n [*] ${YELLOW}Installing Capstone dependencies...${RESET}"
-  if [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
+  if [ "${os}" == "kali" ] || [ "${os}" == "parrot" ] || [ "${os}" == "linuxmint" ]; then
     [[ "${silent}" == "true" ]] && arg=" DEBIAN_FRONTEND=noninteractive"
     sudo ${arg} apt-get -y install python-capstone
   else
@@ -382,7 +388,7 @@ func_python_deps(){
       sudo ${arg} apt-get install -y python-symmetric-jsonrpc
     else
       echo -e " [*] ${YELLOW}Installing SymmetricJSONRPC dependency (via PIP)...${RESET}"
-      sudo pip2 install symmetricjsonrpc
+      sudo ${arg} pip2 install symmetricjsonrpc
     fi
   fi
 
@@ -696,6 +702,8 @@ elif [ "${os}" == "ubuntu" ]; then
     echo -e " ${RED}[ERROR]: Veil-Evasion is only supported On Ubuntu 15.10 or higher!${RESET}\n"
     exit 1
   fi
+elif [ "${os}" == "linuxmint" ]; then
+  echo -e " [I] ${YELLOW}Linux Mint ${version} ${arch} detected...${RESET}\n"
 elif [ "${os}" == "debian" ]; then
   version="$(awk -F '["=]' '/^VERSION_ID=/ {print $3}' /etc/os-release 2>&- | cut -d'.' -f1)"
   if [ "${version}" -lt 8 ]; then
