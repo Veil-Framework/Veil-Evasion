@@ -542,7 +542,7 @@ func_go_deps(){
   sudo mkdir -p /usr/src/go/
 
   if [ "${os}" == "ubuntu" ] || [ "${os}" == "debian" ] || [ "${os}" == "kali" ] || [ "${os}" == "parrot" ]; then
-    goversion="$(apt-cache show golang-src | awk -F '[:-.]' '/Version/ {print $3$4}')"
+    goversion="$(apt-cache show golang-src | awk -F '[.:-]' '/Version/ {print $3$4}')"
     if [[ ! "$(grep "#*deb-src" /etc/apt/sources.list)" ]] && [ "${goversion}" -gt "12" ]; then
       # Download source via Repository
       echo -e "\n\n [*] ${YELLOW}Installing Go (v${goversion} via Repository)${RESET}"
