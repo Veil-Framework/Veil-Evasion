@@ -443,7 +443,7 @@ def pwnstallerGenerateMain():
     extractionpathName = helpers.randomString()
     rcName = helpers.randomString()
 
-    # same obsfuscation as used in Veil-Evasion's c/meterpreter/* payloads
+    # same obfuscation as used in Veil-Evasion's c/meterpreter/* payloads
 
     # max length string for obfuscation
     global_max_string_length = 10000
