@@ -44,7 +44,7 @@ apt-get -y install git
 git clone https://github.com/Veil-Framework/Veil-Evasion.git
 cd Veil-Evasion/
 cd setup
-setup.sh -c
+./setup.sh -c
 ```
 
 ### Regenerating Config
